@@ -1,3 +1,7 @@
+# Environment variables (.env)  
+
+- `REACT_APP_PROD` = yes/no
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
