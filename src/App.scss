@@ -1,6 +1,47 @@
 html {
-  // color: #FFFFFF;
-  // background-color: #0C0C0C;
   padding-top: calc(1em + 3vh);
   padding-left: calc(1em + 3vw);
+  padding-right: calc(1em + 3vw);
+}
+
+@mixin verticalFlex() {
+  display: flex;
+  flex-direction: column;
+}
+
+.Home {
+  @include verticalFlex;
+}
+
+.Heading {
+  margin-bottom: 0.5rem;
+}
+
+.LinkList {
+  @include verticalFlex;
+
+  * {
+    margin: 0.1em;
+    margin-left: 0.5em;
+  }
+}
+
+a {
+  width: fit-content;
+}
+
+.Breadcrumbs {
+  margin-bottom: 1rem;
+}
+
+.topRight {
+  position: fixed;
+  top: 5vh;
+  right: 5vw;
+  z-index: 10;
+}
+
+.Divider {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
