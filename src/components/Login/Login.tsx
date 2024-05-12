@@ -20,9 +20,9 @@ export default function Login() {
   const [authUrl, setAuthUrl] = useState('');
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/discord/auth' : 'http://127.0.0.1:5000/backend/discord/auth')
+    fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/discord/auth' : '/backend/discord/auth')
     .then(response => response.json())
-    .then(url => setAuthUrl(url))
+    .then(url => setAuthUrl(url.redirect_url))
     .catch(error => console.error('Error:', error));
   }, []);
 
