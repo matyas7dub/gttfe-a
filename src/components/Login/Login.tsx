@@ -14,7 +14,7 @@ import {
 import { ExternalLinkIcon } from '@chakra-ui/icons'
 
 export default function Login() {
-  let [isLogged, setLogged] = useState(true);
+  let isLogged = localStorage.getItem("jws") != null;
   const userName = localStorage.getItem("userName");
   const avatarUrl = localStorage.getItem("avatarUrl");
   const [authUrl, setAuthUrl] = useState('');
@@ -22,7 +22,7 @@ export default function Login() {
   useEffect(() => {
     fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/discord/auth' : '/backend/discord/auth')
     .then(response => response.json())
-    .then(url => setAuthUrl(url.redirect_url))
+    .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
     .catch(error => console.error('Error:', error));
   }, []);
 
@@ -40,7 +40,7 @@ export default function Login() {
             <Center>
             {isLogged ? 
             <Button onClick={logout} >Logout</Button> :
-            <a href={authUrl}><Button onClick={login}>Discord redirect <ExternalLinkIcon /></Button></a>
+            <a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a>
             }
             </Center>
           </PopoverBody>
@@ -49,13 +49,10 @@ export default function Login() {
     </div>
   )
 
-  function login() {
-    console.debug("login test");
-    setLogged(true);
-  }
-
   function logout() {
-    console.debug("logout test");
-    setLogged(false);
+    localStorage.removeItem("jws");
+    localStorage.removeItem("avatarUrl");
+    localStorage.removeItem("userName");
+    window.location.reload();
   }
 }

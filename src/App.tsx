@@ -6,8 +6,10 @@ import Update from './pages/Game/Update/Update';
 import Role from './pages/Role/Role';
 import AddToUser from './pages/Role/AddToUser/AddToUser';
 import './App.scss';
+import LoginScript from './components/Login/LoginScript';
 
 function App() {
+  const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -16,6 +18,7 @@ function App() {
       <Route path="/game/update" element={<Update />} />
       <Route path="/role" element={<Role />} />
       <Route path="/role/add-to-user" element={<AddToUser />} />
+      <Route path={`/${loginPath}`} element={<LoginScript />} />
     </Routes>
   )
 }
