@@ -15,8 +15,8 @@ import { ExternalLinkIcon } from '@chakra-ui/icons'
 
 export default function Login() {
   let isLogged = localStorage.getItem("jws") != null;
-  const userName = localStorage.getItem("userName");
-  const avatarUrl = localStorage.getItem("avatarUrl");
+  const fallbackObject = JSON.stringify({"id": "", "avatar": ""});
+  const avatarUrl = `https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`;
   const [authUrl, setAuthUrl] = useState('');
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function Login() {
     <div>
       <Popover>
         <PopoverTrigger>
-          <Avatar name={userName?? ''} src={avatarUrl?? ''} />
+          <Avatar name={JSON.parse(localStorage.getItem("userObject")?? "{}").username} src={localStorage.getItem("userObject") != null ? avatarUrl : ''} />
         </PopoverTrigger>
         <PopoverContent>
           <PopoverArrow />
@@ -53,8 +53,7 @@ export default function Login() {
 
   function logout() {
     localStorage.removeItem("jws");
-    localStorage.removeItem("avatarUrl");
-    localStorage.removeItem("userName");
+    localStorage.removeItem("userObject");
     window.location.reload();
   }
 }
