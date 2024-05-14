@@ -16,7 +16,8 @@ export default function Account() {
   useEffect(() => {
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
-    fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/discord/token' : '/backend/discord/token',
+    fetch(
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/token'),
     {
       method: "POST",
       headers: jsonHeader,

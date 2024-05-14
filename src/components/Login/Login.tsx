@@ -23,7 +23,9 @@ export default function Login() {
 
   useEffect(() => {
     if (!isLogged) {
-      fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/discord/auth' : '/backend/discord/auth')
+      fetch(
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/auth')
+      )
       .then(response => response.json())
       .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
       .catch(error => console.error('Error:', error));

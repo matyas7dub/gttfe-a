@@ -14,7 +14,9 @@ export default function PageUpdate() {
   const toast = useToast();
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/game/all/' : '/backend/game/all/')
+    fetch(
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/')
+    )
     .then(response => response.json())
     .then(data => {
       let gameElems: JSX.Element[] = [];
@@ -45,14 +47,16 @@ export default function PageUpdate() {
     </div>
   );
 
-  async function updateCurrentGame(gameId: string) {
-    setGameId(gameId);
-    if (gameId === '') {
+  async function updateCurrentGame(newGameId: string) {
+    setGameId(newGameId);
+    if (newGameId === '') {
       setPage('');
       return;
     }
 
-    fetch(process.env.REACT_APP_PROD === 'yes' ? `https://gttournament.cz/backend/game/${gameId}/page/` : `/backend/game/${gameId}/page/`)
+    fetch(
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${newGameId}/page/`)
+    )
     .then(response => response.json())
     .then(data => setPage(data.page))
     .catch(error => console.error('Error:', error));
@@ -74,7 +78,8 @@ export default function PageUpdate() {
     headers.append('Authorization', `Bearer ${localStorage.getItem('jws')}`);
     headers.append('Content-Type', 'application/json');
 
-    fetch(process.env.REACT_APP_PROD === 'yes' ? `https://gttournament.cz/backend/game/${gameId}/page/` : `/backend/game/${gameId}/page/`,
+    fetch(
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${gameId}/page/`),
     {
       method: "PUT",
       headers: headers,
