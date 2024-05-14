@@ -29,7 +29,7 @@ export default function Account() {
       navigate('/');
     })
     .catch(error => console.error('Error:', error));
-  });
+  }, [HttpBody]);
   return (
       <Center w="100%" h="80vh">
         <Spinner size='xl' />

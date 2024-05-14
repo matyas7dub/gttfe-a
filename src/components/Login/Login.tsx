@@ -28,7 +28,7 @@ export default function Login() {
       .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
       .catch(error => console.error('Error:', error));
     }
-  }, []);
+  }, [isLogged]);
 
   return(
     <div>
