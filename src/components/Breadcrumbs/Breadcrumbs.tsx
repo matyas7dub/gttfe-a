@@ -34,14 +34,15 @@ export default function Breadcrumbs() {
 
     if (i === segments.length - 1) {
       returnValue.push(
-        <BreadcrumbItem isCurrentPage>
+        <BreadcrumbItem key={capitalisedName} isCurrentPage>
           <BreadcrumbLink as={Link}>
             {capitalisedName}
           </BreadcrumbLink>
         </BreadcrumbItem>
       )
     } else {
-        returnValue.push(<BreadcrumbItem>
+        returnValue.push(
+        <BreadcrumbItem key={url}>
           <BreadcrumbLink as={Link} to={url}>
             {capitalisedName}
           </BreadcrumbLink>

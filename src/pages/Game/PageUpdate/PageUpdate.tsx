@@ -20,7 +20,7 @@ export default function PageUpdate() {
       let gameElems: JSX.Element[] = [];
       for (let game of data.games) {
         gameElems.push(
-          <option value={game.gameId}>{game.name}</option>
+          <option key={game.gameId} value={game.gameId}>{game.name}</option>
         );
       }
       setGames(gameElems);
