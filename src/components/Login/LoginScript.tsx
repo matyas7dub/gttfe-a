@@ -24,21 +24,25 @@ export default function Account() {
     })
     .then(response => response.json())
     .then(data => {
+      console.debug(data);
       localStorage.setItem("jws", data.jws);
       localStorage.setItem("avatarUrl", `https://cdn.discordapp.com/avatars/${data.userObject.id}/${data.userObject.avatar}.png`)
+      setUserName(data.userObject.id)
       navigate('/');
     })
     .catch(error => console.error('Error:', error));
 
-    let bearerHeader = new Headers();
-    bearerHeader.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-    fetch(process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz/backend/user/%40me' : '/backend/user/%40me',
-    {
-      headers: bearerHeader,
-    })
-    .then(response => response.json())
-    .then(data => localStorage.setItem("userName", `${data.name} ${data.surname}`))
-    .catch(error => console.error('Error:', error));
+    function setUserName(id: string) {
+      let bearerHeader = new Headers();
+      bearerHeader.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
+      fetch(process.env.REACT_APP_PROD === 'yes' ? `https://gttournament.cz/backend/user/${id}/` : `/backend/user/${id}/`,
+      {
+        headers: bearerHeader,
+      })
+      .then(response => response.json())
+      .then(data => localStorage.setItem("userName", `${data.name} ${data.surname}`))
+      .catch(error => console.error('Error:', error));
+    }
   });
   return (
       <Center w="100%" h="80vh">
