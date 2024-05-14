@@ -12,12 +12,14 @@ import {
   Center,
 } from '@chakra-ui/react'
 import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   let isLogged = localStorage.getItem("jws") != null;
   const fallbackObject = JSON.stringify({"id": "", "avatar": ""});
-  const avatarUrl = `https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`;
+  const [avatarUrl, setAvatarUrl] = useState(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`); 
   const [authUrl, setAuthUrl] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLogged) {
@@ -32,7 +34,7 @@ export default function Login() {
     <div>
       <Popover>
         <PopoverTrigger>
-          <Avatar name={JSON.parse(localStorage.getItem("userObject")?? "{}").username} src={localStorage.getItem("userObject") != null ? avatarUrl : ''} />
+          <Avatar key={avatarUrl} name={JSON.parse(localStorage.getItem("userObject")?? "{}").username} src={localStorage.getItem("userObject") != null ? avatarUrl : ''} />
         </PopoverTrigger>
         <PopoverContent>
           <PopoverArrow />
@@ -54,6 +56,7 @@ export default function Login() {
   function logout() {
     localStorage.removeItem("jws");
     localStorage.removeItem("userObject");
-    window.location.reload();
+    setAvatarUrl("");
+    navigate("/");
   }
 }
