@@ -1,6 +1,6 @@
 import ColorModeButton from '../../../components/ColorModeButton/ColorModeButton';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
-import { Stack, Select, Button, useToast } from '@chakra-ui/react';
+import { Stack, Select, Button, useToast, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
 import Login from '../../../components/Login/Login';
 import { useEffect, useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
@@ -12,6 +12,8 @@ export default function PageUpdate() {
   const [gameId, setGameId] = useState("");
 
   const toast = useToast();
+
+  const [selectorError, setSelectorError] = useState(false);
 
   useEffect(() => {
     fetch(
@@ -38,9 +40,13 @@ export default function PageUpdate() {
         <ColorModeButton />
       </Stack>
       <Stack direction="column" spacing="3rem" marginTop="5rem" width="75%">
-        <Select id="gameSelect" onChange={(event) => {updateCurrentGame(event.target.value)}} placeholder='Select game'>
-          {games}
-        </Select>
+        <FormControl isInvalid={selectorError}>
+          <FormLabel>Game</FormLabel>
+          <Select id="gameSelect" onChange={(event) => {updateCurrentGame(event.target.value)}} placeholder='Select game'>
+            {games}
+          </Select>
+          <FormErrorMessage>Select a game</FormErrorMessage>
+        </FormControl>
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />
         <Button onClick={uploadGamePage} fontSize="2rem" colorScheme="blue" width="fit-content" padding="1em">Update page</Button>
       </Stack>
@@ -51,8 +57,11 @@ export default function PageUpdate() {
     setGameId(newGameId);
     if (newGameId === '') {
       setPage('');
+      setSelectorError(true);
       return;
     }
+
+    setSelectorError(false);
 
     fetch(
     ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${newGameId}/page/`)
@@ -64,6 +73,7 @@ export default function PageUpdate() {
 
   async function uploadGamePage() {
     if (gameId === '') {
+      setSelectorError(true);
       toast({
         title: 'Error',
         description: 'No game selected.',
@@ -100,7 +110,7 @@ export default function PageUpdate() {
         const data = await response.json();
         toast({
           title: 'Error',
-          description: data.msg,
+          description: data.msg?? 'Unknown error.',
           status: 'error',
           duration: 5000,
           isClosable: true
