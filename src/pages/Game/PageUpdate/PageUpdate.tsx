@@ -1,36 +1,18 @@
 import ColorModeButton from '../../../components/ColorModeButton/ColorModeButton';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
-import { Stack, Select, Button, useToast, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import { Stack, Button, useToast } from '@chakra-ui/react';
 import Login from '../../../components/Login/Login';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
+import GamePicker from '../../../components/GamePicker/GamePicker';
 
 export default function PageUpdate() {
-  const [games, setGames ] = useState<JSX.Element[]>();
-
   const [page, setPage] = useState("");
   const [gameId, setGameId] = useState("");
 
   const toast = useToast();
 
   const [selectorError, setSelectorError] = useState(false);
-
-  useEffect(() => {
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/')
-    )
-    .then(response => response.json())
-    .then(data => {
-      let gameElems: JSX.Element[] = [];
-      for (let game of data.games) {
-        gameElems.push(
-          <option key={game.gameId} value={game.gameId}>{game.name}</option>
-        );
-      }
-      setGames(gameElems);
-    })
-    .catch(error => console.error('Error:', error));
-  }, []);
 
   return (
     <div>
@@ -39,14 +21,8 @@ export default function PageUpdate() {
         <Login />
         <ColorModeButton />
       </Stack>
-      <Stack direction="column" spacing="3rem" marginTop="5rem" width="75%">
-        <FormControl isInvalid={selectorError}>
-          <FormLabel>Game</FormLabel>
-          <Select id="gameSelect" onChange={(event) => {updateCurrentGame(event.target.value)}} placeholder='Select game'>
-            {games}
-          </Select>
-          <FormErrorMessage>Select a game</FormErrorMessage>
-        </FormControl>
+      <Stack direction="column" spacing="3rem" className="Form">
+        <GamePicker isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />
         <Button onClick={uploadGamePage} fontSize="2rem" colorScheme="blue" width="fit-content" padding="1em">Update page</Button>
       </Stack>
