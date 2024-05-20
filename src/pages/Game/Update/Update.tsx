@@ -1,7 +1,5 @@
-import ColorModeButton from "../../../components/ColorModeButton/ColorModeButton";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
-import Login from "../../../components/Login/Login";
 import GamePicker from "../../../components/GamePicker/GamePicker";
 import { useState } from "react";
 
@@ -35,10 +33,6 @@ export default function Update() {
   return (
     <div>
       <Breadcrumbs />
-      <Stack direction="row" align="center" className={"topRight"}>
-        <Login />
-        <ColorModeButton />
-      </Stack>
 
       <Stack direction="column" spacing="3rem" className="Form">
         <GamePicker isInvalid={gameErr} changeHandler={(event) => setGame(event.target.value)}/>

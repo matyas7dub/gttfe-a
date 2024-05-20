@@ -1,7 +1,5 @@
-import ColorModeButton from '../../../components/ColorModeButton/ColorModeButton';
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { Stack, Button, useToast } from '@chakra-ui/react';
-import Login from '../../../components/Login/Login';
 import { useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import GamePicker from '../../../components/GamePicker/GamePicker';
@@ -17,10 +15,6 @@ export default function PageUpdate() {
   return (
     <div>
       <Breadcrumbs />
-      <Stack direction="row" className="topRight">
-        <Login />
-        <ColorModeButton />
-      </Stack>
       <Stack direction="column" spacing="3rem" className="Form">
         <GamePicker isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />

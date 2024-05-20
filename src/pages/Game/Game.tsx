@@ -1,18 +1,12 @@
-import { Link as ChakraLink, HStack, Heading } from "@chakra-ui/react"
+import { Link as ChakraLink, Heading } from "@chakra-ui/react"
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { LinkIcon } from "@chakra-ui/icons";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs"
-import ColorModeButton from "../../components/ColorModeButton/ColorModeButton"
-import Login from "../../components/Login/Login"
 
 export default function Game() {
   return (
     <div>
       <Breadcrumbs />
-      <HStack className="topRight">
-      <Login />
-      <ColorModeButton />
-      </HStack>
 
       <Heading className="Heading">Game</Heading>
       <GameContent />

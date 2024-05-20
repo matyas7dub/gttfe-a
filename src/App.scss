@@ -4,6 +4,10 @@ html {
   padding-right: calc(1em + 3vw);
 }
 
+a {
+  width: fit-content;
+}
+
 @mixin verticalFlex() {
   display: flex;
   flex-direction: column;
@@ -31,19 +35,8 @@ html {
   width: 75%;
 }
 
-a {
-  width: fit-content;
-}
-
 .Breadcrumbs {
   margin-bottom: 1rem;
-}
-
-.topRight {
-  position: fixed;
-  top: 5vh;
-  right: 5vw;
-  z-index: 10;
 }
 
 .Divider {
