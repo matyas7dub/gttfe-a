@@ -3,8 +3,9 @@ import { Select } from "@chakra-ui/select";
 import { ChangeEventHandler, useState, useEffect } from "react";
 
 type GamePickerProps = {
-  isInvalid: boolean,
-  changeHandler: ChangeEventHandler<HTMLSelectElement>
+  isInvalid?: boolean,
+  changeHandler: ChangeEventHandler<HTMLSelectElement>,
+  default?: string,
 }
 export default function GamePicker(props: GamePickerProps) {
   const [games, setGames] = useState<JSX.Element[]>();
@@ -27,9 +28,9 @@ export default function GamePicker(props: GamePickerProps) {
   }, []);
 
   return (
-    <FormControl isInvalid={props.isInvalid}>
+    <FormControl isInvalid={props.isInvalid ?? undefined}>
       <FormLabel>Game</FormLabel>
-      <Select id="gameSelect" onChange={props.changeHandler} placeholder="Select a game">
+      <Select id="gameSelect" onChange={props.changeHandler} placeholder={props.default == undefined ? "Select a game" : props.default}>
         {games}
       </Select>
       <FormErrorMessage>Select a game</FormErrorMessage>
