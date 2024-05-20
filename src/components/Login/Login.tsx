@@ -29,6 +29,10 @@ export default function Login() {
       .then(response => response.json())
       .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
       .catch(error => console.error('Error:', error));
+    } else {
+      if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
+        setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
+      }
     }
   }, [isLogged]);
 
@@ -36,7 +40,8 @@ export default function Login() {
     <div>
       <Popover>
         <PopoverTrigger>
-          <Avatar key={avatarUrl} name={JSON.parse(localStorage.getItem("userObject")?? "{}").username} src={localStorage.getItem("userObject") != null ? avatarUrl : ''} />
+          <Avatar key={avatarUrl} name={JSON.parse(localStorage.getItem("userObject")?? "{}").username}
+            src={localStorage.getItem("userObject") != null && avatarUrl !== "https://cdn.discordapp.com/avatars//.png" ? avatarUrl : ''} />
         </PopoverTrigger>
         <PopoverContent>
           <PopoverArrow />
