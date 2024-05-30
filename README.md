@@ -1,6 +1,10 @@
 # Environment variables (.env)  
 
-- `REACT_APP_PROD` = yes/no
+dev template is in .env-template
+
+- `REACT_APP_PROD`: yes/no (changes localhost to prod domain)
+- `REACT_APP_AUTH_REDIRECT`: where discord should redirect after auth
+- `REACT_APP_JWS_TLL`: how often should JWS tokens be reset
 
 # Getting Started with Create React App
 
