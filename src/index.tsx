@@ -3,10 +3,9 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
-import { Box, ChakraProvider, ColorModeScript, HStack, Img } from '@chakra-ui/react';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import theme from './theme';
-import ColorModeButton from './components/ColorModeButton/ColorModeButton';
-import Login from './components/Login/Login';
+import Navbar from './components/Navbar/Navbar';
 
 
 const root = ReactDOM.createRoot(
@@ -17,12 +16,7 @@ root.render(
   <ColorModeScript />
   <ChakraProvider theme={theme}>
     <BrowserRouter>
-      <HStack position="relative" width="100%" zIndex="10">
-        <Img src="GtLogo.svg" />
-        <Box flexGrow="1" display="hidden" />
-        <Login />
-        <ColorModeButton />
-      </HStack>
+      <Navbar />
       <App />
     </BrowserRouter>
   </ChakraProvider>

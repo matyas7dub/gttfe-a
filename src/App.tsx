@@ -6,7 +6,7 @@ import Update from './pages/Game/Update/Update';
 import Role from './pages/Role/Role';
 import AddToUser from './pages/Role/AddToUser/AddToUser';
 import './App.scss';
-import LoginScript from './components/Login/LoginScript';
+import LoginScript from './components/Navbar/Login/LoginScript';
 
 function App() {
   const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
