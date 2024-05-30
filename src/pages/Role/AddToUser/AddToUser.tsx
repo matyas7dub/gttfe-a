@@ -43,7 +43,7 @@ export default function AddToUser() {
 
         <GamePicker changeHandler={event => setGameId(Number(event.target.value))} default="Null" />
 
-        <Button onClick={addRole} fontSize="2rem" colorScheme="blue" width="fit-content" padding="1em">Add role</Button>
+        <Button onClick={addRole} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Add role</Button>
         
       </Stack>
     </div>

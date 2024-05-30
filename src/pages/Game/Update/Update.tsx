@@ -129,7 +129,7 @@ export default function Update() {
           </FormControl>
         </Stack>
 
-        <Button isDisabled={gameId == null} onClick={updateGame} fontSize="2rem" colorScheme="blue" width="fit-content" padding="1em">Update game</Button>
+        <Button isDisabled={gameId == null} onClick={updateGame} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update game</Button>
 
       </Stack>
     </div>

@@ -3,7 +3,7 @@ import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
-import { ChakraProvider, ColorModeScript, HStack } from '@chakra-ui/react';
+import { Box, ChakraProvider, ColorModeScript, HStack, Img } from '@chakra-ui/react';
 import theme from './theme';
 import ColorModeButton from './components/ColorModeButton/ColorModeButton';
 import Login from './components/Login/Login';
@@ -17,9 +17,11 @@ root.render(
   <ColorModeScript />
   <ChakraProvider theme={theme}>
     <BrowserRouter>
-      <HStack position="fixed" top="5vh" right="5vw" zIndex="10">
-          <Login />
-          <ColorModeButton />
+      <HStack position="relative" width="100%" zIndex="10">
+        <Img src="GtLogo.svg" />
+        <Box flexGrow="1" display="hidden" />
+        <Login />
+        <ColorModeButton />
       </HStack>
       <App />
     </BrowserRouter>

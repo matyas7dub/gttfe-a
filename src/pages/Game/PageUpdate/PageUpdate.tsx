@@ -18,7 +18,7 @@ export default function PageUpdate() {
       <Stack direction="column" spacing="3rem" className="Form">
         <GamePicker isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />
-        <Button onClick={uploadGamePage} fontSize="2rem" colorScheme="blue" width="fit-content" padding="1em">Update page</Button>
+        <Button onClick={uploadGamePage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update page</Button>
       </Stack>
     </div>
   );

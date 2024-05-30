@@ -4,6 +4,12 @@ html {
   padding-right: calc(1em + 3vw);
 }
 
+@font-face {
+  font-family: "Montserrat ExtraBold";
+  src:
+    url("../public/Montserrat-ExtraBold.ttf") format("truetype");
+}
+
 a {
   width: fit-content;
 }
