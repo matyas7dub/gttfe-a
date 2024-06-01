@@ -26,6 +26,7 @@ export default function Account() {
     .then(response => response.json())
     .then(data => {
       localStorage.setItem("jws", data.jws);
+      localStorage.setItem("jwsTtl", String(Date.now() + Number(process.env.REACT_APP_JWS_TTL ?? 0) * 1000));
       localStorage.setItem("userObject", JSON.stringify(data.userObject));
       navigate('/');
     })

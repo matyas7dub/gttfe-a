@@ -10,8 +10,10 @@ import {
   Avatar,
   Button,
   Center,
+  Stack,
+  Tooltip,
 } from '@chakra-ui/react'
-import { ExternalLinkIcon } from '@chakra-ui/icons'
+import { ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -19,7 +21,15 @@ export default function Login() {
   const fallbackObject = JSON.stringify({"id": "", "avatar": ""});
   const [avatarUrl, setAvatarUrl] = useState(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`); 
   const [authUrl, setAuthUrl] = useState('');
+  const [jwsTtl, setJwsTtl] = useState(Number(localStorage.getItem("jwsTtl")));
+  const [validLogin, setValidLogin] = useState(true);
   const navigate = useNavigate();
+
+  const expirationWarning = (
+    <Tooltip label="Your login expired.">
+      <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
+    </Tooltip>
+  );
 
   useEffect(() => {
     if (!isLogged) {
@@ -33,11 +43,27 @@ export default function Login() {
       if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
         setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
       }
-    }
+
+      setJwsTtl(Number(localStorage.getItem("jwsTtl")));
+      if (jwsTtl > Date.now()) {
+        setValidLogin(true);
+
+        setTimeout(() => {
+          setJwsTtl(Number(localStorage.getItem("jwsTtl")));
+          if (jwsTtl < Date.now()) {
+            setValidLogin(false);
+          };
+        }, jwsTtl - Date.now() + 1000); // extra second to make sure it is invalid by that time
+
+      } else {
+        setValidLogin(false);
+      };
+    };
   }, [isLogged]);
 
   return(
-    <div>
+    <Stack direction="row" align="center">
+      {!validLogin && isLogged ? expirationWarning : null}
       <Popover>
         <PopoverTrigger>
           <Avatar key={avatarUrl} name={JSON.parse(localStorage.getItem("userObject")?? "{}").username}
@@ -57,12 +83,13 @@ export default function Login() {
           </PopoverBody>
         </PopoverContent>
       </Popover>
-    </div>
+    </Stack>
   )
 
   function logout() {
     localStorage.removeItem("jws");
     localStorage.removeItem("userObject");
+    localStorage.removeItem("jwsTtl");
     setAvatarUrl("");
     navigate("/");
   }
