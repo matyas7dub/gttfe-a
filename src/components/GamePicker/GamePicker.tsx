@@ -19,7 +19,7 @@ export default function GamePicker(props: GamePickerProps) {
       let gameElems: JSX.Element[] = [];
       for (let game of data.games) {
         gameElems.push(
-          <option key={game.gameId} value={game.gameId}>{game.name}</option>
+          <option key={game.gameId} value={game.gameId}>{namePrettyPrint(game.name)}</option>
         );
       }
       setGames(gameElems);
@@ -36,4 +36,37 @@ export default function GamePicker(props: GamePickerProps) {
       <FormErrorMessage>Select a game</FormErrorMessage>
     </FormControl>
   )
+
+  function namePrettyPrint(name: string) {
+
+    // add names custom names here
+    let prettyNames = {
+      "LOL": "League of Legends",
+    };
+
+    let prettyNameIndex = Object.keys(prettyNames).findIndex((element) => element === name);
+    if (prettyNameIndex >= 0) {
+      return Object.values(prettyNames)[prettyNameIndex];
+    }
+
+    name = name.toLowerCase();
+    let capitalise = true;
+    let prettyName = "";
+
+    for (let letter of name) {
+      if (letter === "_") {
+        prettyName += " ";
+        capitalise = true;
+        continue;
+      }
+      if (capitalise) {
+        prettyName += letter.toUpperCase();
+        capitalise = false;
+      } else {
+        prettyName += letter;
+      }
+    }
+
+    return prettyName;
+  }
 }
