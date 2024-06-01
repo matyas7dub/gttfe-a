@@ -19,6 +19,7 @@ export default function Update() {
   const [minMembersEnabled, setMinMembersEnabled] = useState(false);
   const [maxReserveEnabled, setMaxReserveEnabled] = useState(false);
   const [minReserveEnabled, setMinReserveEnabled] = useState(false);
+  const [maxTeamsEnabled, setMaxTeamsEnabled] = useState(false);
 
   const [gameId, setGameId] = useState<Number>();
   const [regStart, setRegStart] = useState<String>();
@@ -29,6 +30,7 @@ export default function Update() {
   const [minMembers, setMinMembers] = useState(1);
   const [maxReserve, setMaxReserve] = useState(0);
   const [minReserve, setMinReserve] = useState(0);
+  const [maxTeams, setMaxTeams] = useState(1);
 
   return (
     <div>
@@ -129,6 +131,20 @@ export default function Update() {
           </FormControl>
         </Stack>
 
+        <Stack direction="row" spacing={horizontalFormSpacing}>
+          <FormControl>
+            <FormLabel>Maximum teams</FormLabel>
+            <Switch marginBottom={inputToggleMargin} isDisabled={gameId == null} isChecked={maxTeamsEnabled} onChange={(event) => setMaxTeamsEnabled(event.target.checked)} />
+            <NumberInput min={0} isDisabled={!maxTeamsEnabled} value={maxTeamsEnabled ? String(maxTeams) : ""} onChange={(_, value) => {setMaxTeams(value)}}>
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+          </FormControl>
+        </Stack>
+
         <Button isDisabled={gameId == null} onClick={updateGame} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update game</Button>
 
       </Stack>
@@ -147,6 +163,7 @@ export default function Update() {
       setMinMembersEnabled(false);
       setMaxReserveEnabled(false);
       setMinReserveEnabled(false);
+      setMaxTeamsEnabled(false);
       return;
     }
 
@@ -158,8 +175,8 @@ export default function Update() {
     .then(response => response.json())
     .then(data => {
 
-      if (data.game.registrationStart != null) {
-        setRegStart(data.game.registrationStart);
+      if (data.registrationStart != null) {
+        setRegStart(data.registrationStart);
         setRegStartEnabled(true);
       } else {
         setRegStartEnabled(false);
@@ -167,8 +184,8 @@ export default function Update() {
         setRegStart(now);
       }
 
-      if (data.game.registrationEnd != null) {
-        setRegEnd(data.game.registrationEnd);
+      if (data.registrationEnd != null) {
+        setRegEnd(data.registrationEnd);
         setRegEndEnabled(true);
       } else {
         setRegEndEnabled(false);
@@ -176,52 +193,60 @@ export default function Update() {
         setRegEnd(now);
       }
 
-      if (data.game.maxCaptains != null) {
-        setMaxCaptains(data.game.maxCaptains);
+      if (data.maxCaptains != null) {
+        setMaxCaptains(data.maxCaptains);
         setMaxCaptainsEnabled(true);
       } else {
         setMaxCaptainsEnabled(false);
         setMaxCaptains(1);
       }
 
-      if (data.game.minCaptains != null) {
-        setMinCaptains(data.game.minCaptains);
+      if (data.minCaptains != null) {
+        setMinCaptains(data.minCaptains);
         setMinCaptainsEnabled(true);
       } else {
         setMinCaptainsEnabled(false);
         setMinCaptains(1);
       }
 
-      if (data.game.maxMembers != null) {
-        setMaxMembers(data.game.maxMembers);
+      if (data.maxMembers != null) {
+        setMaxMembers(data.maxMembers);
         setMaxMembersEnabled(true);
       } else {
         setMaxMembersEnabled(false);
         setMaxMembers(1);
       }
 
-      if (data.game.minMembers != null) {
-        setMinMembers(data.game.minMembers);
+      if (data.minMembers != null) {
+        setMinMembers(data.minMembers);
         setMinMembersEnabled(true);
       } else {
         setMinMembersEnabled(false);
         setMinMembers(1);
       }
 
-      if (data.game.maxReservist != null) {
-        setMaxReserve(data.game.maxReservist);
+      if (data.maxReservist != null) {
+        setMaxReserve(data.maxReservist);
         setMaxReserveEnabled(true);
       } else {
         setMaxReserveEnabled(false);
         setMaxReserve(0);
       }
 
-      if (data.game.MinReservist != null) {
-        setMinReserve(data.gameMinReservist);
+      if (data.minReservist != null) {
+        setMinReserve(data.minReservist);
         setMinReserveEnabled(true);
       } else {
         setMinReserveEnabled(false);
         setMinReserve(0);
+      }
+
+      if (data.maxTeams != null) {
+        setMaxTeams(data.maxTeams);
+        setMaxTeamsEnabled(true);
+      } else {
+        setMaxTeamsEnabled(false);
+        setMaxTeams(1);
       }
     })
   }
@@ -263,6 +288,10 @@ export default function Update() {
 
     if (minReserveEnabled) {
       Object.assign(body, { minReservists: minReserve });
+    }
+
+    if (maxTeamsEnabled) {
+      Object.assign(body, { maxTeams: maxTeams });
     }
 
     fetch(
