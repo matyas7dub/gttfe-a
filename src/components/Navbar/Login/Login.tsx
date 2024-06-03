@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
   let isLogged = localStorage.getItem("jws") != null;
-  const fallbackObject = JSON.stringify({"id": "", "avatar": ""});
+  const fallbackObject = JSON.stringify({id: "", avatar: ""});
   const [avatarUrl, setAvatarUrl] = useState(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`); 
   const [authUrl, setAuthUrl] = useState('');
   const [jwsTtl, setJwsTtl] = useState(Number(localStorage.getItem("jwsTtl")));

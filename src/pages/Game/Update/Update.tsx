@@ -2,6 +2,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
 import GamePicker from "../../../components/GamePicker/GamePicker";
 import { useState } from "react";
+import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
 
 export default function Update() {
   const horizontalFormSpacing = "2rem";
@@ -252,9 +253,9 @@ export default function Update() {
   }
 
   async function updateGame() {
-    const header = new Headers();
-    header.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-    header.append("Content-Type", "application/json");
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
+    headers.append("Content-Type", "application/json");
 
     let body = { game_id: gameId };
 
@@ -294,32 +295,46 @@ export default function Update() {
       Object.assign(body, { maxTeams: maxTeams });
     }
 
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/')
-    , {
-        method: "PUT",
-        headers: header,
-        body: JSON.stringify(body),
-    })
-    .then(async response => {
-      if (response.ok) {
-        toast({
-          title: 'Page updated successfully',
-          status: 'success',
-          duration: 5000,
-          isClosable: true
-        })
-      } else {
-        const data = await response.json();
-        toast({
-          title: 'Error',
-          description: data.msg?? 'Unknown error.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        })
-      }
-    })
-    .catch(error => console.error("Error:", error));
+    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+      let headersArray = new Array();
+      headers.forEach((value, key) => {
+        headersArray.push([key, value]);
+      });
+      cacheRequestAndRelog(
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/'),
+        "PUT",
+        JSON.stringify(body),
+        headersArray,
+        "Game updated successfully"
+      )
+    } else {
+      fetch(
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/')
+      , {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify(body),
+      })
+      .then(async response => {
+        if (response.ok) {
+          toast({
+            title: 'Game updated successfully',
+            status: 'success',
+            duration: 5000,
+            isClosable: true
+          })
+        } else {
+          const data = await response.json();
+          toast({
+            title: 'Error',
+            description: data.msg?? 'Unknown error.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          })
+        }
+      })
+      .catch(error => console.error("Error:", error));
+    }
   }
 }
