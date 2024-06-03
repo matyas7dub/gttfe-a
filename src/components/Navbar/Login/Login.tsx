@@ -21,7 +21,6 @@ export default function Login() {
   const fallbackObject = JSON.stringify({id: "", avatar: ""});
   const [avatarUrl, setAvatarUrl] = useState(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`); 
   const [authUrl, setAuthUrl] = useState('');
-  const [jwsTtl, setJwsTtl] = useState(Number(localStorage.getItem("jwsTtl")));
   const [validLogin, setValidLogin] = useState(true);
   const navigate = useNavigate();
 
@@ -43,23 +42,18 @@ export default function Login() {
       if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
         setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
       }
-
-      setJwsTtl(Number(localStorage.getItem("jwsTtl")));
-      if (jwsTtl > Date.now()) {
-        setValidLogin(true);
-
-        setTimeout(() => {
-          setJwsTtl(Number(localStorage.getItem("jwsTtl")));
-          if (jwsTtl < Date.now()) {
-            setValidLogin(false);
-          };
-        }, jwsTtl - Date.now() + 1000); // extra second to make sure it is invalid by that time
-
-      } else {
-        setValidLogin(false);
-      };
     };
   }, [isLogged]);
+
+  useEffect(() => {
+    setInterval(() => {
+      if(Number(localStorage.getItem("jwsTtl") ?? 0) < Date.now()) {
+        setValidLogin(false);
+      } else {
+        setValidLogin(true);
+      }
+    }, 5000);
+  }, []);
 
   return(
     <Stack direction="row" align="center">
