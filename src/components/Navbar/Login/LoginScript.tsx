@@ -24,14 +24,21 @@ export default function LoginScript() {
       headers: jsonHeader,
       body: JSON.stringify(HttpBody),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.msg === undefined) {
+    .then(async response => {
+      const data = await response.json();
+      if (response.ok) {
         localStorage.setItem("jws", data.jws);
         localStorage.setItem("jwsTtl", String(Date.now() + Number(process.env.REACT_APP_JWS_TTL ?? 0) * 1000));
         localStorage.setItem("userObject", JSON.stringify(data.userObject));
       } else {
         console.error("Couldn't get jws from API:", data.msg);
+        toast({
+          title: "Couldn't get jws from API",
+          description: data.msg?? data.message?? "Unknown error",
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
       }
       navigate('/');
     })
@@ -70,7 +77,7 @@ export default function LoginScript() {
       })
       localStorage.removeItem("requestCache");
     }
-  }, [HttpBody]);
+  }, []);
   return (
       <Center w="100%" h="80vh">
         <Spinner size='xl' />
