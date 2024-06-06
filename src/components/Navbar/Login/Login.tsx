@@ -25,25 +25,25 @@ export default function Login() {
   const navigate = useNavigate();
 
   const expirationWarning = (
-    <Tooltip label="Your login expired.">
-      <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
-    </Tooltip>
+    <a href={authUrl}>
+      <Tooltip label="Your login expired. Click to relogin.">
+        <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
+      </Tooltip>
+    </a>
   );
 
   useEffect(() => {
-    if (!isLogged) {
+    if (!isLogged || !validLogin) {
       fetch(
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/auth')
       )
       .then(response => response.json())
       .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
       .catch(error => console.error('Error:', error));
-    } else {
-      if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
-        setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
-      }
+    } else if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
+      setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
     };
-  }, [isLogged]);
+  }, [isLogged, validLogin]);
 
   useEffect(() => {
     setInterval(() => {
