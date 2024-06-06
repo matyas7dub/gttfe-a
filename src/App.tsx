@@ -7,6 +7,9 @@ import Role from './pages/Role/Role';
 import AddToUser from './pages/Role/AddToUser/AddToUser';
 import './App.scss';
 import LoginScript from './components/Navbar/Login/LoginScript';
+import CreateEvent from './pages/Events/CreateEvent/CreateEvent';
+import UpdateEvent from './pages/Events/UpdateEvent/UpdateEvent';
+import Events from './pages/Events/Events';
 
 function App() {
   const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
@@ -18,6 +21,9 @@ function App() {
       <Route path="/game/update" element={<Update />} />
       <Route path="/role" element={<Role />} />
       <Route path="/role/add-to-user" element={<AddToUser />} />
+      <Route path="/events" element={<Events />} />
+      <Route path="/events/create" element={<CreateEvent />} />
+      <Route path="/events/update" element={<UpdateEvent />} />
       <Route path={`/${loginPath}`} element={<LoginScript />} />
     </Routes>
   )
