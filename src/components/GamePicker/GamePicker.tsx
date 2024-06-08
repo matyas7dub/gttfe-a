@@ -33,7 +33,7 @@ export default function GamePicker(props: GamePickerProps) {
       <Select id="gameSelect" onChange={props.changeHandler} placeholder={props.default == undefined ? "Select a game" : props.default}>
         {games}
       </Select>
-      <FormErrorMessage>Select a game</FormErrorMessage>
+      <FormErrorMessage>You must pick a game!</FormErrorMessage>
     </FormControl>
   )
 

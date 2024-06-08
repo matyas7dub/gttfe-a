@@ -60,7 +60,7 @@ export function EventPicker(props: EventPickerProps) {
       <Select onChange={props.changeHandler} placeholder={props.default == undefined ? "Select an event" : props.default}>
         {events}
       </Select>
-      <FormErrorMessage>Select an event</FormErrorMessage>
+      <FormErrorMessage>You must select an event!</FormErrorMessage>
     </FormControl>
   )
 }
