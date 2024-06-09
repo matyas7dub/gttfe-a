@@ -85,14 +85,14 @@ export default function LoginScript() {
   )
 }
 
-export function cacheRequestAndRelog(url: string, method: string, body: string, headers: string[][], successMessage?: string) {
+export function cacheRequestAndRelog(url: string, method: string, body: string | null, headers: string[][], successMessage?: string) {
   const cache = {
     url: url,
     successMessage: successMessage ?? "Success",
     request: {
       method: method,
       headers: headers,
-      body: body
+      body: body?? undefined
     },
   };
   localStorage.setItem("requestCache", JSON.stringify(cache));

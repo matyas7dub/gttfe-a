@@ -24,6 +24,7 @@ export function EventsContent() {
       <div className={'LinkList'}>
         <ChakraLink as={RouterLink} to={`${url}create`}>Create event<LinkIcon /></ChakraLink>
         <ChakraLink as={RouterLink} to={`${url}update`}>Update event<LinkIcon /></ChakraLink>
+        <ChakraLink as={RouterLink} to={`${url}delete`}>Delete event<LinkIcon /></ChakraLink>
       </div>
     </div>
   )

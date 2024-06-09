@@ -7,9 +7,10 @@ import Role from './pages/Role/Role';
 import AddToUser from './pages/Role/AddToUser/AddToUser';
 import './App.scss';
 import LoginScript from './components/Navbar/Login/LoginScript';
+import Events from './pages/Events/Events';
 import CreateEvent from './pages/Events/CreateEvent/CreateEvent';
 import UpdateEvent from './pages/Events/UpdateEvent/UpdateEvent';
-import Events from './pages/Events/Events';
+import DeleteEvent from './pages/Events/DeleteEvent/DeleteEvent';
 
 function App() {
   const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
@@ -24,6 +25,7 @@ function App() {
       <Route path="/events" element={<Events />} />
       <Route path="/events/create" element={<CreateEvent />} />
       <Route path="/events/update" element={<UpdateEvent />} />
+      <Route path="/events/delete" element={<DeleteEvent />} />
       <Route path={`/${loginPath}`} element={<LoginScript />} />
     </Routes>
   )
