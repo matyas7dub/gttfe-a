@@ -42,42 +42,47 @@ export default function LoginScript() {
       }
       navigate('/');
     })
-    .catch(error => console.error('Error:', error));
-
-    if (localStorage.getItem("requestCache") != null) {
-      const cache = JSON.parse(localStorage.getItem("requestCache")?? "this will intentionally crash the parser and it shouldnt ever get here");
-      const request = {
-        method: cache.request.method,
-        headers: new Headers(cache.request.headers),
-        body: cache.request.body
-      };
-
-      fetch(cache.url, request)
-      .then(async response => {
-        if (response.ok) {
-          toast({
-            title: cache.successMessage,
-            status: 'success',
-            duration: 5000,
-            isClosable: true
-          })
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Error',
-            description: data.msg?? 'Unknown error.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
+    .then(() => {
+      if (localStorage.getItem("requestCache") != null) {
+        const cache = JSON.parse(localStorage.getItem("requestCache")?? "this will intentionally crash the parser and it shouldnt ever get here");
+        let headers = new Headers(cache.request.headers);
+        if (headers.has("Authorization")) { // update jws only on requests that need it
+          headers.set("Authorization", `Bearer ${localStorage.getItem("jws")}`);
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      })
-      localStorage.removeItem("requestCache");
-    }
+        const request = {
+          method: cache.request.method,
+          headers: headers,
+          body: cache.request.body
+        };
+
+        fetch(cache.url, request)
+        .then(async response => {
+          if (response.ok) {
+            toast({
+              title: cache.successMessage,
+              status: 'success',
+              duration: 5000,
+              isClosable: true
+            })
+          } else {
+            const data = await response.json();
+            toast({
+              title: 'Error',
+              description: data.msg?? 'Unknown error.',
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        })
+        localStorage.removeItem("requestCache");
+      }
+    })
   }, []);
+
   return (
       <Center w="100%" h="80vh">
         <Spinner size='xl' />

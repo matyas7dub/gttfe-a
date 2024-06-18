@@ -70,7 +70,11 @@ export default function Login() {
           <PopoverBody>
             <Center>
             {isLogged ? 
-            <Button onClick={logout} >Logout</Button> :
+            <div>
+              Your token expires at
+              {` ${new Date(Number(localStorage.getItem("jwsTtl"))).getHours()}:${String(new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes()).length === 1 ? "0" + new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes() : new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes()}`} 
+              <Button onClick={logout} >Logout</Button>
+            </div> :
             <a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a>
             }
             </Center>
