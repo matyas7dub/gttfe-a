@@ -3,6 +3,7 @@ import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIn
 import GamePicker from "../../../components/GamePicker/GamePicker";
 import { useState } from "react";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import * as jose from "jose";
 
 export default function Update() {
   const horizontalFormSpacing = "2rem";
@@ -295,7 +296,7 @@ export default function Update() {
       Object.assign(body, { maxTeams: maxTeams });
     }
 
-    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+    if ((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
       let headersArray = new Array();
       headers.forEach((value, key) => {
         headersArray.push([key, value]);

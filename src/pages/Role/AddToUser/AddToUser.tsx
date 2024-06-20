@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import GamePicker from "../../../components/GamePicker/GamePicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import * as jose from "jose";
 
 export default function AddToUser() {
   const [pfpUrl, setPfpUrl] = useState("");
@@ -86,7 +87,7 @@ export default function AddToUser() {
       role: role,
     }
 
-    if(Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+    if((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
       let headersArray = new Array();
       headers.forEach((value, key) => {
         headersArray.push([key, value]);

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as jose from 'jose';
 import {
   Popover,
   PopoverTrigger,
@@ -47,7 +48,7 @@ export default function Login() {
 
   useEffect(() => {
     setInterval(() => {
-      if(Number(localStorage.getItem("jwsTtl") ?? 0) < Date.now()) {
+      if((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
         setValidLogin(false);
       } else {
         setValidLogin(true);
@@ -72,7 +73,7 @@ export default function Login() {
             {isLogged ? 
             <div>
               Your token expires at
-              {` ${new Date(Number(localStorage.getItem("jwsTtl"))).getHours()}:${String(new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes()).length === 1 ? "0" + new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes() : new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes()}`} 
+              {` ${new Date((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000).toLocaleTimeString()}`}
               <Button onClick={logout} >Logout</Button>
             </div> :
             <a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a>
@@ -87,7 +88,7 @@ export default function Login() {
   function logout() {
     localStorage.removeItem("jws");
     localStorage.removeItem("userObject");
-    localStorage.removeItem("jwsTtl");
+    // localStorage.removeItem("jwsTtl");
     setAvatarUrl("");
     navigate("/");
   }

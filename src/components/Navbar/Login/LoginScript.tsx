@@ -28,7 +28,6 @@ export default function LoginScript() {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("jws", data.jws);
-        localStorage.setItem("jwsTtl", String(Date.now() + Number(process.env.REACT_APP_JWS_TTL ?? 0) * 1000));
         localStorage.setItem("userObject", JSON.stringify(data.userObject));
       } else {
         console.error("Couldn't get jws from API:", data.msg);

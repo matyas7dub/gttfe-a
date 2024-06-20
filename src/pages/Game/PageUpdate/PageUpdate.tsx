@@ -4,6 +4,7 @@ import { useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import GamePicker from '../../../components/GamePicker/GamePicker';
 import { cacheRequestAndRelog } from '../../../components/Navbar/Login/LoginScript';
+import * as jose from 'jose';
 
 export default function PageUpdate() {
   const [page, setPage] = useState("");
@@ -59,7 +60,7 @@ export default function PageUpdate() {
     headers.append('Authorization', `Bearer ${localStorage.getItem('jws')}`);
     headers.append('Content-Type', 'application/json');
 
-    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+    if ((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
       let headersArray = new Array();
       headers.forEach((value, key) => {
         headersArray.push([key, value]);
