@@ -1,6 +1,6 @@
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
-import GamePicker from "../../../components/GamePicker/GamePicker";
+import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { useState } from "react";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
 
@@ -38,7 +38,7 @@ export default function Update() {
       <Breadcrumbs />
 
       <Stack direction="column" spacing="3rem" className="Form">
-        <GamePicker isInvalid={gameErr} changeHandler={(event) => setGame(event.target.value)}/>
+        <DataPicker dataType={dataType.game} isInvalid={gameErr} changeHandler={(event) => setGame(event.target.value)}/>
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>

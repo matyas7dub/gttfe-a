@@ -1,8 +1,8 @@
 import { Button, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
-import { EventPicker } from "../Events";
 
 export default function DeleteEvent() {
   const [eventId, setEventId] = useState(0);
@@ -13,7 +13,7 @@ export default function DeleteEvent() {
     <div>
       <Breadcrumbs />
       <Stack direction="column" spacing="2rem" className="Form">
-        <EventPicker key={eventPickerKey} changeHandler={event => setEventId(Number(event.target.value))} />
+        <DataPicker dataType={dataType.event} key={eventPickerKey} changeHandler={event => setEventId(Number(event.target.value))} />
         <Button isDisabled={eventId === 0} onClick={deleteEvent} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete event</Button>
       </Stack>
     </div>

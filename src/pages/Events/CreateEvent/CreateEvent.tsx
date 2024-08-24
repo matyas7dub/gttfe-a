@@ -1,7 +1,7 @@
 import { Button, FormControl, FormErrorMessage, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import GamePicker from "../../../components/GamePicker/GamePicker";
+import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
 
 export default function CreateEvent() {
@@ -25,7 +25,7 @@ export default function CreateEvent() {
     <div>
       <Breadcrumbs />
       <Stack direction="column" spacing="3rem" className="Form">
-        <GamePicker isInvalid={gameError} changeHandler={(event) => {setGameId(Number(event.target.value)); setGameError(false)}} />
+        <DataPicker dataType={dataType.game} isInvalid={gameError} changeHandler={(event) => {setGameId(Number(event.target.value)); setGameError(false)}} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl isInvalid={startError}>

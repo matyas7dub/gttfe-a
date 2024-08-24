@@ -1,9 +1,8 @@
 import { Button, FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import GamePicker from "../../../components/GamePicker/GamePicker";
+import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
-import { EventPicker } from "../Events";
 
 export default function UpdateEvent() {
   const horizontalFormSpacing = "2rem";
@@ -22,9 +21,9 @@ export default function UpdateEvent() {
     <div>
       <Breadcrumbs />
       <Stack direction="column" spacing="3rem" className="Form">
-        <EventPicker key={eventPickerKey} value={eventId?? 0} changeHandler={event => selectEvent(Number(event.target.value))} />
+        <DataPicker dataType={dataType.event} key={eventPickerKey} value={eventId?? 0} changeHandler={event => selectEvent(Number(event.target.value))} />
 
-        <GamePicker isDisabled={eventId == null || eventId === 0} value={gameId} changeHandler={event => setGameId(Number(event.target.value))} />
+        <DataPicker dataType={dataType.game} isDisabled={eventId == null || eventId === 0} value={gameId} changeHandler={event => setGameId(Number(event.target.value))} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
