@@ -18,7 +18,7 @@ export default function LoginScript() {
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/token'),
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/token'),
     {
       method: "POST",
       headers: jsonHeader,
@@ -102,7 +102,7 @@ export function cacheRequestAndRelog(url: string, method: string, body: string, 
   localStorage.setItem("requestCache", JSON.stringify(cache));
 
   fetch(
-  ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/auth')
+  ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
   )
   .then(response => response.json())
   .then(authUrl => window.location.href = authUrl.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)

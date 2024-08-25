@@ -36,7 +36,7 @@ export default function PageUpdate() {
     setSelectorError(false);
 
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${newGameId}/page/`)
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${newGameId}/page/`)
     )
     .then(response => response.json())
     .then(data => setPage(data.page))
@@ -66,7 +66,7 @@ export default function PageUpdate() {
         headersArray.push([key, value]);
       });
       cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${gameId}/page/`),
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${gameId}/page/`),
         "PUT",
         JSON.stringify({
           "game_id": gameId,
@@ -77,7 +77,7 @@ export default function PageUpdate() {
       )
     } else {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${gameId}/page/`),
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${gameId}/page/`),
       {
         method: "PUT",
         headers: headers,

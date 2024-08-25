@@ -60,7 +60,7 @@ export default function AddToUser() {
     const header = new Headers();
     header.append("Authorization", `Bearer ${localStorage.getItem("jws")}`)
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/user/${id}/`),
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/user/${id}/`),
       {
         method: "GET",
         headers: header,
@@ -93,7 +93,7 @@ export default function AddToUser() {
         headersArray.push([key, value]);
       });
       cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/role/add`),
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/role/add`),
         "POST",
         JSON.stringify(body),
         headersArray,
@@ -101,7 +101,7 @@ export default function AddToUser() {
       )
     } else {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/role/add`),
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/role/add`),
         {
           method: "POST",
           headers: headers,

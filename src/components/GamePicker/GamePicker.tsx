@@ -12,7 +12,7 @@ export default function GamePicker(props: GamePickerProps) {
 
   useEffect(() => {
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/')
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/game/all/')
     )
     .then(response => response.json())
     .then(data => {
