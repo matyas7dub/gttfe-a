@@ -7,6 +7,7 @@ import {
 import { RoleContent } from '../Role/Role';
 import { GameContent } from '../Game/Game';
 import { EventsContent } from '../Events/Events';
+import { StagesContent } from '../Stages/Stages';
 
 function Home() {
   return (
@@ -21,6 +22,10 @@ function Home() {
 
       <ChakraLink as={RouterLink} to="events"><Heading className={'Heading'}>Events</Heading></ChakraLink>
       <EventsContent />
+      <Divider className={'Divider'} />
+
+      <ChakraLink as={RouterLink} to="stages"><Heading className={'Heading'}>Stages</Heading></ChakraLink>
+      <StagesContent />
       <Divider className={'Divider'} />
     </div>
   );

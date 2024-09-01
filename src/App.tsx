@@ -11,6 +11,10 @@ import Events from './pages/Events/Events';
 import CreateEvent from './pages/Events/CreateEvent/CreateEvent';
 import UpdateEvent from './pages/Events/UpdateEvent/UpdateEvent';
 import DeleteEvent from './pages/Events/DeleteEvent/DeleteEvent';
+import Stages from './pages/Stages/Stages';
+import CreateStage from './pages/Stages/CreateStage/CreateStage';
+import UpdateStage from './pages/Stages/UpdateStage/UpdateStage';
+import DeleteStage from './pages/Stages/DeleteStage/DeleteStage';
 
 function App() {
   const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
@@ -26,6 +30,10 @@ function App() {
       <Route path="/events/create" element={<CreateEvent />} />
       <Route path="/events/update" element={<UpdateEvent />} />
       <Route path="/events/delete" element={<DeleteEvent />} />
+      <Route path="/stages" element={<Stages />} />
+      <Route path="/stages/create" element={<CreateStage />} />
+      <Route path="/stages/update" element={<UpdateStage />} />
+      <Route path="/stages/delete" element={<DeleteStage />} />
       <Route path={`/${loginPath}`} element={<LoginScript />} />
     </Routes>
   )
