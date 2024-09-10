@@ -1,10 +1,113 @@
+import { QuestionIcon } from "@chakra-ui/icons";
+import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Tooltip, useToast } from "@chakra-ui/react";
+import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
 
 export default function UpdateStage() {
+  const [eventId, setEventId] = useState<Number>();
+  const [stageId, setStageId] = useState<Number>();
+  const [stageName, setStageName] = useState("");
+  const [stageIndex, setStageIndex] = useState<number>();
+
+  const toast = useToast();
+
   return (
     <div>
       <Breadcrumbs />
-      WIP, depends on backend
+      <Stack direction="column" spacing="3rem" className="Form">
+        <DataPicker title="Event (Optional)" dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
+
+        <DataPicker dataType={dataType.stage} eventId={eventId?? undefined} changeHandler={event => selectStage(Number(event.target.value))} /> 
+
+        <FormControl>
+          <FormLabel>Name</FormLabel>
+          <Input isDisabled={stageId == undefined} value={stageName} type="text" onChange={event => setStageName(event.target.value)} />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel>Index/Level <Tooltip label="i. e. quarterfinals = 1, semifinals = 2, finals = 3"><QuestionIcon /></Tooltip></FormLabel>
+          <NumberInput isDisabled={stageId == undefined} defaultValue={stageIndex} onChange={(_, value) => {setStageIndex(value)}}>
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+        </FormControl>
+
+        <Button isDisabled={stageId == undefined} onClick={updateStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update stage</Button>
+      </Stack>
     </div>
   )
+
+  function selectStage(newStageId: Number) {
+    setStageId(newStageId);
+
+    fetch(
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${newStageId}/`)
+    )
+    .then(response => response.json())
+    .then(data => {
+      setEventId(data.eventId);
+      setStageName(data.stageName);
+      setStageIndex(data.stageIndex);
+    })
+    .catch(error => console.error("Error", error));
+  }
+
+  function updateStage() {
+    const headers = new Headers();
+    headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
+    headers.append("Content-Type", "application/json");
+    
+    const body = {
+      eventId: eventId,
+      stageName: stageName,
+      stageIndex: stageIndex
+    }
+
+    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+      let headersArray = new Array();
+      headers.forEach((value, key) => {
+        headersArray.push([key, value]);
+      });
+      cacheRequestAndRelog(
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${stageId}/`),
+        "PUT",
+        JSON.stringify(body),
+        headersArray,
+        "Stage updated successfully"
+      )
+    } else {
+      fetch(
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${stageId}/`),
+      {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify(body)
+      })
+      .then(async response => {
+        if (response.ok) {
+          toast({
+            title: 'Stage updated successfully',
+            status: 'success',
+            duration: 5000,
+            isClosable: true
+          })
+        } else {
+          const data = await response.json();
+          toast({
+            title: 'Error',
+            description: data.msg?? data.message?? 'Unknown error.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          })
+        }
+      })
+      .catch(error => console.error("Error", error));
+    }
+  }
 }

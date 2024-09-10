@@ -11,10 +11,12 @@ export default function LoginScript() {
     "code": code,
     "state": state,
     "redirect_uri": process.env.REACT_APP_AUTH_REDIRECT,
+    "school_id": 1
   };
   const toast = useToast();
 
   useEffect(() => {
+    console.error("REMOVE THE SCHOOL ID THING AT LINE 14 IN LOGIN SCRIPT!!!");
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
     fetch(

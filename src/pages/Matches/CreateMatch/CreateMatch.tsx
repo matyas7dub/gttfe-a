@@ -10,6 +10,7 @@ export default function CreateMatch() {
   const toast = useToast();
 
   const [stageId, setStageId] = useState<Number>();
+  const [gameId, setGameId] = useState<Number>();
   const [firstTeamId, setFirstTeamId] = useState<Number>();
   const [firstTeamResult, setFirstTeamResult] = useState<Number>();
   const [secondTeamId, setSecondTeamId] = useState<Number>();
@@ -21,9 +22,11 @@ export default function CreateMatch() {
       <Stack direction="column" spacing="3rem" className="Form">
         <DataPicker dataType={dataType.stage} changeHandler={(event) => {setStageId(Number(event.target.value))}} />
 
+        <DataPicker dataType={dataType.game} changeHandler={(event) => {setGameId(Number(event.target.value))}} />
+
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <Stack direction="column" spacing="3rem">
-            <DataPicker dataType={dataType.event} changeHandler={(event) => {setFirstTeamId(Number(event.target.value))}} placeholder="Pretend this is a team picker"/>
+            <DataPicker dataType={dataType.teams} isDisabled={gameId == undefined} gameId={gameId} changeHandler={(event) => {setFirstTeamId(Number(event.target.value))}} />
 
             <FormControl>
               <FormLabel>First team result</FormLabel>
@@ -42,7 +45,7 @@ export default function CreateMatch() {
           </div>
         
           <Stack direction="column" spacing="3rem">
-            <DataPicker dataType={dataType.event} changeHandler={(event) => {setSecondTeamId(Number(event.target.value))}} placeholder="Pretend this is a team picker"/>
+            <DataPicker dataType={dataType.teams} isDisabled={gameId == undefined} gameId={gameId} changeHandler={(event) => {setSecondTeamId(Number(event.target.value))}} />
 
             <FormControl>
               <FormLabel>Second team result</FormLabel>

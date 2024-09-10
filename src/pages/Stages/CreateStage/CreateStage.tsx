@@ -1,4 +1,5 @@
-import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, useToast } from "@chakra-ui/react";
+import { QuestionIcon } from "@chakra-ui/icons";
+import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Tooltip, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
@@ -26,7 +27,7 @@ export default function CreateStage() {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Index</FormLabel>
+            <FormLabel>Index/Level <Tooltip label="i. e. quarterfinals = 1, semifinals = 2, finals = 3"><QuestionIcon /></Tooltip></FormLabel>
             <NumberInput onChange={(_, value) => {setStageIndex(value)}}>
               <NumberInputField />
               <NumberInputStepper>

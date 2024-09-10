@@ -38,7 +38,7 @@ export default function PageUpdate() {
     ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${newGameId}/page/`)
     )
     .then(response => response.json())
-    .then(data => setPage(data.page))
+    .then(data => setPage(data.gamePage))
     .catch(error => console.error('Error:', error));
   }
 
