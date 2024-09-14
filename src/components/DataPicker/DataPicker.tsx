@@ -51,20 +51,22 @@ export default function DataPicker(props: DataPickerProps) {
         setErrorMessage("You must select an event!");
         break;
       case dataType.stage:
-        if (props.eventId == undefined) {
-          location = "/backend/stage/listAll/";
-        } else {
+        if (props.eventId != undefined) {
           location = `/backend/event/${props.eventId}/stages/`
+        } else {
+          location = "/backend/stage/listAll/";
         }
         setFormLabel("Stage");
         setPlaceholder("Select a stage");
         setErrorMessage("You must select a stage!");
         break;
       case dataType.match:
-        if (props.stageId == undefined) {
-          location = "/backend/match/listAll/";
-        } else {
+        if (props.stageId != undefined) {
           location = `/backend/stage/${props.stageId}/matches/`;
+        } else if (props.eventId != undefined) {
+          location = `/backend/event/${props.eventId}/matches/`;
+        } else {
+          location = "/backend/match/listAll/";
         }
         setFormLabel("Match");
         setPlaceholder("Select a match");

@@ -1,20 +1,18 @@
-import { Button, Divider, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, useToast } from "@chakra-ui/react";
+import { Button, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import TeamResultInput from "../TeamResultInput";
 
 export default function CreateMatch() {
-  const horizontalFormSpacing = "2rem";
-
   const toast = useToast();
 
-  const [stageId, setStageId] = useState<Number>();
-  const [gameId, setGameId] = useState<Number>();
-  const [firstTeamId, setFirstTeamId] = useState<Number>();
-  const [firstTeamResult, setFirstTeamResult] = useState<Number>();
-  const [secondTeamId, setSecondTeamId] = useState<Number>();
-  const [secondTeamResult, setSecondTeamResult] = useState<Number>();
+  const [stageId, setStageId] = useState<number>();
+  const [firstTeamId, setFirstTeamId] = useState<number>();
+  const [firstTeamResult, setFirstTeamResult] = useState<number>();
+  const [secondTeamId, setSecondTeamId] = useState<number>();
+  const [secondTeamResult, setSecondTeamResult] = useState<number>();
 
   return (
     <div>
@@ -22,43 +20,7 @@ export default function CreateMatch() {
       <Stack direction="column" spacing="3rem" className="Form">
         <DataPicker dataType={dataType.stage} changeHandler={(event) => {setStageId(Number(event.target.value))}} />
 
-        <DataPicker dataType={dataType.game} changeHandler={(event) => {setGameId(Number(event.target.value))}} />
-
-        <Stack direction="row" spacing={horizontalFormSpacing}>
-          <Stack direction="column" spacing="3rem">
-            <DataPicker dataType={dataType.teams} isDisabled={gameId == undefined} gameId={gameId} changeHandler={(event) => {setFirstTeamId(Number(event.target.value))}} />
-
-            <FormControl>
-              <FormLabel>First team result</FormLabel>
-              <NumberInput onChange={(_, value) => {setFirstTeamResult(value)}}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </Stack>
-
-          <div>
-            <Divider orientation="vertical" className="Divider" />
-          </div>
-        
-          <Stack direction="column" spacing="3rem">
-            <DataPicker dataType={dataType.teams} isDisabled={gameId == undefined} gameId={gameId} changeHandler={(event) => {setSecondTeamId(Number(event.target.value))}} />
-
-            <FormControl>
-              <FormLabel>Second team result</FormLabel>
-              <NumberInput onChange={(_, value) => {setSecondTeamResult(value)}}>
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-            </FormControl>
-          </Stack>
-        </Stack>
+        <TeamResultInput stageId={stageId} setFirstTeamId={setFirstTeamId} setFirstTeamResult={setFirstTeamResult} setSecondTeamId={setSecondTeamId} setSecondTeamResult={setSecondTeamResult} />
 
         <Button isDisabled={stageId == null || firstTeamId == null || firstTeamResult == null || secondTeamId == null || secondTeamResult == null} onClick={createMatch} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create match</Button>
       
