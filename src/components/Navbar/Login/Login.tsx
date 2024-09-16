@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import * as jose from 'jose';
 import {
   Popover,
   PopoverTrigger,
@@ -25,29 +26,29 @@ export default function Login() {
   const navigate = useNavigate();
 
   const expirationWarning = (
-    <Tooltip label="Your login expired.">
-      <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
-    </Tooltip>
+    <a href={authUrl}>
+      <Tooltip label="Your login expired. Click to relogin.">
+        <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
+      </Tooltip>
+    </a>
   );
 
   useEffect(() => {
-    if (!isLogged) {
+    if (!isLogged || !validLogin) {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/auth')
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
       )
       .then(response => response.json())
       .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
       .catch(error => console.error('Error:', error));
-    } else {
-      if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
-        setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
-      }
+    } else if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
+      setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
     };
-  }, [isLogged]);
+  }, [isLogged, validLogin]);
 
   useEffect(() => {
     setInterval(() => {
-      if(Number(localStorage.getItem("jwsTtl") ?? 0) < Date.now()) {
+      if(!isLogged || (jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
         setValidLogin(false);
       } else {
         setValidLogin(true);
@@ -72,7 +73,7 @@ export default function Login() {
             {isLogged ? 
             <div>
               Your token expires at
-              {` ${new Date(Number(localStorage.getItem("jwsTtl"))).getHours()}:${new Date(Number(localStorage.getItem("jwsTtl"))).getMinutes()}`} 
+              {` ${new Date((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000).toLocaleTimeString()}`}
               <Button onClick={logout} >Logout</Button>
             </div> :
             <a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a>
@@ -87,7 +88,7 @@ export default function Login() {
   function logout() {
     localStorage.removeItem("jws");
     localStorage.removeItem("userObject");
-    localStorage.removeItem("jwsTtl");
+    // localStorage.removeItem("jwsTtl");
     setAvatarUrl("");
     navigate("/");
   }

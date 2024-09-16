@@ -3,6 +3,7 @@ import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIn
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { useState } from "react";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import * as jose from "jose";
 
 export default function Update() {
   const horizontalFormSpacing = "2rem";
@@ -171,7 +172,7 @@ export default function Update() {
     setGameId(Number(newGameId));
     setGameErr(false);
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/game/${newGameId}/`)
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${newGameId}/`)
     )
     .then(response => response.json())
     .then(data => {
@@ -226,16 +227,16 @@ export default function Update() {
         setMinMembers(1);
       }
 
-      if (data.maxReservist != null) {
-        setMaxReserve(data.maxReservist);
+      if (data.maxReservists != null) {
+        setMaxReserve(data.maxReservists);
         setMaxReserveEnabled(true);
       } else {
         setMaxReserveEnabled(false);
         setMaxReserve(0);
       }
 
-      if (data.minReservist != null) {
-        setMinReserve(data.minReservist);
+      if (data.minReservists != null) {
+        setMinReserve(data.minReservists);
         setMinReserveEnabled(true);
       } else {
         setMinReserveEnabled(false);
@@ -295,13 +296,13 @@ export default function Update() {
       Object.assign(body, { maxTeams: maxTeams });
     }
 
-    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+    if ((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
       let headersArray = new Array();
       headers.forEach((value, key) => {
         headersArray.push([key, value]);
       });
       cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/'),
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/game/all/'),
         "PUT",
         JSON.stringify(body),
         headersArray,
@@ -309,7 +310,7 @@ export default function Update() {
       )
     } else {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/game/all/')
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/game/all/')
       , {
           method: "PUT",
           headers: headers,

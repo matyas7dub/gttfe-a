@@ -20,7 +20,7 @@ export default function LoginScript() {
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/token'),
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/token'),
     {
       method: "POST",
       headers: jsonHeader,
@@ -30,7 +30,6 @@ export default function LoginScript() {
       const data = await response.json();
       if (response.ok) {
         localStorage.setItem("jws", data.jws);
-        localStorage.setItem("jwsTtl", String(Date.now() + Number(process.env.REACT_APP_JWS_TTL ?? 0) * 1000));
         localStorage.setItem("userObject", JSON.stringify(data.userObject));
       } else {
         console.error("Couldn't get jws from API:", data.msg);
@@ -44,42 +43,47 @@ export default function LoginScript() {
       }
       navigate('/');
     })
-    .catch(error => console.error('Error:', error));
-
-    if (localStorage.getItem("requestCache") != null) {
-      const cache = JSON.parse(localStorage.getItem("requestCache")?? "this will intentionally crash the parser and it shouldnt ever get here");
-      const request = {
-        method: cache.request.method,
-        headers: new Headers(cache.request.headers),
-        body: cache.request.body
-      };
-
-      fetch(cache.url, request)
-      .then(async response => {
-        if (response.ok) {
-          toast({
-            title: cache.successMessage,
-            status: 'success',
-            duration: 5000,
-            isClosable: true
-          })
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Error',
-            description: data.msg?? 'Unknown error.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
+    .then(() => {
+      if (localStorage.getItem("requestCache") != null) {
+        const cache = JSON.parse(localStorage.getItem("requestCache")?? "this will intentionally crash the parser and it shouldnt ever get here");
+        let headers = new Headers(cache.request.headers);
+        if (headers.has("Authorization")) { // update jws only on requests that need it
+          headers.set("Authorization", `Bearer ${localStorage.getItem("jws")}`);
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      })
-      localStorage.removeItem("requestCache");
-    }
+        const request = {
+          method: cache.request.method,
+          headers: headers,
+          body: cache.request.body
+        };
+
+        fetch(cache.url, request)
+        .then(async response => {
+          if (response.ok) {
+            toast({
+              title: cache.successMessage,
+              status: 'success',
+              duration: 5000,
+              isClosable: true
+            })
+          } else {
+            const data = await response.json();
+            toast({
+              title: 'Error',
+              description: data.msg?? 'Unknown error.',
+              status: 'error',
+              duration: 5000,
+              isClosable: true
+            })
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        })
+        localStorage.removeItem("requestCache");
+      }
+    })
   }, []);
+
   return (
       <Center w="100%" h="80vh">
         <Spinner size='xl' />
@@ -100,7 +104,7 @@ export function cacheRequestAndRelog(url: string, method: string, body: string |
   localStorage.setItem("requestCache", JSON.stringify(cache));
 
   fetch(
-  ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + '/backend/discord/auth')
+  ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
   )
   .then(response => response.json())
   .then(authUrl => window.location.href = authUrl.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)

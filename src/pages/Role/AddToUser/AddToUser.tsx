@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import * as jose from "jose";
 
 export default function AddToUser() {
   const [pfpUrl, setPfpUrl] = useState("");
@@ -59,7 +60,7 @@ export default function AddToUser() {
     const header = new Headers();
     header.append("Authorization", `Bearer ${localStorage.getItem("jws")}`)
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/user/${id}/`),
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/user/${id}/`),
       {
         method: "GET",
         headers: header,
@@ -86,13 +87,13 @@ export default function AddToUser() {
       role: role,
     }
 
-    if(Number(localStorage.getItem("jwsTtl")) < Date.now()) {
+    if((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
       let headersArray = new Array();
       headers.forEach((value, key) => {
         headersArray.push([key, value]);
       });
       cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/role/add`),
+        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/role/add`),
         "POST",
         JSON.stringify(body),
         headersArray,
@@ -100,7 +101,7 @@ export default function AddToUser() {
       )
     } else {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/role/add`),
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/role/add`),
         {
           method: "POST",
           headers: headers,
