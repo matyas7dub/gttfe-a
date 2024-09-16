@@ -1,7 +1,7 @@
 import { Avatar, Button, Card, FormControl, FormLabel, Input, Radio, RadioGroup, Stack, Text, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import GamePicker from "../../../components/GamePicker/GamePicker";
+import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
 import * as jose from "jose";
 
@@ -43,7 +43,7 @@ export default function AddToUser() {
           </RadioGroup>
         </FormControl>
 
-        <GamePicker changeHandler={event => setGameId(Number(event.target.value))} default="Null" />
+        <DataPicker dataType={dataType.game} changeHandler={event => setGameId(Number(event.target.value))} placeholder="Null" />
 
         <Button onClick={addRole} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Add role</Button>
         

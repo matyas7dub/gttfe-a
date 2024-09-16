@@ -7,6 +7,18 @@ import Role from './pages/Role/Role';
 import AddToUser from './pages/Role/AddToUser/AddToUser';
 import './App.scss';
 import LoginScript from './components/Navbar/Login/LoginScript';
+import Events from './pages/Events/Events';
+import CreateEvent from './pages/Events/CreateEvent/CreateEvent';
+import UpdateEvent from './pages/Events/UpdateEvent/UpdateEvent';
+import DeleteEvent from './pages/Events/DeleteEvent/DeleteEvent';
+import Stages from './pages/Stages/Stages';
+import CreateStage from './pages/Stages/CreateStage/CreateStage';
+import UpdateStage from './pages/Stages/UpdateStage/UpdateStage';
+import DeleteStage from './pages/Stages/DeleteStage/DeleteStage';
+import CreateMatch from './pages/Matches/CreateMatch/CreateMatch';
+import UpdateMatch from './pages/Matches/UpdateMatch/UpdateMatch';
+import DeleteMatch from './pages/Matches/DeleteMatch/DeleteMatch';
+import Matches from './pages/Matches/Matches';
 
 function App() {
   const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
@@ -18,6 +30,18 @@ function App() {
       <Route path="/game/update" element={<Update />} />
       <Route path="/role" element={<Role />} />
       <Route path="/role/add-to-user" element={<AddToUser />} />
+      <Route path="/events" element={<Events />} />
+      <Route path="/events/create" element={<CreateEvent />} />
+      <Route path="/events/update" element={<UpdateEvent />} />
+      <Route path="/events/delete" element={<DeleteEvent />} />
+      <Route path="/stages" element={<Stages />} />
+      <Route path="/stages/create" element={<CreateStage />} />
+      <Route path="/stages/update" element={<UpdateStage />} />
+      <Route path="/stages/delete" element={<DeleteStage />} />
+      <Route path="/matches" element={<Matches />} />
+      <Route path="/matches/create" element={<CreateMatch />} />
+      <Route path="/matches/update" element={<UpdateMatch />} />
+      <Route path="/matches/delete" element={<DeleteMatch />} />
       <Route path={`/${loginPath}`} element={<LoginScript />} />
     </Routes>
   )

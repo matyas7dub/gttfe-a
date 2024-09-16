@@ -11,10 +11,12 @@ export default function LoginScript() {
     "code": code,
     "state": state,
     "redirect_uri": process.env.REACT_APP_AUTH_REDIRECT,
+    "school_id": 1
   };
   const toast = useToast();
 
   useEffect(() => {
+    console.error("REMOVE THE SCHOOL ID THING AT LINE 14 IN LOGIN SCRIPT!!!");
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
     fetch(
@@ -89,14 +91,14 @@ export default function LoginScript() {
   )
 }
 
-export function cacheRequestAndRelog(url: string, method: string, body: string, headers: string[][], successMessage?: string) {
+export function cacheRequestAndRelog(url: string, method: string, body: string | null, headers: string[][], successMessage?: string) {
   const cache = {
     url: url,
     successMessage: successMessage ?? "Success",
     request: {
       method: method,
       headers: headers,
-      body: body
+      body: body?? undefined
     },
   };
   localStorage.setItem("requestCache", JSON.stringify(cache));

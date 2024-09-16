@@ -2,7 +2,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
 import { Stack, Button, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
-import GamePicker from '../../../components/GamePicker/GamePicker';
+import DataPicker, { dataType } from '../../../components/DataPicker/DataPicker';
 import { cacheRequestAndRelog } from '../../../components/Navbar/Login/LoginScript';
 import * as jose from 'jose';
 
@@ -18,7 +18,7 @@ export default function PageUpdate() {
     <div>
       <Breadcrumbs />
       <Stack direction="column" spacing="3rem" className="Form">
-        <GamePicker isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
+        <DataPicker dataType={dataType.game} isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />
         <Button onClick={uploadGamePage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update page</Button>
       </Stack>
@@ -39,7 +39,7 @@ export default function PageUpdate() {
     ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${newGameId}/page/`)
     )
     .then(response => response.json())
-    .then(data => setPage(data.page))
+    .then(data => setPage(data.gamePage))
     .catch(error => console.error('Error:', error));
   }
 

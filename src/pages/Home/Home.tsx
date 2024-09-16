@@ -6,6 +6,9 @@ import {
 } from '@chakra-ui/react';
 import { RoleContent } from '../Role/Role';
 import { GameContent } from '../Game/Game';
+import { EventsContent } from '../Events/Events';
+import { StagesContent } from '../Stages/Stages';
+import { MatchesContent } from '../Matches/Matches';
 
 function Home() {
   return (
@@ -14,8 +17,20 @@ function Home() {
       <GameContent />
       <Divider className={'Divider'} />
 
-      <ChakraLink as={RouterLink} to="Role"><Heading className={'Heading'}>Role</Heading></ChakraLink>
+      <ChakraLink as={RouterLink} to="role"><Heading className={'Heading'}>Role</Heading></ChakraLink>
       <RoleContent />
+      <Divider className={'Divider'} />
+
+      <ChakraLink as={RouterLink} to="events"><Heading className={'Heading'}>Events</Heading></ChakraLink>
+      <EventsContent />
+      <Divider className={'Divider'} />
+
+      <ChakraLink as={RouterLink} to="stages"><Heading className={'Heading'}>Stages</Heading></ChakraLink>
+      <StagesContent />
+      <Divider className={'Divider'} />
+
+      <ChakraLink as={RouterLink} to="matches"><Heading className={'Heading'}>Matches</Heading></ChakraLink>
+      <MatchesContent />
       <Divider className={'Divider'} />
     </div>
   );
