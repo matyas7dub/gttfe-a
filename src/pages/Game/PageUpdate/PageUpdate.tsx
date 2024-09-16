@@ -3,8 +3,7 @@ import { Stack, Button, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import DataPicker, { dataType } from '../../../components/DataPicker/DataPicker';
-import { cacheRequestAndRelog } from '../../../components/Navbar/Login/LoginScript';
-import * as jose from 'jose';
+import { fetchGracefully } from '../../../components/Navbar/Login/LoginScript';
 
 export default function PageUpdate() {
   const [page, setPage] = useState("");
@@ -56,58 +55,17 @@ export default function PageUpdate() {
       return;
     }
 
-    let headers = new Headers();
-    headers.append('Authorization', `Bearer ${localStorage.getItem('jws')}`);
-    headers.append('Content-Type', 'application/json');
+    const headers: [string, string][] = [
+      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
+      ["Content-Type", "application/json"]
+    ];
 
-    if ((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
-      let headersArray = new Array();
-      headers.forEach((value, key) => {
-        headersArray.push([key, value]);
-      });
-      cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${gameId}/page/`),
-        "PUT",
-        JSON.stringify({
-          "game_id": gameId,
-          "gamePage": page
-        }),
-        headersArray,
-        "Page updated successfully"
-      )
-    } else {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${gameId}/page/`),
-      {
-        method: "PUT",
-        headers: headers,
-        body: JSON.stringify({
-          "game_id": gameId,
-          "gamePage": page
-        }),
-      })
-      .then(async response => {
-        if (response.ok) {
-          toast({
-            title: 'Page updated successfully',
-            status: 'success',
-            duration: 5000,
-            isClosable: true
-          })
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Error',
-            description: data.msg?? 'Unknown error.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      })
+    const body = {
+      game_id: gameId,
+      gamePage: page
     }
+
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${gameId}/page/`),
+    "PUT", JSON.stringify(body), headers, "Page updated successfully", toast);
   }
 }

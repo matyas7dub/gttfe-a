@@ -2,7 +2,7 @@ import { Button, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
-import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import TeamResultInput from "../TeamResultInput";
 
 export default function CreateMatch() {
@@ -29,9 +29,10 @@ export default function CreateMatch() {
   )
 
   function createMatch() {
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-    headers.append("Content-Type", "application/json");
+    const headers: [string, string][] = [
+      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
+      ["Content-Type", "application/json"]
+    ];
     
     const body = {
       stageId: stageId,
@@ -41,46 +42,7 @@ export default function CreateMatch() {
       secondTeamResult: secondTeamResult
     }
 
-    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
-      let headersArray = new Array();
-      headers.forEach((value, key) => {
-        headersArray.push([key, value]);
-      });
-      cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/create`),
-        "POST",
-        JSON.stringify(body),
-        headersArray,
-        "Match created successfully"
-      )
-    } else {
-      fetch(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/create`),
-      {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(body)
-      })
-      .then(async response => {
-        if (response.ok) {
-          toast({
-            title: 'Match created successfully',
-            status: 'success',
-            duration: 5000,
-            isClosable: true
-          })
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Error',
-            description: data.msg?? data.message?? 'Unknown error.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
-        }
-      })
-      .catch(error => console.error("Error", error));
-    }
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/create`),
+    "POST", JSON.stringify(body), headers, "Match created successfully", toast);
   }
 }

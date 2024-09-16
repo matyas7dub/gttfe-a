@@ -1,6 +1,7 @@
-import { Center, Spinner, useToast } from "@chakra-ui/react";
+import { Center, CreateToastFnReturn, Spinner, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"
+import * as jose from 'jose';
 
 export default function LoginScript() {
   let searchParams = useSearchParams();
@@ -13,6 +14,7 @@ export default function LoginScript() {
     "redirect_uri": process.env.REACT_APP_AUTH_REDIRECT,
     "school_id": 1
   };
+
   const toast = useToast();
 
   useEffect(() => {
@@ -46,40 +48,13 @@ export default function LoginScript() {
     .then(() => {
       if (localStorage.getItem("requestCache") != null) {
         const cache = JSON.parse(localStorage.getItem("requestCache")?? "this will intentionally crash the parser and it shouldnt ever get here");
-        let headers = new Headers(cache.request.headers);
-        if (headers.has("Authorization")) { // update jws only on requests that need it
-          headers.set("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-        }
-        const request = {
-          method: cache.request.method,
-          headers: headers,
-          body: cache.request.body
-        };
 
-        fetch(cache.url, request)
-        .then(async response => {
-          if (response.ok) {
-            toast({
-              title: cache.successMessage,
-              status: 'success',
-              duration: 5000,
-              isClosable: true
-            })
-          } else {
-            const data = await response.json();
-            toast({
-              title: 'Error',
-              description: data.msg?? 'Unknown error.',
-              status: 'error',
-              duration: 5000,
-              isClosable: true
-            })
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        })
-        localStorage.removeItem("requestCache");
+        const authorizationIndex = cache.request.headers.flat(1).findIndex((x: string) => x == "Authorization");
+        if (authorizationIndex !== -1) {
+          cache.request.headers[(authorizationIndex + 2)/2 - 1][1] = `Bearer ${localStorage.getItem("jws")}`;
+        }
+
+        fetchWithToast(cache.url, cache.request.method, cache.request.headers, cache.request.body, cache.successMessage, toast)
       }
     })
   }, []);
@@ -91,23 +66,59 @@ export default function LoginScript() {
   )
 }
 
-export function cacheRequestAndRelog(url: string, method: string, body: string | null, headers: string[][], successMessage?: string) {
-  const cache = {
-    url: url,
-    successMessage: successMessage ?? "Success",
-    request: {
-      method: method,
-      headers: headers,
-      body: body?? undefined
-    },
-  };
-  localStorage.setItem("requestCache", JSON.stringify(cache));
+export function fetchGracefully(url: string, method: string, body: string | null, headers: [string, string][], successMessage: string, toast: CreateToastFnReturn) {
+  // The headers have to be [string, string][] otherwise they get lost at some point
+  successMessage = successMessage?? "Success";
 
-  fetch(
-  ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
-  )
-  .then(response => response.json())
-  .then(authUrl => window.location.href = authUrl.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)
-  .catch(error => console.error('Error:', error));
-      
+  if ((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
+    const cache = {
+      url: url,
+      successMessage: successMessage,
+      request: {
+        method: method,
+        headers: headers,
+        body: body?? undefined
+      },
+    };
+    localStorage.setItem("requestCache", JSON.stringify(cache));
+  
+    fetch(
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
+    )
+    .then(response => response.json())
+    .then(authUrl => window.location.href = authUrl.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)
+    .catch(error => console.error('Error:', error));
+  } else {
+    fetchWithToast(url, method, headers, body, successMessage, toast);
+  }
+}
+
+function fetchWithToast(url: string, method: string, headers: [string, string][], body: string | null, successMessage: string, toast: CreateToastFnReturn) {
+  fetch(url,
+    {
+      method: method,
+      headers: new Headers(headers),
+      body: body?? undefined
+    })
+  .then(async response => {
+    if (response.ok) {
+      toast({
+        title: successMessage,
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
+      localStorage.removeItem("requestCache");
+    } else {
+      const data = await response.json();
+      toast({
+        title: 'Error',
+        description: data.msg?? data.message?? 'Unknown error.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+  })
+  .catch(error => console.error("Error:", error));
 }

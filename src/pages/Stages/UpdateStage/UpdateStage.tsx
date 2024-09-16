@@ -3,7 +3,7 @@ import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIn
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
-import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 
 export default function UpdateStage() {
   const [eventId, setEventId] = useState<Number>();
@@ -58,9 +58,10 @@ export default function UpdateStage() {
   }
 
   function updateStage() {
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-    headers.append("Content-Type", "application/json");
+    const headers: [string, string][] = [
+      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
+      ["Content-Type", "application/json"]
+    ];
     
     const body = {
       eventId: eventId,
@@ -68,46 +69,7 @@ export default function UpdateStage() {
       stageIndex: stageIndex
     }
 
-    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
-      let headersArray = new Array();
-      headers.forEach((value, key) => {
-        headersArray.push([key, value]);
-      });
-      cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${stageId}/`),
-        "PUT",
-        JSON.stringify(body),
-        headersArray,
-        "Stage updated successfully"
-      )
-    } else {
-      fetch(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${stageId}/`),
-      {
-        method: "PUT",
-        headers: headers,
-        body: JSON.stringify(body)
-      })
-      .then(async response => {
-        if (response.ok) {
-          toast({
-            title: 'Stage updated successfully',
-            status: 'success',
-            duration: 5000,
-            isClosable: true
-          })
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Error',
-            description: data.msg?? data.message?? 'Unknown error.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
-        }
-      })
-      .catch(error => console.error("Error", error));
-    }
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${stageId}/`),
+    "PUT", JSON.stringify(body), headers, "Stage updated successfully", toast);
   }
 }

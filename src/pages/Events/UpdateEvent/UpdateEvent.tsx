@@ -2,7 +2,7 @@ import { Button, FormControl, FormLabel, Input, Stack, useToast } from "@chakra-
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
-import { cacheRequestAndRelog } from "../../../components/Navbar/Login/LoginScript";
+import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 
 export default function UpdateEvent() {
   const horizontalFormSpacing = "2rem";
@@ -81,9 +81,10 @@ export default function UpdateEvent() {
 
     const endTime = `${end}:00`;
 
-    const headers = new Headers();
-    headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-    headers.append("Content-Type", "application/json");
+    const headers: [string, string][] = [
+      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
+      ["Content-Type", "application/json"]
+    ];
 
     const body = {
       date: startDate,
@@ -94,47 +95,9 @@ export default function UpdateEvent() {
       eventType: eventType
     }
 
-    if (Number(localStorage.getItem("jwsTtl")) < Date.now()) {
-      let headersArray = new Array();
-      headers.forEach((value, key) => {
-        headersArray.push([key, value]);
-      });
-      cacheRequestAndRelog(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${eventId}/`),
-        "PUT",
-        JSON.stringify(body),
-        headersArray,
-        "Event updated successfully"
-      )
-    } else {
-      fetch(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${eventId}/`),
-      {
-        method: "PUT",
-        headers: headers,
-        body: JSON.stringify(body)
-      })
-      .then(async response => {
-        if (response.ok) {
-          toast({
-            title: 'Event updated successfully',
-            status: 'success',
-            duration: 5000,
-            isClosable: true
-          })
-        } else {
-          const data = await response.json();
-          toast({
-            title: 'Error',
-            description: data.msg?? data.message?? 'Unknown error.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
-        }
-      })
-      .catch(error => console.error("Error", error));
-    }
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${eventId}/`),
+    "PUT", JSON.stringify(body), headers, "Event updated successfully", toast);
+
     setEventPickerKey(eventPickerKey + 1);
   }
 }
