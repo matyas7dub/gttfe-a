@@ -26,7 +26,7 @@ export default function DeleteMatch() {
 
         <DataPicker eventId={eventId?? undefined} stageId={stageId?? undefined} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
-        <Button isDisabled={matchId == undefined} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete match</Button>
+        <Button isDisabled={!matchId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete match</Button>
 
         <ConfirmationModal isOpen={isOpen} onClose={onClose} body={`Do you really want to delete the match ${firstTeamName} vs ${secondTeamName}`} confirmFunction={deleteMatch} />
       </Stack>
@@ -35,7 +35,7 @@ export default function DeleteMatch() {
 
   function selectStage(newStageId: number) {
     setStageId(newStageId);
-    if (eventId == undefined) {
+    if (!eventId) {
       fetch(
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${newStageId}/`),
       )
@@ -47,7 +47,7 @@ export default function DeleteMatch() {
 
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
-    if (stageId == undefined) {
+    if (!stageId) {
       fetch(
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/${newMatchId}/`),
       )

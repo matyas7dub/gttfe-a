@@ -153,7 +153,7 @@ export default function Update() {
   );
 
   function setGame(newGameId: String) {
-    if (newGameId == "") {
+    if (newGameId === "") {
       setGameErr(true);
       setGameId(undefined);
       setRegStartEnabled(false);

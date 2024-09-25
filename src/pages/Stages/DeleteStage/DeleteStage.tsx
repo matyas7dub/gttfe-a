@@ -22,7 +22,7 @@ export default function DeleteStage() {
 
         <DataPicker dataType={dataType.stage} eventId={eventId?? undefined} changeHandler={event => selectStage(Number(event.target.value))} /> 
 
-        <Button isDisabled={stageId == undefined} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete stage</Button>
+        <Button isDisabled={!stageId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete stage</Button>
 
         <ConfirmationModal isOpen={isOpen} onClose={onClose} body={`Do you really want to delete ${stageName}`} confirmFunction={deleteStage} />
       </Stack>

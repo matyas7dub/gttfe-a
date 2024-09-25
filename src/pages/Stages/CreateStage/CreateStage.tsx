@@ -38,7 +38,7 @@ export default function CreateStage() {
           </FormControl>
         </Stack>
 
-        <Button isDisabled={eventId == null || stageName == "" || stageIndex == null} onClick={createStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create stage</Button>
+        <Button isDisabled={eventId == null || stageName === "" || stageIndex == null} onClick={createStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create stage</Button>
 
       </Stack>
     </div>

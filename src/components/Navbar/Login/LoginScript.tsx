@@ -8,7 +8,7 @@ export default function LoginScript() {
   const navigate = useNavigate();
   let code = searchParams[0].get('code');
   let state = searchParams[0].get('state');
-  let HttpBody = {
+  let httpBody = {
     "code": code,
     "state": state,
     "redirect_uri": process.env.REACT_APP_AUTH_REDIRECT,
@@ -26,7 +26,7 @@ export default function LoginScript() {
     {
       method: "POST",
       headers: jsonHeader,
-      body: JSON.stringify(HttpBody),
+      body: JSON.stringify(httpBody),
     })
     .then(async response => {
       const data = await response.json();
@@ -49,7 +49,7 @@ export default function LoginScript() {
       if (localStorage.getItem("requestCache") != null) {
         const cache = JSON.parse(localStorage.getItem("requestCache")?? "this will intentionally crash the parser and it shouldnt ever get here");
 
-        const authorizationIndex = cache.request.headers.flat(1).findIndex((x: string) => x == "Authorization");
+        const authorizationIndex = cache.request.headers.flat(1).findIndex((x: string) => x === "Authorization");
         if (authorizationIndex !== -1) {
           cache.request.headers[(authorizationIndex + 2)/2 - 1][1] = `Bearer ${localStorage.getItem("jws")}`;
         }
@@ -57,6 +57,7 @@ export default function LoginScript() {
         fetchWithToast(cache.url, cache.request.method, cache.request.headers, cache.request.body, cache.successMessage, toast)
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -44,6 +44,7 @@ export default function Login() {
     } else if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
       setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLogged, validLogin]);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export default function Login() {
         setValidLogin(true);
       }
     }, 5000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return(

@@ -27,11 +27,11 @@ export default function UpdateMatch() {
 
         <DataPicker eventId={eventId?? undefined} stageId={stageId?? undefined} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
-        <TeamResultInput isDisabled={matchId == undefined} stageId={stageId?? undefined}
+        <TeamResultInput isDisabled={!matchId} stageId={stageId?? undefined}
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}
           secondTeamId={secondTeamId} setSecondTeamId={setSecondTeamId} secondTeamResult={secondTeamResult} setSecondTeamResult={setSecondTeamResult} />
 
-        <Button isDisabled={matchId == undefined} onClick={updateMatch} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update match</Button>
+        <Button isDisabled={!matchId} onClick={updateMatch} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update match</Button>
 
       </Stack>
     </div>
@@ -39,7 +39,7 @@ export default function UpdateMatch() {
 
   function selectStage(newStageId: number) {
     setStageId(newStageId);
-    if (eventId == undefined) {
+    if (!eventId) {
       fetch(
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${newStageId}/`),
       )
@@ -51,7 +51,7 @@ export default function UpdateMatch() {
 
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
-    if (stageId == undefined) {
+    if (!stageId) {
       fetch(
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/${newMatchId}/`),
       )

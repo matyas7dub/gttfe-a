@@ -23,12 +23,12 @@ export default function UpdateStage() {
 
         <FormControl>
           <FormLabel>Name</FormLabel>
-          <Input isDisabled={stageId == undefined} value={stageName} type="text" onChange={event => setStageName(event.target.value)} />
+          <Input isDisabled={!stageId} value={stageName} type="text" onChange={event => setStageName(event.target.value)} />
         </FormControl>
 
         <FormControl>
           <FormLabel>Index/Level <Tooltip label="i. e. quarterfinals = 1, semifinals = 2, finals = 3"><QuestionIcon /></Tooltip></FormLabel>
-          <NumberInput isDisabled={stageId == undefined} defaultValue={stageIndex} onChange={(_, value) => {setStageIndex(value)}}>
+          <NumberInput isDisabled={!stageId} defaultValue={stageIndex} onChange={(_, value) => {setStageIndex(value)}}>
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
@@ -37,7 +37,7 @@ export default function UpdateStage() {
           </NumberInput>
         </FormControl>
 
-        <Button isDisabled={stageId == undefined} onClick={updateStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update stage</Button>
+        <Button isDisabled={!stageId} onClick={updateStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update stage</Button>
       </Stack>
     </div>
   )

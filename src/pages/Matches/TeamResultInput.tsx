@@ -1,4 +1,4 @@
-import { Divider, Flex, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
+import { Divider, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import DataPicker, { dataType } from "../../components/DataPicker/DataPicker";
 
@@ -21,7 +21,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   const [gameId, setGameId] = useState<Number>();
 
   useEffect(() => {
-    if (props.stageId != undefined) {
+    if (props.stageId) {
       fetch(
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${props.stageId}`)
       )
@@ -43,7 +43,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   return (
     <Stack direction="row" spacing={horizontalFormSpacing}>
       <Stack direction="column" spacing="3rem">
-        <DataPicker value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={gameId == undefined || props.isDisabled} gameId={gameId} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} />
+        <DataPicker value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} gameId={gameId} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} />
 
         <FormControl>
           <FormLabel>First team result</FormLabel>
@@ -62,7 +62,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
       </div>
 
       <Stack direction="column" spacing="3rem">
-        <DataPicker value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={gameId == undefined || props.isDisabled} gameId={gameId} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} />
+        <DataPicker value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} gameId={gameId} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} />
 
         <FormControl>
           <FormLabel>Second team result</FormLabel>
