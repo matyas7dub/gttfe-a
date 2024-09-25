@@ -33,7 +33,7 @@ export default function DataPicker(props: DataPickerProps) {
   const [errorMessage, setErrorMessage] = useState("You must select one!");
 
   useEffect(() => {
-    const url = process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '';
+    const url = process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL;
     let location = "";
     let invalid = false;
 

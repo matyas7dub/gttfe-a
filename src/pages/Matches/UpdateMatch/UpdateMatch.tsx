@@ -41,7 +41,7 @@ export default function UpdateMatch() {
     setStageId(newStageId);
     if (!eventId) {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${newStageId}/`),
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${newStageId}/`),
       )
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
@@ -53,7 +53,7 @@ export default function UpdateMatch() {
     setMatchId(newMatchId);
     if (!stageId) {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/${newMatchId}/`),
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${newMatchId}/`),
       )
       .then(response => response.json())
       .then(data => {
@@ -81,7 +81,7 @@ export default function UpdateMatch() {
       secondTeamResult: secondTeamResult
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/match/${matchId}/`),
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${matchId}/`),
       "PUT", JSON.stringify(body), headers, "Match updated successfully", toast);
   }
 }

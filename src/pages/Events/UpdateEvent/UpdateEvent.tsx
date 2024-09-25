@@ -57,7 +57,7 @@ export default function UpdateEvent() {
     setEventId(newEventId);
 
     fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${newEventId}/`)
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/event/${newEventId}/`)
     )
     .then(response => response.json())
     .then(data => {
@@ -95,7 +95,7 @@ export default function UpdateEvent() {
       eventType: eventType
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${eventId}/`),
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/event/${eventId}/`),
     "PUT", JSON.stringify(body), headers, "Event updated successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);

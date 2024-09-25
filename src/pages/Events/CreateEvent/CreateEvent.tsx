@@ -123,7 +123,7 @@ export default function CreateEvent() {
       eventType: eventType
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + "/backend/event/create"),
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/event/create"),
     "POST", JSON.stringify(body), headers, "Event created successfully", toast);
   }
 }

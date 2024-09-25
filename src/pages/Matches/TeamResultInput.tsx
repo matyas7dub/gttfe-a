@@ -23,7 +23,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   useEffect(() => {
     if (props.stageId) {
       fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/stage/${props.stageId}`)
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${props.stageId}`)
       )
       .then(response => response.json())
       .then(data => gameIdFromEvent(data.eventId))
@@ -33,7 +33,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
 
   function gameIdFromEvent(eventId: number) {
     fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${eventId}`)
+    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/event/${eventId}`)
     )
     .then(response => response.json())
     .then(data => setGameId(data.gameId))

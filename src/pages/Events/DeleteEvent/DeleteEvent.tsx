@@ -30,7 +30,7 @@ export default function DeleteEvent() {
     setEventId(newEventId);
 
     fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${newEventId}/`)
+      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/event/${newEventId}/`)
     )
     .then(response => response.json())
     .then(data => {
@@ -44,7 +44,7 @@ export default function DeleteEvent() {
       ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
     ];
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : '') + `/backend/event/${eventId}/`),
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/event/${eventId}/`),
     "DELETE", null, headers, "Event deleted successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);
