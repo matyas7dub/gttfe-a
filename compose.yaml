@@ -1,6 +1,6 @@
 services:
   gtt-admin-frontend:
-    image: gttfe-a
+    image: ghcr.io/matyas7dub/gttfe-a:latest
     networks:
       - gtt-internal
     ports:
