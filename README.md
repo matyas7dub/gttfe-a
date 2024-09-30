@@ -1,22 +1,32 @@
 # ![](./public/GtLogo.svg) Admin Frontend
 
   1. [Setup](#setup)
-      1. [Docker](#using-docker-dev)
-      2. [npm](#manual-setup-dev)
-      3. [Environment variables](#environment-variables)
+      1. [Docker compose](#using-docker-compose-dev)
+      2. [Docker standalone](#using-docker-standalone-dev)
+      3. [npm](#manual-setup-dev)
+      4. [Environment variables](#environment-variables)
   2. [CRA](#create-react-app)
 
 # Setup
 
-## Using Docker (dev)
+## Using Docker compose (dev)
 
-  1. Set [environment variables](#environment-variables) including Docker compose variables
+  1. Set Docker compose [environment variables](#environment-variables)
   2. Run
       ```bash
       docker compose pull && docker compose up -d
       ```
   3. Set up [gttbe-2 database](https://github.com/viotalJiplk/gttbe-2#docker-install)
   4. Open [localhost:5002](http://localhost:5002) or configured port
+
+## Using Docker standalone (dev)
+
+  0. (Set up [gttbe-2](https://github.com/viotalJiplk/gttbe-2) and its database)
+  1. Run
+      ```bash
+      docker run -p 5002:80 --name gtt-admin-frontend --pull always -d ghcr.io/matyas7dub/gttfe-a:latest
+      ```
+  2. Open [localhost:5002](http://localhost:5002)
 
 ## Manual setup (dev)
 
