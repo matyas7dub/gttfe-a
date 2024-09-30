@@ -1,16 +1,46 @@
-# Environment variables (.env)  
+# ![](./public/GtLogo.svg) Admin Frontend
 
-dev template is in .env-template
+  1. [Setup](#setup)
+      1. [Docker](#using-docker-dev)
+      2. [npm](#manual-setup-dev)
+      3. [Environment variables](#environment-variables)
+  2. [CRA](#create-react-app)
 
-- `REACT_APP_PROD`: yes/no (changes localhost to prod domain)
-- `REACT_APP_AUTH_REDIRECT`: where discord should redirect after auth
-- `REACT_APP_JWS_TLL`: how often should JWS tokens be reset
+# Setup
 
-# Getting Started with Create React App
+## Using Docker (dev)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+  1. Set [environment variables](#environment-variables) including Docker compose variables
+  2. Run
+      ```bash
+      docker compose pull && docker compose up -d
+      ```
+  3. Set up [gttbe-2 database](https://github.com/viotalJiplk/gttbe-2#docker-install)
+  4. Open [localhost:5002](http://localhost:5002) or configured port
 
-## Available Scripts
+## Manual setup (dev)
+
+  1. Set [environment variables](#environment-variables)
+  2. Set up [gttbe-2](https://github.com/viotalJiplk/gttbe-2) and its database
+  3. Run 
+      ```bash
+      npm i && npm start
+      ```
+
+## Environment variables
+
+You can set these variables in .env  
+Defaults are in .env-template  
+
+- `REACT_APP_PROD={yes/no}` changes localhost to prod domain
+- `REACT_APP_AUTH_REDIRECT={URL}` where discord should redirect after authentication
+- `REACT_APP_BACKEND_URL={URL/empty}` location of gttbe-2
+
+# Create React App
+
+This project is using [Create React App](https://github.com/facebook/create-react-app).
+
+## CRA scripts
 
 In the project directory, you can run:
 
@@ -47,7 +77,7 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+## Learn more about CRA
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 

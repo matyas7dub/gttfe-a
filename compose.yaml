@@ -1,13 +1,14 @@
 services:
   gtt-admin-frontend:
     image: ghcr.io/matyas7dub/gttfe-a:latest
+    container_name: gtt-admin-frontend
     networks:
       - gtt-internal
     ports:
-      - "5002:80"
+      - "$AdminFrontendPort:80"
 
   gtt-backend:
-    image: ghcr.io/viotaljiplk/gttbe-2:latest
+    image: ghcr.io/viotaljiplk/gttbe-2:dev
     restart: $restart
     container_name: gtt-backend
     networks:
