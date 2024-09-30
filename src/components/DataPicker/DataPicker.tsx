@@ -91,7 +91,7 @@ export default function DataPicker(props: DataPickerProps) {
         switch (props.dataType) {
           case dataType.game:
             let gameElems: JSX.Element[] = [];
-            for (let game of data.games) {
+            for (let game of data) {
               gameElems.push(
                 <option key={game.gameId} value={game.gameId}>{namePrettyPrint(game.name)}</option>
               );

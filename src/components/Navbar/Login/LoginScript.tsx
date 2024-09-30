@@ -11,7 +11,7 @@ export default function LoginScript() {
   let httpBody = {
     "code": code,
     "state": state,
-    "redirect_uri": process.env.REACT_APP_AUTH_REDIRECT,
+    "redirectUri": process.env.REACT_APP_AUTH_REDIRECT,
     "school_id": 1
   };
 

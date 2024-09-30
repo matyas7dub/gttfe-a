@@ -39,7 +39,7 @@ export default function Login() {
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
       )
       .then(response => response.json())
-      .then(url => setAuthUrl(url.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
+      .then(url => setAuthUrl(url.redirectUrl + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
       .catch(error => console.error('Error:', error));
     } else if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
       setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
