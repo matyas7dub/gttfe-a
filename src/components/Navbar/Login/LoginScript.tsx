@@ -87,7 +87,7 @@ export function fetchGracefully(url: string, method: string, body: string | null
     ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
     )
     .then(response => response.json())
-    .then(authUrl => window.location.href = authUrl.redirect_url + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)
+    .then(authUrl => window.location.href = authUrl.redirectUrl + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)
     .catch(error => console.error('Error:', error));
   } else {
     fetchWithToast(url, method, headers, body, successMessage, toast);

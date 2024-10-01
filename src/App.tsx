@@ -19,6 +19,7 @@ import CreateMatch from './pages/Matches/CreateMatch/CreateMatch';
 import UpdateMatch from './pages/Matches/UpdateMatch/UpdateMatch';
 import DeleteMatch from './pages/Matches/DeleteMatch/DeleteMatch';
 import Matches from './pages/Matches/Matches';
+import AutofillEvent from './pages/Events/AutofillEvent/AutofillEvent';
 
 function App() {
   const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
@@ -34,6 +35,7 @@ function App() {
       <Route path="/events/create" element={<CreateEvent />} />
       <Route path="/events/update" element={<UpdateEvent />} />
       <Route path="/events/delete" element={<DeleteEvent />} />
+      <Route path="/events/fill" element={<AutofillEvent />} />
       <Route path="/stages" element={<Stages />} />
       <Route path="/stages/create" element={<CreateStage />} />
       <Route path="/stages/update" element={<UpdateStage />} />
