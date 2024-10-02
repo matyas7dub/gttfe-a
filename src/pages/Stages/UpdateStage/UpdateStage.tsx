@@ -19,7 +19,7 @@ export default function UpdateStage() {
       <Stack direction="column" spacing="3rem" className="Form">
         <DataPicker title="Event (Optional)" dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
 
-        <DataPicker dataType={dataType.stage} eventId={eventId?? undefined} changeHandler={event => selectStage(Number(event.target.value))} /> 
+        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} /> 
 
         <FormControl>
           <FormLabel>Name</FormLabel>

@@ -23,9 +23,9 @@ export default function UpdateMatch() {
       <Stack direction="column" spacing="3rem" className="Form">
         <DataPicker dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
 
-        <DataPicker eventId={eventId?? undefined} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
+        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
 
-        <DataPicker eventId={eventId?? undefined} stageId={stageId?? undefined} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
+        <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
         <TeamResultInput isDisabled={!matchId} stageId={stageId?? undefined}
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}

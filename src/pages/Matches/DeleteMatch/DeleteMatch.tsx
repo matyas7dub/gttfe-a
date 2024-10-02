@@ -22,9 +22,9 @@ export default function DeleteMatch() {
       <Stack direction="column" spacing="2rem" className="Form">
         <DataPicker dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
 
-        <DataPicker eventId={eventId?? undefined} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
+        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
 
-        <DataPicker eventId={eventId?? undefined} stageId={stageId?? undefined} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
+        <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}}  dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
         <Button isDisabled={!matchId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete match</Button>
 
