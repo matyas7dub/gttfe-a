@@ -20,7 +20,7 @@ export default function DeleteStage() {
       <Stack direction="column" spacing="2rem" className="Form">
         <DataPicker title="Event (Optional)" dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
 
-        <DataPicker dataType={dataType.stage} eventId={eventId?? undefined} changeHandler={event => selectStage(Number(event.target.value))} /> 
+        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} /> 
 
         <Button isDisabled={!stageId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete stage</Button>
 

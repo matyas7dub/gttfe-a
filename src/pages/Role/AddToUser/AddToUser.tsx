@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, FormControl, FormLabel, Input, Radio, RadioGroup, Stack, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Button, Card, FormControl, FormLabel, Input, Stack, Text, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
@@ -8,9 +8,8 @@ export default function AddToUser() {
   const [pfpUrl, setPfpUrl] = useState("");
   const [userName, setUserName] = useState("");
   const [userUsername, setUserUsername] = useState("");
-  const [role, setRole] = useState("Admin");
+  const [roleId, setRoleId] = useState<number>();
   const [userId, setUserId] = useState("");
-  const [gameId, setGameId] = useState(0);
 
   const toast = useToast();
 
@@ -21,7 +20,7 @@ export default function AddToUser() {
       <Stack direction="column" spacing="3rem" className="Form">
         <FormControl>
           <FormLabel>User ID</FormLabel>
-          <Input type="number" onChange={(event) => updateUser(event.target.value)}/>
+          <Input type="number" onChange={(event) => selectUser(event.target.value)}/>
         </FormControl>
 
         <Card width="fit-content" minWidth="30%" marginTop="-2rem">
@@ -31,18 +30,7 @@ export default function AddToUser() {
           </Stack>
         </Card>
 
-        <FormControl>
-          <FormLabel>Role</FormLabel>
-          <RadioGroup value={role} onChange={setRole}>
-            <Stack direction="row">
-              <Radio value="admin">Admin</Radio>
-              <Radio value="gameOrganizer">Game organizer</Radio>
-              <Radio value="gameStreamer">Game streamer</Radio>
-            </Stack>
-          </RadioGroup>
-        </FormControl>
-
-        <DataPicker dataType={dataType.game} changeHandler={event => setGameId(Number(event.target.value))} placeholder="Null" />
+        <DataPicker dataType={dataType.assignedRoles} changeHandler={event => setRoleId(Number(event.target.value))} />
 
         <Button onClick={addRole} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Add role</Button>
         
@@ -50,27 +38,32 @@ export default function AddToUser() {
     </div>
   );
 
-  function updateUser(id: string) {
-    if (id.length <= 17 || id.length >= 19) {
+  function selectUser(id: string) {
+    if (id.length <= 17) {
       return;
     }
     setUserId(id);
 
-    const header = new Headers();
-    header.append("Authorization", `Bearer ${localStorage.getItem("jws")}`)
     fetch(
     ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/user/${id}/`),
       {
         method: "GET",
-        headers: header,
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("jws")}`
+        }
       }
     )
     .then(async response => {
       if (response.ok) {
-        const data = await response.json();
-        setUserName(`${data.name} ${data.surname}`)
-        setUserUsername(data.discord_user_object.username);
-        setPfpUrl(`https://cdn.discordapp.com/avatars/${data.discord_user_object.id}/${data.discord_user_object.avatar}`);
+        const user = await response.json();
+        setUserName(`${user.name} ${user.surname}`)
+        if (user.discord_user_object !== null) {
+          setUserUsername(user.discord_user_object.username);
+          setPfpUrl(`https://cdn.discordapp.com/avatars/${user.discord_user_object.id}/${user.discord_user_object.avatar}`);
+        } else {
+          setUserUsername("");
+          setPfpUrl("");
+        }
       }
     });
   }
@@ -82,12 +75,11 @@ export default function AddToUser() {
     ];
 
     const body = {
-      game_id: gameId,
-      user_id: userId,
-      role: role,
+      assignedRoleId: roleId,
+      userId: userId
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/role/add`),
+    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/userRole/create`),
     "POST", JSON.stringify(body), headers, "Role added successfully", toast);
   }
 }
