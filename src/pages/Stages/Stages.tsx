@@ -23,6 +23,7 @@ export function StagesContent() {
       <ChakraLink as={RouterLink} to={`${url}create`}>Create stage<LinkIcon /></ChakraLink>
       <ChakraLink as={RouterLink} to={`${url}update`}>Update stage<LinkIcon /></ChakraLink>
       <ChakraLink as={RouterLink} to={`${url}delete`}>Delete stage<LinkIcon /></ChakraLink>
+      <ChakraLink as={RouterLink} to={`${url}fill`}>Autofill stage<LinkIcon /></ChakraLink>
     </div>
   )
 }
