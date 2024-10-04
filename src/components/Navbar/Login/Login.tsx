@@ -16,6 +16,7 @@ import {
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons'
 import { useNavigate } from 'react-router-dom';
+import { loginPath } from '../../../config/config';
 
 export default function Login() {
   let isLogged = localStorage.getItem("jws") != null;
@@ -39,7 +40,7 @@ export default function Login() {
       ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
       )
       .then(response => response.json())
-      .then(url => setAuthUrl(url.redirectUrl + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`))
+      .then(url => setAuthUrl(url.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`))
       .catch(error => console.error('Error:', error));
     } else if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
       setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)

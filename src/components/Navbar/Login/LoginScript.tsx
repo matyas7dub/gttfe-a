@@ -2,6 +2,7 @@ import { Center, CreateToastFnReturn, Spinner, useToast } from "@chakra-ui/react
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"
 import * as jose from 'jose';
+import { loginPath } from "../../../config/config";
 
 export default function LoginScript() {
   let searchParams = useSearchParams();
@@ -11,7 +12,7 @@ export default function LoginScript() {
   let httpBody = {
     "code": code,
     "state": state,
-    "redirectUri": process.env.REACT_APP_AUTH_REDIRECT,
+    "redirectUri": window.location.origin + loginPath,
     "school_id": 1
   };
 
@@ -87,7 +88,7 @@ export function fetchGracefully(url: string, method: string, body: string | null
     ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
     )
     .then(response => response.json())
-    .then(authUrl => window.location.href = authUrl.redirectUrl + `&redirect_uri=${process.env.REACT_APP_AUTH_REDIRECT}`)
+    .then(authUrl => window.location.href = authUrl.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`)
     .catch(error => console.error('Error:', error));
   } else {
     fetchWithToast(url, method, headers, body, successMessage, toast);
