@@ -21,9 +21,9 @@ import DeleteMatch from './pages/Matches/DeleteMatch/DeleteMatch';
 import Matches from './pages/Matches/Matches';
 import AutofillEvent from './pages/Events/AutofillEvent/AutofillEvent';
 import AutofillStage from './pages/Stages/AutofillStage/AutofillStage';
+import { loginPathRelative } from './config/config';
 
 function App() {
-  const loginPath = (process.env.REACT_APP_AUTH_REDIRECT ?? 'login').split('/').pop()
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -46,7 +46,7 @@ function App() {
       <Route path="/matches/create" element={<CreateMatch />} />
       <Route path="/matches/update" element={<UpdateMatch />} />
       <Route path="/matches/delete" element={<DeleteMatch />} />
-      <Route path={`/${loginPath}`} element={<LoginScript />} />
+      <Route path={`${loginPathRelative}`} element={<LoginScript />} />
     </Routes>
   )
 }
