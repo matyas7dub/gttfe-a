@@ -4,13 +4,17 @@ import { ChangeEventHandler, useState, useEffect } from "react";
 
 type DataPickerProps = {
   dataType: dataType,
-  isInvalid?: boolean,
   changeHandler: ChangeEventHandler<HTMLSelectElement>,
+  isInvalid?: boolean,
   placeholder?: string,
   title?: string,
   value?: number,
   isDisabled?: boolean,
-  // optional props for some data types
+  options?: DataPickerOptions
+}
+
+// optional props for some data types
+type DataPickerOptions = {
   gameId?: Number,
   eventId?: Number,
   stageId?: Number
@@ -22,20 +26,24 @@ export enum dataType {
   stage,
   match,
   teams,
+  assignedRoles,
 }
 
 export default function DataPicker(props: DataPickerProps) {
-  const [data, setData] = useState<JSX.Element[]>();
+  const [optionElems, setOptionElems] = useState<JSX.Element[]>();
 
   // changes depending on data type
   const [formLabel, setFormLabel] = useState("Pick one");
   const [placeholder, setPlaceholder] = useState("Select one");
   const [errorMessage, setErrorMessage] = useState("You must select one!");
 
+
   useEffect(() => {
     const url = process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL;
     let location = "";
     let invalid = false;
+
+
 
     switch (props.dataType) {
       case dataType.game:
@@ -51,8 +59,8 @@ export default function DataPicker(props: DataPickerProps) {
         setErrorMessage("You must select an event!");
         break;
       case dataType.stage:
-        if (props.eventId) {
-          location = `/backend/event/${props.eventId}/stages/`
+        if (props.options !== undefined && props.options.eventId) {
+          location = `/backend/event/${props.options.eventId}/stages/`
         } else {
           location = "/backend/stage/listAll/";
         }
@@ -61,10 +69,10 @@ export default function DataPicker(props: DataPickerProps) {
         setErrorMessage("You must select a stage!");
         break;
       case dataType.match:
-        if (props.stageId) {
-          location = `/backend/stage/${props.stageId}/matches/`;
-        } else if (props.eventId) {
-          location = `/backend/event/${props.eventId}/matches/`;
+        if (props.options !== undefined && props.options.stageId) {
+          location = `/backend/stage/${props.options.stageId}/matches/`;
+        } else if (props.options !== undefined && props.options.eventId) {
+          location = `/backend/event/${props.options.eventId}/matches/`;
         } else {
           location = "/backend/match/listAll/";
         }
@@ -73,14 +81,22 @@ export default function DataPicker(props: DataPickerProps) {
         setErrorMessage("You must select a match!");
         break;
       case dataType.teams:
-        if (!props.gameId) {
-          console.error("You need to provide a gameId for the teams data picker")
-          invalid = true;
+        if (props.options !== undefined) {
+          if (!props.options.gameId) {
+            console.error("You need to provide a gameId for the teams data picker")
+            invalid = true;
+          }
+          location = `/backend/team/list/participating/${props.options.gameId}/false/`
+          setFormLabel("Team")
+          setPlaceholder("Select a team");
+          setErrorMessage("You must select a team!");
         }
-        location = `/backend/team/list/participating/${props.gameId}/false/`
-        setFormLabel("Team")
-        setPlaceholder("Select a team");
-        setErrorMessage("You must select a team!");
+        break;
+      case dataType.assignedRoles:
+        location = '/backend/assignedRole/listAll';
+        setFormLabel("Role");
+        setPlaceholder("Select a role");
+        setErrorMessage("You must select a role!");
         break;
     }
 
@@ -96,7 +112,7 @@ export default function DataPicker(props: DataPickerProps) {
                 <option key={game.gameId} value={game.gameId}>{namePrettyPrint(game.name)}</option>
               );
             }
-            setData(gameElems);
+            setOptionElems(gameElems);
             break;
 
           case dataType.event:
@@ -106,7 +122,7 @@ export default function DataPicker(props: DataPickerProps) {
                 <option key={event.eventId} value={event.eventId}>{namePrettyPrint(event.description)}</option>
               );
             }
-            setData(eventElems);
+            setOptionElems(eventElems);
             break;
           case dataType.stage:
             let stageElems: JSX.Element[] = [];
@@ -115,7 +131,7 @@ export default function DataPicker(props: DataPickerProps) {
                 <option key={stage.stageId} value={stage.stageId}>{namePrettyPrint(stage.stageName)}</option>
               );
             }
-            setData(stageElems);
+            setOptionElems(stageElems);
             break;
           case dataType.match:
             let matchElems: JSX.Element[] = [];
@@ -125,7 +141,7 @@ export default function DataPicker(props: DataPickerProps) {
                 <option key={match.matchId} value={match.matchId}>{`${match.firstTeamId} vs ${match.secondTeamId} (${match.firstTeamResult}:${match.secondTeamResult})`}</option>
               );
             }
-            setData(matchElems);
+            setOptionElems(matchElems);
             break;
           case dataType.teams:
             let teamElems: JSX.Element[] = [];
@@ -134,20 +150,29 @@ export default function DataPicker(props: DataPickerProps) {
                 <option key={team.teamId} value={team.teamId}>{team.name}</option>
               );
             }
-            setData(teamElems);
+            setOptionElems(teamElems);
+            break;
+          case dataType.assignedRoles:
+            let roleElems: JSX.Element[] = [];
+            for (let role of data) {
+              roleElems.push(
+                <option key={role.assignedRoleId} value={role.assignedRoleId}>{role.roleName}</option>
+              );
+            }
+            setOptionElems(roleElems);
             break;
         }
       })
       .catch(error => console.error('Error:', error));
     }
-  }, [props.isDisabled, props.gameId, props.eventId, props.stageId, props.dataType]);
+  }, [props.isDisabled, props.dataType, props.options]);
 
   return (
     <FormControl isInvalid={props.isInvalid ?? undefined}>
       <FormLabel>{props.title?? formLabel}</FormLabel>
       <Select onChange={props.changeHandler} value={props.value?? undefined} isDisabled={props.isDisabled?? undefined}
         placeholder={props.placeholder?? placeholder}>
-        {data}
+        {optionElems}
       </Select>
       <FormErrorMessage>{errorMessage}</FormErrorMessage>
     </FormControl>

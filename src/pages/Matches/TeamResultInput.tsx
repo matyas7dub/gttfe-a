@@ -43,7 +43,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   return (
     <Stack direction="row" spacing={horizontalFormSpacing}>
       <Stack direction="column" spacing="3rem">
-        <DataPicker value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} gameId={gameId} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} />
+        <DataPicker options={{gameId: gameId}} value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} />
 
         <FormControl>
           <FormLabel>First team result</FormLabel>
@@ -62,7 +62,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
       </div>
 
       <Stack direction="column" spacing="3rem">
-        <DataPicker value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} gameId={gameId} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} />
+        <DataPicker options={{gameId: gameId}} value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} />
 
         <FormControl>
           <FormLabel>Second team result</FormLabel>

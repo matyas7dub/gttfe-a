@@ -9,8 +9,9 @@ on:
 env:
   IMAGE_NAME: gttfe-a
   REACT_APP_PROD: no
-  REACT_APP_AUTH_REDIRECT: http://localhost:5002/login
-  REACT_APP_BACKEND_URL: 'http://localhost:5000'
+  REACT_APP_AUTH_REDIRECT: /login
+  REACT_APP_BACKEND_URL: ''
+  PUBLIC_URL: "/admin"
 
 jobs:
 
