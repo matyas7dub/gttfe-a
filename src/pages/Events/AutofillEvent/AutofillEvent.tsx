@@ -108,7 +108,6 @@ export function autofillMatches(stageId: number, teamIds: number[], toast: Creat
       matches.push([teamIds[team], teamIds[team + 1]]);
     }
 
-    let matchesError = false;
     for (let match = 0; match < matches.length; match++) {
       fetch(
         ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/match/create/"),
@@ -129,26 +128,21 @@ export function autofillMatches(stageId: number, teamIds: number[], toast: Creat
       )
       .then(response => {
         if (!response.ok) {
-          matchesError = true;
-        }
-      })
-      .then(() => {
-        if (match !== matches.length - 1) {
-          return;
-        }
-
-        if (!matchesError) {
           toast({
-            title: "Matches created successfully",
-            status: 'success',
+            id: "matchErrorToast",
+            title: 'Error while creating matches',
+            description: `An error occured while creating match (teamId)${matches[match][0]} vs (teamId)${matches[match][1]}`,
+            status: 'error',
             duration: 5000,
             isClosable: true
           })
-        } else {
+        }
+      })
+      .then(() => {
+        if (match === matches.length - 1 && !toast.isActive("matchErrorToast")) {
           toast({
-            title: 'Error while creating matches',
-            description: "An error occured while creating some match(es)",
-            status: 'error',
+            title: "Matches created successfully",
+            status: 'success',
             duration: 5000,
             isClosable: true
           })
