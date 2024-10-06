@@ -8,7 +8,7 @@ services:
       - "$AdminFrontendPort:80"
 
   gtt-backend:
-    image: ghcr.io/viotaljiplk/gttbe-2:dev
+    image: ghcr.io/viotaljiplk/gttbe-2:$build
     restart: $restart
     container_name: gtt-backend
     networks:
