@@ -68,7 +68,7 @@ export default function LoginScript() {
   )
 }
 
-export function fetchGracefully(url: string, method: string, body: string | null, headers: [string, string][], successMessage: string, toast: CreateToastFnReturn) {
+export function fetchGracefully(url: string, method: string, body: string | null | any, headers: [string, string][], successMessage: string, toast: CreateToastFnReturn) {
   // The headers have to be [string, string][] otherwise they get lost at some point
   successMessage = successMessage?? "Success";
 
@@ -91,12 +91,12 @@ export function fetchGracefully(url: string, method: string, body: string | null
     .then(authUrl => window.location.href = authUrl.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`)
     .catch(error => console.error('Error:', error));
   } else {
-    fetchWithToast(url, method, headers, body, successMessage, toast);
+    return fetchWithToast(url, method, headers, body, successMessage, toast);
   }
 }
 
-function fetchWithToast(url: string, method: string, headers: [string, string][], body: string | null, successMessage: string, toast: CreateToastFnReturn) {
-  fetch(url,
+function fetchWithToast(url: string, method: string, headers: [string, string][], body: string | null | any, successMessage: string, toast: CreateToastFnReturn) {
+  return fetch(url,
     {
       method: method,
       headers: new Headers(headers),
@@ -112,7 +112,7 @@ function fetchWithToast(url: string, method: string, headers: [string, string][]
       })
       localStorage.removeItem("requestCache");
     } else {
-      const data = await response.json();
+      const data = await response.clone().json();
       toast({
         title: 'Error',
         description: data.msg?? data.message?? 'Unknown error.',
@@ -121,6 +121,7 @@ function fetchWithToast(url: string, method: string, headers: [string, string][]
         isClosable: true
       })
     }
+    return response
   })
   .catch(error => console.error("Error:", error));
 }
