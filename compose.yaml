@@ -26,6 +26,9 @@ services:
       token_ttl: "$token_ttl"
       userid_claim: "$userid_claim"
       PROD: "$production"
+      DYNFOLDER: "/files"
+    volumes:
+        - files:/files
     ports:
       - "$Port:80"
 
@@ -55,3 +58,4 @@ networks:
 
 volumes:
   db-data:
+  files:
