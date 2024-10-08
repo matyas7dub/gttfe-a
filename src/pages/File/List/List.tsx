@@ -35,7 +35,7 @@ export default function List() {
         ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
       ],
       "Files listed successfully", toast);
-    if (typeof result === undefined) {
+    if (typeof result === "undefined") {
       return
     }
     let parsed: ListAPI[] = await result?.json();
@@ -55,6 +55,7 @@ export default function List() {
   }
   useEffect(() => {
     listFiles();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
 
