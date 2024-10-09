@@ -1,6 +1,7 @@
-import { Button, FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 
@@ -47,7 +48,7 @@ export default function UpdateEvent() {
           <Input isDisabled={eventId == null || eventId === 0} value={eventType} type="text" onChange={(event) => {setEventType(event.target.value)}} />
         </FormControl>
 
-        <Button isDisabled={eventId == null || eventId === 0} onClick={updateEvent} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update event</Button>
+        <ConfirmationButton isDisabled={eventId == null || eventId === 0} onClick={updateEvent}>Update event</ConfirmationButton>
       </Stack>
 
     </div>

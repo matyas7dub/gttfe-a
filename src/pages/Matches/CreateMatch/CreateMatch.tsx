@@ -1,6 +1,7 @@
-import { Button, Stack, useToast } from "@chakra-ui/react";
+import { Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import TeamResultInput from "../TeamResultInput";
@@ -22,8 +23,8 @@ export default function CreateMatch() {
 
         <TeamResultInput stageId={stageId} setFirstTeamId={setFirstTeamId} setFirstTeamResult={setFirstTeamResult} setSecondTeamId={setSecondTeamId} setSecondTeamResult={setSecondTeamResult} />
 
-        <Button isDisabled={stageId == null || firstTeamId == null || firstTeamResult == null || secondTeamId == null || secondTeamResult == null} onClick={createMatch} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create match</Button>
-      
+        <ConfirmationButton isDisabled={stageId == null || firstTeamId == null || firstTeamResult == null || secondTeamId == null || secondTeamResult == null} onClick={createMatch}> Create match</ConfirmationButton>
+
       </Stack>
     </div>
   )

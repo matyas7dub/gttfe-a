@@ -1,6 +1,7 @@
-import { Button, FormControl, FormErrorMessage, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
+import { FormControl, FormErrorMessage, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 
@@ -53,7 +54,7 @@ export default function CreateEvent() {
           <FormErrorMessage>You must pick an event type!</FormErrorMessage>
         </FormControl>
 
-        <Button onClick={createEvent} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create event</Button>
+        <ConfirmationButton onClick={createEvent}>Create event</ConfirmationButton>
       </Stack>
 
     </div>
