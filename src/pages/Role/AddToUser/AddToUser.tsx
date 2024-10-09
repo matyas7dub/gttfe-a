@@ -44,8 +44,7 @@ export default function AddToUser() {
     }
     setUserId(id);
 
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/user/${id}/`),
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/user/${id}/`,
       {
         method: "GET",
         headers: {
@@ -79,7 +78,7 @@ export default function AddToUser() {
       userId: userId
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/userRole/create`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/userRole/create`,
     "POST", JSON.stringify(body), headers, "Role added successfully", toast);
   }
 }

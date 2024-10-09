@@ -14,7 +14,7 @@ export default function Upload() {
       return;
     }
     await fetchGracefully(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/file/" + fileName),
+      process.env.REACT_APP_BACKEND_URL + "/backend/file/" + fileName,
       'PUT',
       file,
       [
