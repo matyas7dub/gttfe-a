@@ -36,9 +36,7 @@ export default function DeleteMatch() {
   function selectStage(newStageId: number) {
     setStageId(newStageId);
     if (!eventId) {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${newStageId}/`),
-      )
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
       .catch(error => console.error("Error", error));
@@ -48,9 +46,7 @@ export default function DeleteMatch() {
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
     if (!stageId) {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${newMatchId}/`),
-      )
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/match/${newMatchId}/`)
       .then(response => response.json())
       .then(data => {
         setStageId(Number(data.stageId));
@@ -62,9 +58,7 @@ export default function DeleteMatch() {
   }
 
   function getTeamName(teamId: number): string {
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/team/id/${teamId}/`),
-    )
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/team/id/${teamId}/`)
     .then(response => response.json())
     .then(data => {
       return data.name
@@ -78,7 +72,7 @@ export default function DeleteMatch() {
       ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
     ];
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${matchId}/`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/match/${matchId}/`,
     "DELETE", null, headers, "Match deleted successfully", toast);
   }
 }

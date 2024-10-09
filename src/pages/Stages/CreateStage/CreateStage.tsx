@@ -56,7 +56,7 @@ export default function CreateStage() {
       stageIndex: stageIndex
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/create`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/stage/create`,
     "POST", JSON.stringify(body), headers, "Stage created successfully", toast);
   }
 }

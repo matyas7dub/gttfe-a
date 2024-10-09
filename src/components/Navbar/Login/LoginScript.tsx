@@ -22,8 +22,7 @@ export default function LoginScript() {
     console.error("REMOVE THE SCHOOL ID THING AT LINE 14 IN LOGIN SCRIPT!!!");
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/token'),
+    fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/token',
     {
       method: "POST",
       headers: jsonHeader,
@@ -84,9 +83,7 @@ export function fetchGracefully(url: string, method: string, body: string | null
     };
     localStorage.setItem("requestCache", JSON.stringify(cache));
   
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/discord/auth')
-    )
+    fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/auth')
     .then(response => response.json())
     .then(authUrl => window.location.href = authUrl.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`)
     .catch(error => console.error('Error:', error));

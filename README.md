@@ -42,7 +42,6 @@
 You can set these variables in .env  
 Defaults are in .env-template  
 
-- `REACT_APP_PROD={yes/no}` changes localhost to prod domain
 - `REACT_APP_AUTH_REDIRECT={URL}` where discord should redirect after authentication
 - `REACT_APP_BACKEND_URL={URL/empty}` location of gttbe-2
 - `PUBLIC_URL{URL/empty}` optional prefix for the url path (the part after the domain)

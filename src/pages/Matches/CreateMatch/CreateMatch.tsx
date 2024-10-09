@@ -42,7 +42,7 @@ export default function CreateMatch() {
       secondTeamResult: secondTeamResult
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/create`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/match/create`,
     "POST", JSON.stringify(body), headers, "Match created successfully", toast);
   }
 }

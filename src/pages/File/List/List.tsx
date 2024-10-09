@@ -16,7 +16,7 @@ export default function List() {
 
   async function deleteFile (filename: string){
     await fetchGracefully(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/file/"+ filename),
+      process.env.REACT_APP_BACKEND_URL + "/backend/file/" + filename,
       'DELETE',
       null,
       [
@@ -28,7 +28,7 @@ export default function List() {
 
   async function listFiles() {
     let result = await fetchGracefully(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/file/list"),
+      process.env.REACT_APP_BACKEND_URL + "/backend/file/list",
       'GET',
       null,
       [

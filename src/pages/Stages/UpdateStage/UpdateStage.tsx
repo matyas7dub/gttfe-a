@@ -45,9 +45,7 @@ export default function UpdateStage() {
   function selectStage(newStageId: Number) {
     setStageId(newStageId);
 
-    fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${newStageId}/`)
-    )
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
     .then(response => response.json())
     .then(data => {
       setEventId(data.eventId);
@@ -69,7 +67,7 @@ export default function UpdateStage() {
       stageIndex: stageIndex
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${stageId}/`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${stageId}/`,
     "PUT", JSON.stringify(body), headers, "Stage updated successfully", toast);
   }
 }
