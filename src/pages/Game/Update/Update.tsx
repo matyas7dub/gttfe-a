@@ -1,8 +1,9 @@
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 
 export default function Update() {
   const horizontalFormSpacing = "2rem";
@@ -146,7 +147,7 @@ export default function Update() {
           </FormControl>
         </Stack>
 
-        <Button isDisabled={gameId == null} onClick={updateGame} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update game</Button>
+        <ConfirmationButton isDisabled={gameId == null} onClick={updateGame}>Update game</ConfirmationButton> 
 
       </Stack>
     </div>

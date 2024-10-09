@@ -1,6 +1,7 @@
-import { Button, Stack, useDisclosure, useToast } from "@chakra-ui/react";
+import { Stack, useDisclosure, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
@@ -22,7 +23,7 @@ export default function DeleteStage() {
 
         <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} /> 
 
-        <Button isDisabled={!stageId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete stage</Button>
+        <ConfirmationButton isDisabled={!stageId} onClick={onOpen}>Delete stage</ConfirmationButton>
 
         <ConfirmationModal isOpen={isOpen} onClose={onClose} body={`Do you really want to delete ${stageName}`} confirmFunction={deleteStage} />
       </Stack>

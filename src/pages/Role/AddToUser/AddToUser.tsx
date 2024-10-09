@@ -1,6 +1,7 @@
-import { Avatar, Button, Card, FormControl, FormLabel, Input, Stack, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Card, FormControl, FormLabel, Input, Stack, Text, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 
@@ -32,8 +33,8 @@ export default function AddToUser() {
 
         <DataPicker dataType={dataType.assignedRoles} changeHandler={event => setRoleId(Number(event.target.value))} />
 
-        <Button onClick={addRole} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Add role</Button>
-        
+        <ConfirmationButton onClick={addRole}>Add role</ConfirmationButton> 
+
       </Stack>
     </div>
   );

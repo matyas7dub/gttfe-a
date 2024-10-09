@@ -1,6 +1,7 @@
-import { Alert, AlertIcon, AlertTitle, Button, FormControl, FormLabel, Input, Stack, Tooltip } from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle, FormControl, FormLabel, Input, Stack, Tooltip } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 
 /*
@@ -39,7 +40,8 @@ export default function AutofillStage() {
           {previousStageName !== "" ? `Previous stage name was ${previousStageName}` : ""}
         </FormControl>
 
-        <Button isDisabled={stageName === ""} onClick={createStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create stage and matches</Button>
+        <ConfirmationButton isDisabled={stageName === ""} onClick={createStage}>Create stage and matches</ConfirmationButton>
+
       </Stack>
     </div>
   )

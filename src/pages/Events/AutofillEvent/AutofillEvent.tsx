@@ -1,6 +1,7 @@
-import { Alert, AlertIcon, AlertTitle, Button, CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle, CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 
 export default function AutofillEvent() {
@@ -28,7 +29,7 @@ export default function AutofillEvent() {
           <Input onChange={event => setStageName(event.target.value)}/>
         </FormControl>
 
-        <Button isDisabled={stageName === "" || createdStage} onClick={createStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create stage and matches</Button>
+        <ConfirmationButton isDisabled={stageName === "" || createdStage} onClick={createStage}>Create stage and matches</ConfirmationButton>
       </Stack>
     </div>
   )

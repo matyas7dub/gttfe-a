@@ -1,6 +1,7 @@
-import { Button, Stack, useDisclosure, useToast } from "@chakra-ui/react";
+import { Stack, useDisclosure, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
@@ -26,7 +27,7 @@ export default function DeleteMatch() {
 
         <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}}  dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
-        <Button isDisabled={!matchId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete match</Button>
+        <ConfirmationButton isDisabled={!matchId} onClick={onOpen}>Delete match</ConfirmationButton>
 
         <ConfirmationModal isOpen={isOpen} onClose={onClose} body={`Do you really want to delete the match ${firstTeamName} vs ${secondTeamName}`} confirmFunction={deleteMatch} />
       </Stack>

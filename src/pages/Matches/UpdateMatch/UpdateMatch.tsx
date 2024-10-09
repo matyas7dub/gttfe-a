@@ -1,6 +1,7 @@
-import { Button, Stack, useToast } from "@chakra-ui/react";
+import { Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import TeamResultInput from "../TeamResultInput";
@@ -31,7 +32,7 @@ export default function UpdateMatch() {
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}
           secondTeamId={secondTeamId} setSecondTeamId={setSecondTeamId} secondTeamResult={secondTeamResult} setSecondTeamResult={setSecondTeamResult} />
 
-        <Button isDisabled={!matchId} onClick={updateMatch} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update match</Button>
+        <ConfirmationButton isDisabled={!matchId} onClick={updateMatch}>Update match</ConfirmationButton>
 
       </Stack>
     </div>

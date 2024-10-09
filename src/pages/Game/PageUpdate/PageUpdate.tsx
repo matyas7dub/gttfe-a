@@ -1,9 +1,10 @@
 import Breadcrumbs from '../../../components/Breadcrumbs/Breadcrumbs';
-import { Stack, Button, useToast } from '@chakra-ui/react';
+import { Stack, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import MDEditor from '@uiw/react-md-editor';
 import DataPicker, { dataType } from '../../../components/DataPicker/DataPicker';
 import { fetchGracefully } from '../../../components/Navbar/Login/LoginScript';
+import ConfirmationButton from '../../../components/ConfirmationButton/ConfirmationButton';
 
 export default function PageUpdate() {
   const [page, setPage] = useState("");
@@ -19,7 +20,7 @@ export default function PageUpdate() {
       <Stack direction="column" spacing="3rem" className="Form">
         <DataPicker dataType={dataType.game} isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />
-        <Button onClick={uploadGamePage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update page</Button>
+        <ConfirmationButton onClick={uploadGamePage}>Update page</ConfirmationButton>
       </Stack>
     </div>
   );
