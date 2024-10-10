@@ -27,6 +27,7 @@ export enum dataType {
   match,
   teams,
   assignedRoles,
+  file,
 }
 
 export default function DataPicker(props: DataPickerProps) {
@@ -41,6 +42,7 @@ export default function DataPicker(props: DataPickerProps) {
   useEffect(() => {
     let location = "";
     let invalid = false;
+    let headersRequired = false;
 
 
 
@@ -97,10 +99,27 @@ export default function DataPicker(props: DataPickerProps) {
         setPlaceholder("Select a role");
         setErrorMessage("You must select a role!");
         break;
+      case dataType.file:
+        location = '/backend/file/list';
+        setFormLabel("File");
+        setPlaceholder("Select a file");
+        setErrorMessage("You must select a file!");
+        headersRequired = true;
+        break;
     }
 
     if (!invalid && !props.isDisabled) {
-      fetch(process.env.REACT_APP_BACKEND_URL + location)
+      const headers = new Headers();
+      headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
+      headers.append("Content-Type", "application/json");
+
+      const options = {};
+
+      if(headersRequired) {
+        Object.assign(options, { headers: headers });
+      }
+
+      fetch(process.env.REACT_APP_BACKEND_URL + location, options)
       .then(response => response.json())
       .then(data => {
         switch (props.dataType) {
@@ -159,6 +178,16 @@ export default function DataPicker(props: DataPickerProps) {
               );
             }
             setOptionElems(roleElems);
+            break;
+          case dataType.file:
+            console.debug(data);
+            let fileElems: JSX.Element[] = [];
+            for (let file of data) {
+              fileElems.push(
+                <option key={file.address} value={file.address}>{file.fileName}</option>
+              );
+            }
+            setOptionElems(fileElems);
             break;
         }
       })
