@@ -3,6 +3,7 @@ import Home from './pages/Home/Home';
 import Game from './pages/Game/Game';
 import PageUpdate from './pages/Game/PageUpdate/PageUpdate';
 import UpdateGame from './pages/Game/UpdateGame/UpdateGame';
+import CreateGame from './pages/Game/CreateGame/CreateGame';
 import Role from './pages/Role/Role';
 import AddToUser from './pages/Role/AddToUser/AddToUser';
 import './App.scss';
@@ -34,6 +35,7 @@ function App() {
       <Route path="/game" element={<Game />} />
       <Route path="/game/page-update" element={<PageUpdate />} />
       <Route path="/game/update" element={<UpdateGame/>} />
+      <Route path="/game/create" element={<CreateGame />} />
       <Route path="/role" element={<Role />} />
       <Route path="/role/add-to-user" element={<AddToUser />} />
       <Route path="/events" element={<Events />} />
