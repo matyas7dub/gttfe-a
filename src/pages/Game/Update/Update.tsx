@@ -1,8 +1,9 @@
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 
 export default function Update() {
   const horizontalFormSpacing = "2rem";
@@ -146,7 +147,7 @@ export default function Update() {
           </FormControl>
         </Stack>
 
-        <Button isDisabled={gameId == null} onClick={updateGame} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update game</Button>
+        <ConfirmationButton isDisabled={gameId == null} onClick={updateGame}>Update game</ConfirmationButton> 
 
       </Stack>
     </div>
@@ -170,9 +171,7 @@ export default function Update() {
 
     setGameId(Number(newGameId));
     setGameErr(false);
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/game/${newGameId}/`)
-    )
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/game/${newGameId}/`)
     .then(response => response.json())
     .then(data => {
 
@@ -296,7 +295,7 @@ export default function Update() {
       Object.assign(body, { maxTeams: maxTeams });
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + '/backend/game/all/'),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + '/backend/game/all/',
     "PUT", JSON.stringify(body), headers, "Game updated successfully", toast);
   }
 }

@@ -1,6 +1,7 @@
-import { Button, Stack, useToast } from "@chakra-ui/react";
+import { Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import TeamResultInput from "../TeamResultInput";
@@ -31,7 +32,7 @@ export default function UpdateMatch() {
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}
           secondTeamId={secondTeamId} setSecondTeamId={setSecondTeamId} secondTeamResult={secondTeamResult} setSecondTeamResult={setSecondTeamResult} />
 
-        <Button isDisabled={!matchId} onClick={updateMatch} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Update match</Button>
+        <ConfirmationButton isDisabled={!matchId} onClick={updateMatch}>Update match</ConfirmationButton>
 
       </Stack>
     </div>
@@ -40,9 +41,7 @@ export default function UpdateMatch() {
   function selectStage(newStageId: number) {
     setStageId(newStageId);
     if (!eventId) {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${newStageId}/`),
-      )
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
       .catch(error => console.error("Error", error));
@@ -52,9 +51,7 @@ export default function UpdateMatch() {
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
     if (!stageId) {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${newMatchId}/`),
-      )
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/match/${newMatchId}/`)
       .then(response => response.json())
       .then(data => {
         setStageId(Number(data.stageId))
@@ -81,7 +78,7 @@ export default function UpdateMatch() {
       secondTeamResult: secondTeamResult
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${matchId}/`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/match/${matchId}/`,
       "PUT", JSON.stringify(body), headers, "Match updated successfully", toast);
   }
 }

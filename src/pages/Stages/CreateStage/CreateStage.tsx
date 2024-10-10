@@ -1,7 +1,8 @@
 import { QuestionIcon } from "@chakra-ui/icons";
-import { Button, FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Tooltip, useToast } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Tooltip, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 
@@ -38,8 +39,7 @@ export default function CreateStage() {
           </FormControl>
         </Stack>
 
-        <Button isDisabled={eventId == null || stageName === "" || stageIndex == null} onClick={createStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create stage</Button>
-
+        <ConfirmationButton isDisabled={eventId == null || stageName === "" || stageIndex == null} onClick={createStage}>Create stage</ConfirmationButton>
       </Stack>
     </div>
   )
@@ -56,7 +56,7 @@ export default function CreateStage() {
       stageIndex: stageIndex
     }
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/create`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/stage/create`,
     "POST", JSON.stringify(body), headers, "Stage created successfully", toast);
   }
 }

@@ -39,7 +39,6 @@ export default function DataPicker(props: DataPickerProps) {
 
 
   useEffect(() => {
-    const url = process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL;
     let location = "";
     let invalid = false;
 
@@ -101,7 +100,7 @@ export default function DataPicker(props: DataPickerProps) {
     }
 
     if (!invalid && !props.isDisabled) {
-      fetch(url + location)
+      fetch(process.env.REACT_APP_BACKEND_URL + location)
       .then(response => response.json())
       .then(data => {
         switch (props.dataType) {

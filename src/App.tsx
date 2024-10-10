@@ -21,6 +21,10 @@ import DeleteMatch from './pages/Matches/DeleteMatch/DeleteMatch';
 import Matches from './pages/Matches/Matches';
 import AutofillEvent from './pages/Events/AutofillEvent/AutofillEvent';
 import AutofillStage from './pages/Stages/AutofillStage/AutofillStage';
+import File from './pages/File/File';
+import Upload from './pages/File/Upload/Upload';
+import List from './pages/File/List/List';
+
 import { loginPathRelative } from './config/config';
 
 function App() {
@@ -46,6 +50,9 @@ function App() {
       <Route path="/matches/create" element={<CreateMatch />} />
       <Route path="/matches/update" element={<UpdateMatch />} />
       <Route path="/matches/delete" element={<DeleteMatch />} />
+      <Route path="/file" element={<File />} />
+      <Route path="/file/upload" element={<Upload />} />
+      <Route path="/file/list" element={<List />} />
       <Route path={`${loginPathRelative}`} element={<LoginScript />} />
     </Routes>
   )

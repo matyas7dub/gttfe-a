@@ -9,6 +9,7 @@ import { GameContent } from '../Game/Game';
 import { EventsContent } from '../Events/Events';
 import { StagesContent } from '../Stages/Stages';
 import { MatchesContent } from '../Matches/Matches';
+import { FileContent } from '../File/File';
 
 function Home() {
   return (
@@ -31,6 +32,10 @@ function Home() {
 
       <ChakraLink as={RouterLink} to="matches"><Heading className={'Heading'}>Matches</Heading></ChakraLink>
       <MatchesContent />
+      <Divider className={'Divider'} />
+
+      <ChakraLink as={RouterLink} to="file"><Heading className={'Heading'}>File</Heading></ChakraLink>
+      <FileContent />
       <Divider className={'Divider'} />
     </div>
   );

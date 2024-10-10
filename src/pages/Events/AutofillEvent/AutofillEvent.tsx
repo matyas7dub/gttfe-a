@@ -1,6 +1,7 @@
-import { Alert, AlertIcon, AlertTitle, Button, CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
+import { Alert, AlertIcon, AlertTitle, CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 
 export default function AutofillEvent() {
@@ -28,22 +29,18 @@ export default function AutofillEvent() {
           <Input onChange={event => setStageName(event.target.value)}/>
         </FormControl>
 
-        <Button isDisabled={stageName === "" || createdStage} onClick={createStage} fontSize="2rem" colorScheme="GttOrange" width="fit-content" padding="1em">Create stage and matches</Button>
+        <ConfirmationButton isDisabled={stageName === "" || createdStage} onClick={createStage}>Create stage and matches</ConfirmationButton>
       </Stack>
     </div>
   )
 
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
-    fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/event/${newEventId}/`)
-    )
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${newEventId}/`)
     .then(response => response.json())
     .then(event => {
-      fetch(
-        // This returns the players, not the teams for some reason
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/team/list/participating/${event.gameId}/false/`)
-      )
+      // This returns the players, not the teams for some reason
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/team/list/participating/${event.gameId}/false/`)
       .then(response => response.json())
       .then(data => {
         let ids: number[] = [];
@@ -61,8 +58,7 @@ export default function AutofillEvent() {
 
   function createStage() {
     setCreatedStage(true);
-    fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/stage/create"),
+    fetch(process.env.REACT_APP_BACKEND_URL + "/backend/stage/create",
       {
         method: "POST",
         body: JSON.stringify({
@@ -109,8 +105,7 @@ export function autofillMatches(stageId: number, teamIds: number[], toast: Creat
     }
 
     for (let match = 0; match < matches.length; match++) {
-      fetch(
-        ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + "/backend/match/create/"),
+      fetch(process.env.REACT_APP_BACKEND_URL + "/backend/match/create/",
         {
           method: "POST",
           body: JSON.stringify({

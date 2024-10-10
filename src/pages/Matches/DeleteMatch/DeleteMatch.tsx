@@ -1,6 +1,7 @@
-import { Button, Stack, useDisclosure, useToast } from "@chakra-ui/react";
+import { Stack, useDisclosure, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
+import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
@@ -26,7 +27,7 @@ export default function DeleteMatch() {
 
         <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}}  dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
-        <Button isDisabled={!matchId} onClick={onOpen} fontSize="2rem" colorScheme="red" width="fit-content" padding="1em">Delete match</Button>
+        <ConfirmationButton isDisabled={!matchId} onClick={onOpen}>Delete match</ConfirmationButton>
 
         <ConfirmationModal isOpen={isOpen} onClose={onClose} body={`Do you really want to delete the match ${firstTeamName} vs ${secondTeamName}`} confirmFunction={deleteMatch} />
       </Stack>
@@ -36,9 +37,7 @@ export default function DeleteMatch() {
   function selectStage(newStageId: number) {
     setStageId(newStageId);
     if (!eventId) {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/stage/${newStageId}/`),
-      )
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
       .catch(error => console.error("Error", error));
@@ -48,9 +47,7 @@ export default function DeleteMatch() {
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
     if (!stageId) {
-      fetch(
-      ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${newMatchId}/`),
-      )
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/match/${newMatchId}/`)
       .then(response => response.json())
       .then(data => {
         setStageId(Number(data.stageId));
@@ -62,9 +59,7 @@ export default function DeleteMatch() {
   }
 
   function getTeamName(teamId: number): string {
-    fetch(
-    ((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/team/id/${teamId}/`),
-    )
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/team/id/${teamId}/`)
     .then(response => response.json())
     .then(data => {
       return data.name
@@ -78,7 +73,7 @@ export default function DeleteMatch() {
       ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
     ];
 
-    fetchGracefully(((process.env.REACT_APP_PROD === 'yes' ? 'https://gttournament.cz' : process.env.REACT_APP_BACKEND_URL) + `/backend/match/${matchId}/`),
+    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/match/${matchId}/`,
     "DELETE", null, headers, "Match deleted successfully", toast);
   }
 }
