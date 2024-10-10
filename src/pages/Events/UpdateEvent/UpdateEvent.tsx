@@ -60,8 +60,10 @@ export default function UpdateEvent() {
     fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${newEventId}/`)
     .then(response => response.json())
     .then(data => {
-      setStart(`${data.date} ${data.beginTime}`);
-      setEnd(data.endTime);
+      const beginTimeTruncated = String(data.beginTime).substring(0, 5);
+      const endTimeTruncated = String(data.endTime).substring(0, 5);
+      setStart(`${data.date} ${beginTimeTruncated}`);
+      setEnd(endTimeTruncated);
       setDescription(data.description);
       setEventType(data.eventType);
       setGameId(data.gameId);
