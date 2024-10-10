@@ -36,7 +36,7 @@ export default function Upload() {
           <Input type="file" onChange={(event) => setFile(event.target.files !== null?event.target.files[0]: null)}/>
         </FormControl>
 
-        <ConfirmationButton onClick={uploadFile}>Upload file</ConfirmationButton>        
+        <ConfirmationButton isDisabled={fileName === ""} onClick={uploadFile}>Upload file</ConfirmationButton>        
 
       </Stack>
     </div>
