@@ -20,8 +20,9 @@ export function GameContent() {
   return (
     <div>
       <div className={'LinkList'}>
-        <ChakraLink as={RouterLink} to={`${url}page-update`}>Game page update<LinkIcon /></ChakraLink>
+        <ChakraLink as={RouterLink} to={`${url}create`}>Create a game<LinkIcon /></ChakraLink>
         <ChakraLink as={RouterLink} to={`${url}update`}>Update a game<LinkIcon /></ChakraLink>
+        <ChakraLink as={RouterLink} to={`${url}page-update`}>Update a game page<LinkIcon /></ChakraLink>
       </div>
     </div>
   )
