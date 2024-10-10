@@ -5,7 +5,7 @@ import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 
-export default function Update() {
+export default function UpdateGame() {
   const horizontalFormSpacing = "2rem";
   const inputToggleMargin = "0.5rem";
 
