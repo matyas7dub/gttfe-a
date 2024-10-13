@@ -14,9 +14,9 @@ export default function List() {
 
   const toast = useToast();
 
-  async function deleteFile (filename: string){
+  async function deleteFile (fileName: string){
     await fetchGracefully(
-      process.env.REACT_APP_BACKEND_URL + "/backend/file/" + filename,
+      process.env.REACT_APP_BACKEND_URL + `/backend/file/${fileName}`,
       'DELETE',
       null,
       [

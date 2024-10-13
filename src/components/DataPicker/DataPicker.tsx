@@ -94,7 +94,7 @@ export default function DataPicker(props: DataPickerProps) {
         }
         break;
       case dataType.assignedRoles:
-        location = '/backend/assignedRole/listAll';
+        location = '/backend/assignedRole/listAll/';
         setFormLabel("Role");
         setPlaceholder("Select a role");
         setErrorMessage("You must select a role!");
