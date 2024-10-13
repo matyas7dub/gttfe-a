@@ -33,7 +33,10 @@ export default function Login() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validLoginState]);
 
-  useEffect(() => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => afterLogin, [])
+
+  function afterLogin() {
     const validLogin = validJws();
     setValidLoginState(validLogin);
 
@@ -41,8 +44,7 @@ export default function Login() {
       setAvatarUrl(getAvatarFromUserObject());
       setAvatarKey(avatarKey + 1);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }
 
   function validJws() {
     if (localStorage.getItem("jws")) {
@@ -89,7 +91,7 @@ export default function Login() {
               {` ${new Date((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000).toLocaleTimeString()}`}
               <Center><Button onClick={logout}>Logout</Button></Center>
             </div> :
-            <Center><a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a></Center>
+            <Center><Button onClick={login}>Discord redirect <ExternalLinkIcon /></Button></Center>
             }
             </Center>
           </PopoverBody>
@@ -104,6 +106,18 @@ export default function Login() {
     setValidLoginState(false);
     setAvatarUrl("");
     setAvatarKey(avatarKey + 1);
+  }
+
+  function login() {
+    window.open(authUrl, "_blank");
+
+    const currentJws = localStorage.getItem("jws");
+    const interval = setInterval(() => {
+      if (currentJws !== localStorage.getItem("jws")) {
+        clearInterval(interval);
+        afterLogin();
+      }
+    }, 1000);
   }
 }
 
