@@ -13,13 +13,11 @@ export default function LoginScript() {
     "code": code,
     "state": state,
     "redirectUri": window.location.origin + loginPath,
-    "school_id": 1
   };
 
   const toast = useToast();
 
   useEffect(() => {
-    console.error("REMOVE THE SCHOOL ID THING AT LINE 14 IN LOGIN SCRIPT!!!");
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
     fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/token',

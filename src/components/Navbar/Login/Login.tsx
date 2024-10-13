@@ -15,69 +15,81 @@ import {
   Tooltip,
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons'
-import { useNavigate } from 'react-router-dom';
 import { loginPath } from '../../../config/config';
 
 export default function Login() {
-  let isLogged = localStorage.getItem("jws") != null;
-  const fallbackObject = JSON.stringify({id: "", avatar: ""});
-  const [avatarUrl, setAvatarUrl] = useState(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`); 
-  const [authUrl, setAuthUrl] = useState('');
-  const [validLogin, setValidLogin] = useState(true);
-  const navigate = useNavigate();
-
-  const expirationWarning = (
-    <a href={authUrl}>
-      <Tooltip label="Your login expired. Click to relogin.">
-        <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
-      </Tooltip>
-    </a>
-  );
+  const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("userObject") ? getAvatarFromUserObject() : "");
+  const [avatarKey, setAvatarKey] = useState(0);
+  const [authUrl, setAuthUrl] = useState("");
+  const [validLoginState, setValidLoginState] = useState(true);
 
   useEffect(() => {
-    if (!isLogged || !validLogin) {
+    if (!validLoginState) {
       fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/auth')
       .then(response => response.json())
       .then(url => setAuthUrl(url.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`))
       .catch(error => console.error('Error:', error));
-    } else if (avatarUrl === "https://cdn.discordapp.com/avatars//.png") {
-      setAvatarUrl(`https://cdn.discordapp.com/avatars/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).id}/${JSON.parse(localStorage.getItem("userObject")?? fallbackObject).avatar}.png`)
-    };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogged, validLogin]);
+  }, [validLoginState]);
 
   useEffect(() => {
-    setInterval(() => {
-      if(!isLogged || (jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
-        setValidLogin(false);
-      } else {
-        setValidLogin(true);
-      }
-    }, 5000);
+    const validLogin = validJws();
+    setValidLoginState(validLogin);
+
+    if (avatarUrl.length === 0) {
+      setAvatarUrl(getAvatarFromUserObject());
+      setAvatarKey(avatarKey + 1);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
+
+  function validJws() {
+    if (localStorage.getItem("jws")) {
+      const remainingTime = remainingJwsTime(localStorage.getItem("jws") as string);
+      if (remainingTime > 0) {
+        setTimeout(() => {setValidLoginState(validJws())}, remainingTime);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function remainingJwsTime(jws: string) {
+    const expirationTime = (jose.decodeJwt(jws).exp?? 0) * 1000;
+    return expirationTime - Date.now();
+  }
+
+  function getAvatarFromUserObject() {
+    const userObject = localStorage.getItem("userObject");
+    if (userObject) {
+      const userJsonObject = JSON.parse(userObject);
+      return `https://cdn.discordapp.com/avatars/${userJsonObject.id}/${userJsonObject.avatar}.png`;
+    }
+    return "";
+  }
 
   return(
     <Stack direction="row" align="center">
-      {!validLogin && isLogged ? expirationWarning : null}
+      <ExpirationWarning authUrl={authUrl} validLogin={validLoginState} />
       <Popover>
         <PopoverTrigger>
-          <Avatar key={avatarUrl} name={JSON.parse(localStorage.getItem("userObject")?? "{}").username}
-            src={localStorage.getItem("userObject") != null && avatarUrl !== "https://cdn.discordapp.com/avatars//.png" ? avatarUrl : ''} />
+          <Avatar key={avatarKey} src={avatarUrl}
+          name={localStorage.getItem("userObject") ? JSON.parse(localStorage.getItem("userObject") as string).username : undefined} />
         </PopoverTrigger>
         <PopoverContent>
           <PopoverArrow />
           <PopoverCloseButton />
-          <PopoverHeader>{ isLogged ? 'Logout' : 'Login' }</PopoverHeader>
+          <PopoverHeader>{ localStorage.getItem("jws") ? 'Logout' : 'Login' }</PopoverHeader>
           <PopoverBody>
             <Center>
-            {isLogged ? 
+            {localStorage.getItem("jws") ? 
             <div>
-              Your token expires at
+              Your login expires at
               {` ${new Date((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000).toLocaleTimeString()}`}
-              <Button onClick={logout} >Logout</Button>
+              <Center><Button onClick={logout}>Logout</Button></Center>
             </div> :
-            <a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a>
+            <Center><a href={authUrl}><Button>Discord redirect <ExternalLinkIcon /></Button></a></Center>
             }
             </Center>
           </PopoverBody>
@@ -89,8 +101,29 @@ export default function Login() {
   function logout() {
     localStorage.removeItem("jws");
     localStorage.removeItem("userObject");
-    // localStorage.removeItem("jwsTtl");
+    setValidLoginState(false);
     setAvatarUrl("");
-    navigate("/");
+    setAvatarKey(avatarKey + 1);
   }
+}
+
+type expirationWarningProps = {
+  authUrl: string,
+  validLogin: boolean
+}
+
+function ExpirationWarning(props: expirationWarningProps) {
+  const warning = (
+    <a href={props.authUrl}>
+      <Tooltip label="Your login expired. Click to relogin.">
+        <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
+      </Tooltip>
+    </a>
+  );
+
+  return (
+    <>
+      {!props.validLogin && localStorage.getItem("jws") ? warning : ""}
+    </>
+  );
 }
