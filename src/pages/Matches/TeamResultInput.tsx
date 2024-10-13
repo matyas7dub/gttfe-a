@@ -22,7 +22,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
 
   useEffect(() => {
     if (props.stageId) {
-      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${props.stageId}`)
+      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${props.stageId}/`)
       .then(response => response.json())
       .then(data => gameIdFromEvent(data.eventId))
       .catch(error => console.error("Error", error));
@@ -30,7 +30,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   }, [props.stageId])
 
   function gameIdFromEvent(eventId: number) {
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${eventId}`)
+    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${eventId}/`)
     .then(response => response.json())
     .then(data => setGameId(data.gameId))
     .catch(error => console.error("Error", error));
