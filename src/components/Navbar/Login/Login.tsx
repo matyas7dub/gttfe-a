@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
 import * as jose from 'jose';
 import {
   Popover,
@@ -27,6 +27,8 @@ export default function Login() {
   const [roleBadges, setRoleBadges] = useState<JSX.Element[]>();
 
   const toast = useToast();
+
+  const focusRef = createRef<HTMLButtonElement>();
 
   useEffect(() => {
     if (!validLoginState) {
@@ -97,14 +99,14 @@ export default function Login() {
   return(
     <Stack direction="row" align="center">
       <ExpirationWarning authUrl={authUrl} validLogin={validLoginState} />
-      <Popover>
+      <Popover initialFocusRef={focusRef}>
         <PopoverTrigger>
           <Avatar key={avatarKey} src={avatarUrl}
           name={localStorage.getItem("userObject") ? JSON.parse(localStorage.getItem("userObject") as string).username : undefined} />
         </PopoverTrigger>
         <PopoverContent>
           <PopoverArrow />
-          <PopoverCloseButton />
+          <PopoverCloseButton  ref={focusRef}/>
           <PopoverHeader>{ localStorage.getItem("jws") ? 'Logout' : 'Login' }</PopoverHeader>
           <PopoverBody>
             {localStorage.getItem("jws") ? 
