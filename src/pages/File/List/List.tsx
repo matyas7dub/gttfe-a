@@ -3,6 +3,7 @@ import { DeleteIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 interface ListAPI {
   fileName: string,
@@ -16,7 +17,7 @@ export default function List() {
 
   async function deleteFile (fileName: string){
     await fetchGracefully(
-      process.env.REACT_APP_BACKEND_URL + `/backend/file/${fileName}`,
+      backendUrl + `/backend/file/${fileName}`,
       'DELETE',
       null,
       [
@@ -28,7 +29,7 @@ export default function List() {
 
   async function listFiles() {
     let result = await fetchGracefully(
-      process.env.REACT_APP_BACKEND_URL + "/backend/file/list",
+      backendUrl + "/backend/file/list",
       'GET',
       null,
       [

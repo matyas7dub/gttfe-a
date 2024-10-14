@@ -1,6 +1,7 @@
 import { FormControl, FormErrorMessage, FormLabel } from "@chakra-ui/form-control";
 import { Select } from "@chakra-ui/select";
 import { ChangeEventHandler, useState, useEffect } from "react";
+import { backendUrl } from "../../config/config";
 
 type DataPickerProps = {
   dataType: dataType,
@@ -119,7 +120,7 @@ export default function DataPicker(props: DataPickerProps) {
         Object.assign(options, { headers: headers });
       }
 
-      fetch(process.env.REACT_APP_BACKEND_URL + location, options)
+      fetch(backendUrl + location, options)
       .then(response => response.json())
       .then(data => {
         switch (props.dataType) {

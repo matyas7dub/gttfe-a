@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function AddToUser() {
   const [pfpUrl, setPfpUrl] = useState("");
@@ -45,7 +46,7 @@ export default function AddToUser() {
     }
     setUserId(id);
 
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/user/${id}/`,
+    fetch(backendUrl + `/backend/user/${id}/`,
       {
         method: "GET",
         headers: {
@@ -79,7 +80,7 @@ export default function AddToUser() {
       userId: userId
     }
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/userRole/create`,
+    fetchGracefully(backendUrl + `/backend/userRole/create`,
     "POST", JSON.stringify(body), headers, "Role added successfully", toast);
   }
 }

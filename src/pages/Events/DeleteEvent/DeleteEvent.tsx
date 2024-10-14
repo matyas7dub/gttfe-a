@@ -5,6 +5,7 @@ import ConfirmationButton from "../../../components/ConfirmationButton/Confirmat
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function DeleteEvent() {
   const [eventId, setEventId] = useState(-1);
@@ -30,7 +31,7 @@ export default function DeleteEvent() {
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
 
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${newEventId}/`)
+    fetch(backendUrl + `/backend/event/${newEventId}/`)
     .then(response => response.json())
     .then(data => {
       setEventName(data.description);
@@ -43,7 +44,7 @@ export default function DeleteEvent() {
       ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
     ];
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/event/${eventId}/`,
+    fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     "DELETE", null, headers, "Event deleted successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);

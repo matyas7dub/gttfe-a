@@ -2,7 +2,7 @@ import { Center, CreateToastFnReturn, Spinner, useToast } from "@chakra-ui/react
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom"
 import * as jose from 'jose';
-import { loginPath } from "../../../config/config";
+import { backendUrl, loginPath } from "../../../config/config";
 
 export default function LoginScript() {
   let searchParams = useSearchParams();
@@ -19,7 +19,7 @@ export default function LoginScript() {
   useEffect(() => {
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
-    fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/token',
+    fetch(backendUrl + '/backend/discord/token',
     {
       method: "POST",
       headers: jsonHeader,
@@ -60,7 +60,7 @@ export function fetchGracefully(url: string, method: string, body: string | null
 
   if (!localStorage.getItem("jws") || (jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
 
-    fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/auth')
+    fetch(backendUrl + '/backend/discord/auth')
     .then(response => response.json())
     .then(authUrl => window.open(authUrl.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`, "_blank"))
     .then(() => {

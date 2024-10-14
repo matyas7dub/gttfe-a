@@ -5,6 +5,7 @@ import ConfirmationButton from "../../../components/ConfirmationButton/Confirmat
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function DeleteStage() {
   const [eventId, setEventId] = useState<Number>();
@@ -33,7 +34,7 @@ export default function DeleteStage() {
   function selectStage(newStageId: Number) {
     setStageId(newStageId);
 
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
+    fetch(backendUrl + `/backend/stage/${newStageId}/`)
     .then(response => response.json())
     .then(data => {
       setStageName(data.stageName);
@@ -45,7 +46,7 @@ export default function DeleteStage() {
       ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
     ];
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${stageId}/`,
+    fetchGracefully(backendUrl + `/backend/stage/${stageId}/`,
     "DELETE", null, headers, "Stage deleted successfully", toast);
   }
 }

@@ -5,6 +5,7 @@ import MDEditor from '@uiw/react-md-editor';
 import DataPicker, { dataType } from '../../../components/DataPicker/DataPicker';
 import { fetchGracefully } from '../../../components/Navbar/Login/LoginScript';
 import ConfirmationButton from '../../../components/ConfirmationButton/ConfirmationButton';
+import { backendUrl } from '../../../config/config';
 
 export default function PageUpdate() {
   const [page, setPage] = useState("");
@@ -35,7 +36,7 @@ export default function PageUpdate() {
 
     setSelectorError(false);
 
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/game/${newGameId}/page/`)
+    fetch(backendUrl + `/backend/game/${newGameId}/page/`)
     .then(response => response.json())
     .then(data => setPage(data.gamePage))
     .catch(error => console.error('Error:', error));
@@ -64,7 +65,7 @@ export default function PageUpdate() {
       gamePage: page
     }
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/game/${gameId}/page/`,
+    fetchGracefully(backendUrl + `/backend/game/${gameId}/page/`,
     "PUT", JSON.stringify(body), headers, "Page updated successfully", toast);
   }
 }

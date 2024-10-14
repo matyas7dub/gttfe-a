@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function CreateGame() {
   const horizontalFormSpacing = "2rem";
@@ -74,7 +75,7 @@ export default function CreateGame() {
       icon: icon
     }
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + "/backend/game/create",
+    fetchGracefully(backendUrl + "/backend/game/create",
     "POST", JSON.stringify(body), headers, "Game created successfully", toast);
   }
 }

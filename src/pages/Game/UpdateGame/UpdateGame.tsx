@@ -4,6 +4,7 @@ import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker"
 import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
+import { backendUrl } from "../../../config/config";
 
 export default function UpdateGame() {
   const horizontalFormSpacing = "2rem";
@@ -68,7 +69,7 @@ export default function UpdateGame() {
 
     setGameId(Number(newGameId));
     setGameErr(false);
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/game/${newGameId}/`)
+    fetch(backendUrl + `/backend/game/${newGameId}/`)
     .then(response => response.json())
     .then(data => {
 
@@ -120,7 +121,7 @@ export default function UpdateGame() {
       icon: icon
     };
     
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/game/${gameId}/`,
+    fetchGracefully(backendUrl + `/backend/game/${gameId}/`,
     "PUT", JSON.stringify(body), headers, "Game updated successfully", toast);
   }
 }
