@@ -36,7 +36,7 @@ const theme = extendTheme({
     }
   },
   fonts: {
-    body: "Montserrat ExtraBold",
+    body: '"Montserrat ExtraBold", sans-serif',
     heading: "Montserrat ExtraBold"
   },
   components: {
