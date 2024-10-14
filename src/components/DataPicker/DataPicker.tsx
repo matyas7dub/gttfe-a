@@ -8,7 +8,7 @@ type DataPickerProps = {
   isInvalid?: boolean,
   placeholder?: string,
   title?: string,
-  value?: number,
+  value?: number | string,
   isDisabled?: boolean,
   options?: DataPickerOptions
 }
