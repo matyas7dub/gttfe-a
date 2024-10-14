@@ -5,6 +5,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function UpdateStage() {
   const [eventId, setEventId] = useState<Number>();
@@ -47,7 +48,7 @@ export default function UpdateStage() {
   function selectStage(newStageId: Number) {
     setStageId(newStageId);
 
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
+    fetch(backendUrl + `/backend/stage/${newStageId}/`)
     .then(response => response.json())
     .then(data => {
       setEventId(data.eventId);
@@ -69,7 +70,7 @@ export default function UpdateStage() {
       stageIndex: stageIndex
     }
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${stageId}/`,
+    fetchGracefully(backendUrl + `/backend/stage/${stageId}/`,
     "PUT", JSON.stringify(body), headers, "Stage updated successfully", toast);
   }
 }

@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function UpdateEvent() {
   const horizontalFormSpacing = "2rem";
@@ -57,7 +58,7 @@ export default function UpdateEvent() {
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
 
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${newEventId}/`)
+    fetch(backendUrl + `/backend/event/${newEventId}/`)
     .then(response => response.json())
     .then(data => {
       const beginTimeTruncated = String(data.beginTime).substring(0, 5);
@@ -96,7 +97,7 @@ export default function UpdateEvent() {
       eventType: eventType
     }
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/event/${eventId}/`,
+    fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     "PUT", JSON.stringify(body), headers, "Event updated successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);

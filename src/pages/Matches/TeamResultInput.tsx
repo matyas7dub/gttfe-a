@@ -1,6 +1,7 @@
 import { Divider, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import DataPicker, { dataType } from "../../components/DataPicker/DataPicker";
+import { backendUrl } from "../../config/config";
 
 type TeamResultInputProps = {
   stageId: number | undefined,
@@ -22,7 +23,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
 
   useEffect(() => {
     if (props.stageId) {
-      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${props.stageId}/`)
+      fetch(backendUrl + `/backend/stage/${props.stageId}/`)
       .then(response => response.json())
       .then(data => gameIdFromEvent(data.eventId))
       .catch(error => console.error("Error", error));
@@ -30,7 +31,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   }, [props.stageId])
 
   function gameIdFromEvent(eventId: number) {
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${eventId}/`)
+    fetch(backendUrl + `/backend/event/${eventId}/`)
     .then(response => response.json())
     .then(data => setGameId(data.gameId))
     .catch(error => console.error("Error", error));

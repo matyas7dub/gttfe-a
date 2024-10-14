@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function Upload() {
   const [fileName, setFileName] = useState<String>("");
@@ -15,7 +16,7 @@ export default function Upload() {
       return;
     }
     await fetchGracefully(
-      process.env.REACT_APP_BACKEND_URL + `/backend/file/${fileName}`,
+      backendUrl + `/backend/file/${fileName}`,
       'PUT',
       file,
       [

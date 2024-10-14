@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons'
-import { loginPath } from '../../../config/config';
+import { backendUrl, loginPath } from '../../../config/config';
 
 export default function Login() {
   const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("userObject") ? getAvatarFromUserObject() : "");
@@ -25,7 +25,7 @@ export default function Login() {
 
   useEffect(() => {
     if (!validLoginState) {
-      fetch(process.env.REACT_APP_BACKEND_URL + '/backend/discord/auth')
+      fetch(backendUrl + '/backend/discord/auth')
       .then(response => response.json())
       .then(url => setAuthUrl(url.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`))
       .catch(error => console.error('Error:', error));

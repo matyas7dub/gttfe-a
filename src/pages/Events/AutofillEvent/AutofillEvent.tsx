@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import { backendUrl } from "../../../config/config";
 
 export default function AutofillEvent() {
   const [eventId, setEventId] = useState<number>();
@@ -36,11 +37,11 @@ export default function AutofillEvent() {
 
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${newEventId}/`)
+    fetch(backendUrl + `/backend/event/${newEventId}/`)
     .then(response => response.json())
     .then(event => {
       // This returns the players, not the teams for some reason
-      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/team/list/participating/${event.gameId}/false/`)
+      fetch(backendUrl + `/backend/team/list/participating/${event.gameId}/false/`)
       .then(response => response.json())
       .then(data => {
         let ids: number[] = [];
@@ -58,7 +59,7 @@ export default function AutofillEvent() {
 
   function createStage() {
     setCreatedStage(true);
-    fetch(process.env.REACT_APP_BACKEND_URL + "/backend/stage/create",
+    fetch(backendUrl + "/backend/stage/create",
       {
         method: "POST",
         body: JSON.stringify({
@@ -105,7 +106,7 @@ export function autofillMatches(stageId: number, teamIds: number[], toast: Creat
     }
 
     for (let match = 0; match < matches.length; match++) {
-      fetch(process.env.REACT_APP_BACKEND_URL + "/backend/match/create/",
+      fetch(backendUrl + "/backend/match/create/",
         {
           method: "POST",
           body: JSON.stringify({

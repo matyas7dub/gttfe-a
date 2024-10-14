@@ -5,6 +5,7 @@ import ConfirmationButton from "../../../components/ConfirmationButton/Confirmat
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function DeleteMatch() {
   const [eventId, setEventId] = useState<number>();
@@ -37,7 +38,7 @@ export default function DeleteMatch() {
   function selectStage(newStageId: number) {
     setStageId(newStageId);
     if (!eventId) {
-      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/stage/${newStageId}/`)
+      fetch(backendUrl + `/backend/stage/${newStageId}/`)
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
       .catch(error => console.error("Error", error));
@@ -47,7 +48,7 @@ export default function DeleteMatch() {
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
     if (!stageId) {
-      fetch(process.env.REACT_APP_BACKEND_URL + `/backend/match/${newMatchId}/`)
+      fetch(backendUrl + `/backend/match/${newMatchId}/`)
       .then(response => response.json())
       .then(data => {
         setStageId(Number(data.stageId));
@@ -59,7 +60,7 @@ export default function DeleteMatch() {
   }
 
   function getTeamName(teamId: number): string {
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/team/id/${teamId}/`)
+    fetch(backendUrl + `/backend/team/id/${teamId}/`)
     .then(response => response.json())
     .then(data => {
       return data.name
@@ -73,7 +74,7 @@ export default function DeleteMatch() {
       ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
     ];
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/match/${matchId}/`,
+    fetchGracefully(backendUrl + `/backend/match/${matchId}/`,
     "DELETE", null, headers, "Match deleted successfully", toast);
   }
 }

@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
+import { backendUrl } from "../../../config/config";
 
 export default function CreateEvent() {
   const horizontalFormSpacing = "2rem";
@@ -124,7 +125,7 @@ export default function CreateEvent() {
       eventType: eventType
     }
 
-    fetchGracefully(process.env.REACT_APP_BACKEND_URL + "/backend/event/create",
+    fetchGracefully(backendUrl + "/backend/event/create",
     "POST", JSON.stringify(body), headers, "Event created successfully", toast);
   }
 }

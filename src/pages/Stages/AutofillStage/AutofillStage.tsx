@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import { backendUrl } from "../../../config/config";
 
 /*
 This is not done yet:
@@ -49,7 +50,7 @@ export default function AutofillStage() {
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
     const previousStages: [number, number][] = []; // array of [id, index]
-    fetch(process.env.REACT_APP_BACKEND_URL + `/backend/event/${newEventId}/stages/`)
+    fetch(backendUrl + `/backend/event/${newEventId}/stages/`)
     .then(response => response.json())
     .then(stages => {
       let highestIndex = -1;
