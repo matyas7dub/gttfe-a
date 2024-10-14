@@ -1,5 +1,5 @@
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
-import { FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Switch, useToast } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, useToast } from "@chakra-ui/react";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
@@ -7,20 +7,17 @@ import ConfirmationButton from "../../../components/ConfirmationButton/Confirmat
 
 export default function UpdateGame() {
   const horizontalFormSpacing = "2rem";
-  const inputToggleMargin = "0.5rem";
 
   const toast = useToast();
 
   const [gameErr, setGameErr] = useState(false);
 
-  const [regStartEnabled, setRegStartEnabled] = useState(false);
-  const [regEndEnabled, setRegEndEnabled] = useState(false);
-  const [maxTeamsEnabled, setMaxTeamsEnabled] = useState(false);
-
   const [gameId, setGameId] = useState<Number>();
-  const [regStart, setRegStart] = useState<String>();
-  const [regEnd, setRegEnd] = useState<String>();
+  const [regStart, setRegStart] = useState("");
+  const [regEnd, setRegEnd] = useState("");
   const [maxTeams, setMaxTeams] = useState(0);
+  const [backdrop, setBackdrop] = useState("");
+  const [icon, setIcon] = useState("");
 
   return (
     <div>
@@ -32,21 +29,18 @@ export default function UpdateGame() {
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
             <FormLabel>Registration start</FormLabel>
-            <Switch marginBottom={inputToggleMargin} isDisabled={gameId == null} isChecked={regStartEnabled} onChange={(event) => setRegStartEnabled(event.target.checked)} />
-            <Input max={regEndEnabled ? String(regEnd) : undefined} isDisabled={!regStartEnabled} type='date' value={regStartEnabled ? String(regStart) : ""} onChange={(event) => setRegStart(event.target.value)}/>
+            <Input max={regEnd} type='date' value={regStart} onChange={(event) => setRegStart(event.target.value)}/>
           </FormControl>
 
           <FormControl>
             <FormLabel>Registration end</FormLabel>
-            <Switch marginBottom={inputToggleMargin} isDisabled={gameId == null} isChecked={regEndEnabled} onChange={(event) => setRegEndEnabled(event.target.checked)} />
-            <Input min={regStartEnabled ? String(regStart) : undefined} isDisabled={!regEndEnabled} type='date' value={regEndEnabled ? String(regEnd) : ""} onChange={(event) => setRegEnd(event.target.value)} />
+            <Input min={regStart}  type='date' value={regEnd} onChange={(event) => setRegEnd(event.target.value)} />
           </FormControl>
         </Stack>
 
         <FormControl>
           <FormLabel>Maximum teams</FormLabel>
-          <Switch marginBottom={inputToggleMargin} isDisabled={gameId == null} isChecked={maxTeamsEnabled} onChange={(event) => setMaxTeamsEnabled(event.target.checked)} />
-          <NumberInput min={0} isDisabled={!maxTeamsEnabled} value={maxTeamsEnabled ? String(maxTeams) : ""} onChange={(_, value) => {setMaxTeams(value)}}>
+          <NumberInput min={0} value={maxTeams} onChange={(_, value) => {setMaxTeams(value)}}>
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
@@ -54,6 +48,10 @@ export default function UpdateGame() {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
+
+        <DataPicker title="Backdrop" value={backdrop} dataType={dataType.file} changeHandler={event => {setBackdrop(event.target.value)}} />
+
+        <DataPicker title="Icon" value={icon} dataType={dataType.file} changeHandler={event => {setIcon(event.target.value)}} />
 
         <ConfirmationButton isDisabled={gameId == null} onClick={updateGame}>Update game</ConfirmationButton> 
 
@@ -65,9 +63,6 @@ export default function UpdateGame() {
     if (newGameId === "") {
       setGameErr(true);
       setGameId(undefined);
-      setRegStartEnabled(false);
-      setRegEndEnabled(false);
-      setMaxTeamsEnabled(false);
       return;
     }
 
@@ -79,28 +74,34 @@ export default function UpdateGame() {
 
       if (data.registrationStart != null) {
         setRegStart(data.registrationStart);
-        setRegStartEnabled(true);
       } else {
-        setRegStartEnabled(false);
         const now = new Date().toISOString().split('T')[0].replace(/-/g, '-');
         setRegStart(now);
       }
 
       if (data.registrationEnd != null) {
         setRegEnd(data.registrationEnd);
-        setRegEndEnabled(true);
       } else {
-        setRegEndEnabled(false);
         const now = new Date().toISOString().split('T')[0].replace(/-/g, '-');
         setRegEnd(now);
       }
 
       if (data.maxTeams != null) {
         setMaxTeams(data.maxTeams);
-        setMaxTeamsEnabled(true);
       } else {
-        setMaxTeamsEnabled(false);
         setMaxTeams(0);
+      }
+
+      if (data.backdrop != null) {
+        setBackdrop(data.backdrop);
+      } else {
+        setBackdrop("");
+      }
+
+      if (data.icon != null) {
+        setIcon(data.icon);
+      } else {
+        setIcon("");
       }
     })
   }
@@ -111,20 +112,14 @@ export default function UpdateGame() {
       ["Content-Type", "application/json"]
     ];
 
-    const body = {};
-
-    if (regStartEnabled) {
-      Object.assign(body, { registrationStart: regStart });
-    }
-
-    if (regEndEnabled) {
-      Object.assign(body, { registrationEnd: regEnd });
-    }
-
-    if (maxTeamsEnabled) {
-      Object.assign(body, { maxTeams: maxTeams });
-    }
-
+    const body = {
+      registrationStart: regStart,
+      registrationEnd: regEnd,
+      maxTeams: maxTeams,
+      backdrop: backdrop,
+      icon: icon
+    };
+    
     fetchGracefully(process.env.REACT_APP_BACKEND_URL + `/backend/game/${gameId}/`,
     "PUT", JSON.stringify(body), headers, "Game updated successfully", toast);
   }
