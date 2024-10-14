@@ -14,6 +14,7 @@ import {
   Stack,
   Tooltip,
   useToast,
+  Badge,
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons'
 import { backendUrl, loginPath } from '../../../config/config';
@@ -23,6 +24,7 @@ export default function Login() {
   const [avatarKey, setAvatarKey] = useState(0);
   const [authUrl, setAuthUrl] = useState("");
   const [validLoginState, setValidLoginState] = useState(true);
+  const [roleBadges, setRoleBadges] = useState<JSX.Element[]>();
 
   const toast = useToast();
 
@@ -43,10 +45,9 @@ export default function Login() {
     const validLogin = validJws();
     setValidLoginState(validLogin);
 
-    if (avatarUrl.length === 0) {
-      setAvatarUrl(getAvatarFromUserObject());
-      setAvatarKey(avatarKey + 1);
-    }
+    getRoleBadges();
+    setAvatarUrl(getAvatarFromUserObject());
+    setAvatarKey(avatarKey + 1);
   }
 
   function validJws() {
@@ -74,6 +75,25 @@ export default function Login() {
     return "";
   }
 
+  function getRoleBadges() {
+    const userObject = localStorage.getItem("userObject");
+    if (userObject) {
+      const userJsonObject = JSON.parse(userObject);
+      fetch(backendUrl + `/backend/user/${userJsonObject.id}/assignedRoles/`)
+      .then(response => response.json())
+      .then(data => {
+        const roleBadges: JSX.Element[] = [];
+        for (let role of data) {
+          roleBadges.push(
+            <Badge marginRight="0.3em">{role.roleName}</Badge>
+          );
+        }
+        setRoleBadges(roleBadges);
+      })
+      .catch(error => console.error("Error", error));
+    }
+  }
+
   return(
     <Stack direction="row" align="center">
       <ExpirationWarning authUrl={authUrl} validLogin={validLoginState} />
@@ -87,16 +107,20 @@ export default function Login() {
           <PopoverCloseButton />
           <PopoverHeader>{ localStorage.getItem("jws") ? 'Logout' : 'Login' }</PopoverHeader>
           <PopoverBody>
-            <Center>
             {localStorage.getItem("jws") ? 
-            <div>
+            <Center>
+            <Stack direction="column">
+              <Center>{roleBadges}</Center>
+              <>
               Your login expires at
               {` ${new Date((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000).toLocaleTimeString()}`}
+              </>
               <Center><Button onClick={logout}>Logout</Button></Center>
-            </div> :
+            </Stack>
+            </Center>
+            :
             <Center><Button onClick={login}>Discord redirect <ExternalLinkIcon /></Button></Center>
             }
-            </Center>
           </PopoverBody>
         </PopoverContent>
       </Popover>
