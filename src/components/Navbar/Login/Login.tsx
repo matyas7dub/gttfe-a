@@ -34,7 +34,7 @@ export default function Login() {
   }, [validLoginState]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => afterLogin, [])
+  useEffect(() => afterLogin(), [])
 
   function afterLogin() {
     const validLogin = validJws();
