@@ -13,6 +13,7 @@ import {
   Center,
   Stack,
   Tooltip,
+  useToast,
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, WarningTwoIcon } from '@chakra-ui/icons'
 import { backendUrl, loginPath } from '../../../config/config';
@@ -22,6 +23,8 @@ export default function Login() {
   const [avatarKey, setAvatarKey] = useState(0);
   const [authUrl, setAuthUrl] = useState("");
   const [validLoginState, setValidLoginState] = useState(true);
+
+  const toast = useToast();
 
   useEffect(() => {
     if (!validLoginState) {
@@ -116,28 +119,34 @@ export default function Login() {
       if (currentJws !== localStorage.getItem("jws")) {
         clearInterval(interval);
         afterLogin();
+        toast({
+          title: 'Logged in',
+          description: 'Successfully logged in',
+          status: 'success',
+          duration: 5000,
+          isClosable: true
+        });
       }
     }, 1000);
   }
-}
 
-type expirationWarningProps = {
-  authUrl: string,
-  validLogin: boolean
-}
+  type expirationWarningProps = {
+    authUrl: string,
+    validLogin: boolean
+  }
 
-function ExpirationWarning(props: expirationWarningProps) {
-  const warning = (
-    <a href={props.authUrl}>
+  function ExpirationWarning(props: expirationWarningProps) {
+    const warning = (
       <Tooltip label="Your login expired. Click to relogin.">
-        <WarningTwoIcon boxSize="2vw" color="GttOrange.400" />
+        <WarningTwoIcon onClick={login} cursor="pointer" boxSize="2vw" color="GttOrange.400" />
       </Tooltip>
-    </a>
-  );
-
-  return (
-    <>
-      {!props.validLogin && localStorage.getItem("jws") ? warning : ""}
-    </>
-  );
+    );
+  
+    return (
+      <>
+        {!props.validLogin && localStorage.getItem("jws") ? warning : ""}
+      </>
+    );
+  }
 }
+
