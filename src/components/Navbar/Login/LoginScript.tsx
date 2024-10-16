@@ -1,4 +1,4 @@
-import { Center, CreateToastFnReturn, Spinner, useToast } from "@chakra-ui/react";
+import { Center, CreateToastFnReturn, Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom"
 import * as jose from 'jose';
@@ -14,8 +14,6 @@ export default function LoginScript() {
     "redirectUri": window.location.origin + loginPath,
   };
 
-  const toast = useToast();
-
   useEffect(() => {
     let jsonHeader = new Headers();
     jsonHeader.append("Content-Type", "application/json")
@@ -28,18 +26,13 @@ export default function LoginScript() {
     .then(async response => {
       const data = await response.json();
       if (response.ok) {
+        localStorage.setItem("loginResult", "success");
         localStorage.setItem("jws", data.jws);
         localStorage.setItem("userObject", JSON.stringify(data.userObject));
       } else {
         const error = data.msg?? data.message?? "Unknown error";
+        localStorage.setItem("loginResult", error);
         console.error("Couldn't get jws from API:", error);
-        toast({
-          title: "Couldn't get jws from API",
-          description: error,
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        })
       }
       window.close();
     })
