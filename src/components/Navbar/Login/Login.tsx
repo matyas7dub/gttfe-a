@@ -175,7 +175,7 @@ export default function Login() {
   function ExpirationWarning(props: expirationWarningProps) {
     const warning = (
       <Tooltip label="Your login expired. Click to relogin.">
-        <WarningTwoIcon onClick={login} cursor="pointer" boxSize="2vw" color="GttOrange.400" />
+        <WarningTwoIcon onClick={login} cursor="pointer" boxSize="2rem" color="GttOrange.400" />
       </Tooltip>
     );
   
