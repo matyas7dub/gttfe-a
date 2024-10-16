@@ -140,18 +140,29 @@ export default function Login() {
   function login() {
     window.open(authUrl, "_blank");
 
-    const currentJws = localStorage.getItem("jws");
     const interval = setInterval(() => {
-      if (currentJws !== localStorage.getItem("jws")) {
+      if (localStorage.getItem("loginResult")) {
         clearInterval(interval);
-        afterLogin();
-        toast({
-          title: 'Logged in',
-          description: 'Successfully logged in',
-          status: 'success',
-          duration: 5000,
-          isClosable: true
-        });
+        const loginResult = localStorage.getItem("loginResult");
+        localStorage.removeItem("loginResult");
+        if (loginResult === "success") {
+          afterLogin();
+          toast({
+            title: 'Logged in',
+            description: 'Successfully logged in',
+            status: 'success',
+            duration: 5000,
+            isClosable: true
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: loginResult,
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          });
+        }
       }
     }, 1000);
   }
