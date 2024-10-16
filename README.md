@@ -45,6 +45,7 @@ Defaults are in .env-template
 - `REACT_APP_AUTH_REDIRECT={URL}` where discord should redirect after authentication
 - `REACT_APP_BACKEND_URL={URL/empty}` location of gttbe-2
 - `PUBLIC_URL{URL/empty}` optional prefix for the url path (the part after the domain)
+- `REACT_APP_COMMIT_HASH` is the commit hash from which CI builds
 
 # Create React App
 

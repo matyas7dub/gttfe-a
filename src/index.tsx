@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
 import theme from './theme';
 import Navbar from './components/Navbar/Navbar';
+import Footer from './components/Footer/Footer';
 import { publicUrl } from './config/config';
 
 const root = ReactDOM.createRoot(
@@ -18,6 +19,7 @@ root.render(
       <BrowserRouter basename={publicUrl}>
       <Navbar />
       <App />
+      <Footer />
     </BrowserRouter>
   </ChakraProvider>
   </>
