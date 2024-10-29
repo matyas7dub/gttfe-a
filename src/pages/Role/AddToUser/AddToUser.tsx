@@ -81,6 +81,11 @@ export default function AddToUser() {
     }
 
     fetchGracefully(backendUrl + `/backend/userRole/create`,
-    "POST", JSON.stringify(body), headers, "Role added successfully", toast);
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Role added successfully", toast);
   }
 }

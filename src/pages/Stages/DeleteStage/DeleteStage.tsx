@@ -47,6 +47,10 @@ export default function DeleteStage() {
     ];
 
     fetchGracefully(backendUrl + `/backend/stage/${stageId}/`,
-    "DELETE", null, headers, "Stage deleted successfully", toast);
+    {
+      method: "DELETE",
+      headers: headers
+    },
+    "Stage deleted successfully", toast);
   }
 }

@@ -66,6 +66,11 @@ export default function PageUpdate() {
     }
 
     fetchGracefully(backendUrl + `/backend/game/${gameId}/page/`,
-    "PUT", JSON.stringify(body), headers, "Page updated successfully", toast);
+    {
+      method: "PUT",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Page updated successfully", toast);
   }
 }

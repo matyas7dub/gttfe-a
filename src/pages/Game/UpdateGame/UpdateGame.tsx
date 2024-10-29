@@ -122,6 +122,11 @@ export default function UpdateGame() {
     };
     
     fetchGracefully(backendUrl + `/backend/game/${gameId}/`,
-    "PUT", JSON.stringify(body), headers, "Game updated successfully", toast);
+    {
+      method: "PUT",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Game updated successfully", toast);
   }
 }

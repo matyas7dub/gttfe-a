@@ -16,25 +16,26 @@ export default function List() {
   const toast = useToast();
 
   async function deleteFile (fileName: string){
-    await fetchGracefully(
-      backendUrl + `/backend/file/${fileName}`,
-      'DELETE',
-      null,
-      [
+    await fetchGracefully(backendUrl + `/backend/file/${fileName}`,
+    {
+      method: "DELETE",
+      headers: [
         ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
-      ],
-      "Files deleted successfully", toast);
+      ]
+    },
+    "Files deleted successfully", toast);
     listFiles()
   }
 
   async function listFiles() {
     let result = await fetchGracefully(
       backendUrl + "/backend/file/list",
-      'GET',
-      null,
-      [
-        ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
-      ],
+      {
+        method: "GET",
+        headers: [
+          ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
+        ],
+      },
       "Files listed successfully", toast);
     if (typeof result === "undefined") {
       return

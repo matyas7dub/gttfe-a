@@ -47,60 +47,77 @@ export default function LoginScript() {
   )
 }
 
-export function fetchGracefully(url: string, method: string, body: string | null | any, headers: [string, string][], successMessage: string, toast: CreateToastFnReturn) {
-  // The headers have to be [string, string][] otherwise they get lost at some point
+export async function fetchGracefully(url: string, init: RequestInit, successMessage: string, toast: CreateToastFnReturn): Promise<Response> {
   successMessage = successMessage?? "Success";
 
-  if (!localStorage.getItem("jws") || (jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
-
-    fetch(backendUrl + '/backend/discord/auth')
-    .then(response => response.json())
-    .then(authUrl => window.open(authUrl.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`, "_blank"))
-    .then(() => {
-      const currentJws = localStorage.getItem("jws");
-      const interval = setInterval(() => {
-        if (currentJws !== localStorage.getItem("jws")) {
-          clearInterval(interval);
-          const newHeaders: [string, string][] = headers;
-          const authIndex = newHeaders.findIndex(value => value[0] === "Authorization");
-          newHeaders[authIndex] = ["Authorization", `Bearer ${localStorage.getItem("jws")}`] as [string, string];
-          fetchWithToast(url, method, newHeaders, body, successMessage, toast);
-        }
-      }, 1000);
+  await new Promise((resolve, reject) => {
+    if (!localStorage.getItem("jws") || (jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
+      fetch(backendUrl + '/backend/discord/auth')
+      .then(response => response.json())
+      .then(authUrl => window.open(authUrl.redirectUrl + `&redirect_uri=${window.location.origin + loginPath}`, "_blank"))
+      .then(() => {
+        const oldJws = localStorage.getItem("jws");
+        const interval = setInterval(() => {
+          if (oldJws !== localStorage.getItem("jws")) {
+            clearInterval(interval);
+            resolve(`Bearer ${localStorage.getItem("jws")}`);
+          }
+        }, 1000);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        reject("Error logging in.");
+      });
+    } else {
+      resolve("Already logged in.");
+    }
+  })
+  .then((response) => {
+    if ((response as string).startsWith("Bearer ")) {
+      const newHeaders = new Headers(init.headers);
+      newHeaders.set("Authorization", response as string);
+      init.headers = newHeaders;
+    }
+  })
+  .catch(error => {
+    console.error("Error:", error);
+    toast({
+      title: 'Error',
+      description: error,
+      status: 'error',
+      duration: 5000,
+      isClosable: true
     })
-    .catch(error => console.error('Error:', error));
-  } else {
-    return fetchWithToast(url, method, headers, body, successMessage, toast);
-  }
+  })
+
+  return fetchWithToast(url, init, successMessage, toast);
 }
 
-async function fetchWithToast(url: string, method: string, headers: [string, string][], body: string | null | any, successMessage: string, toast: CreateToastFnReturn) {
-  return fetch(url,
-    {
-      method: method,
-      headers: new Headers(headers),
-      body: body?? undefined
+async function fetchWithToast(url: string, init: RequestInit, successMessage: string, toast: CreateToastFnReturn): Promise<Response> {
+  return new Promise((resolve, reject) => {
+    fetch(url, init)
+    .then(async response => {
+      if (response.ok) {
+        toast({
+          title: successMessage,
+          status: 'success',
+          duration: 5000,
+          isClosable: true
+        })
+        resolve(response);
+      } else {
+        const data = await response.json();
+        const error = data.msg?? data.message?? 'Unknown error.';
+        toast({
+          title: 'Error',
+          description: error,
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+        reject(response);
+      }
     })
-  .then(async response => {
-    if (response.ok) {
-      toast({
-        title: successMessage,
-        status: 'success',
-        duration: 5000,
-        isClosable: true
-      })
-      localStorage.removeItem("requestCache");
-    } else {
-      const data = await response.clone().json();
-      toast({
-        title: 'Error',
-        description: data.msg?? data.message?? 'Unknown error.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      })
-    }
-    return response
+    .catch(error => console.error("Error:", error));
   })
-  .catch(error => console.error("Error:", error));
 }

@@ -75,6 +75,10 @@ export default function DeleteMatch() {
     ];
 
     fetchGracefully(backendUrl + `/backend/match/${matchId}/`,
-    "DELETE", null, headers, "Match deleted successfully", toast);
+    {
+      method: "DELETE",
+      headers: headers
+    },
+    "Match deleted successfully", toast);
   }
 }

@@ -126,6 +126,11 @@ export default function CreateEvent() {
     }
 
     fetchGracefully(backendUrl + "/backend/event/create",
-    "POST", JSON.stringify(body), headers, "Event created successfully", toast);
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Event created successfully", toast);
   }
 }
