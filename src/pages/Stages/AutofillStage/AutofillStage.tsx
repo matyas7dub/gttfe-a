@@ -1,47 +1,34 @@
-import { Alert, AlertIcon, AlertTitle, FormControl, FormLabel, Input, Stack, Tooltip } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import { backendUrl } from "../../../config/config";
-
-/*
-This is not done yet:
-  - the permission for listing stages from an event is broken
-  - I don't know how the bracket system will work yet
-*/
+import { createStage } from "../../Events/AutofillEvent/AutofillEvent";
 
 export default function AutofillStage() {
   const [eventId, setEventId] = useState<number>();
   const [previousStageName, setPreviousStageName] = useState("");
+  const [previousStageIndex, setPreviousStageIndex] = useState(-1);
   const [stageName, setStageName] = useState("");
+  const [teamIds, setTeamIds] = useState<number[]>();
+
+  const toast = useToast();
 
   return (
     <div>
       <Breadcrumbs />
 
       <Stack direction="column" spacing="3rem" className="Form">
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>This is currently a work in progress (not working)</AlertTitle>
-        </Alert>
-
-        <Tooltip label="As this uses multiple requests, it is not *yet* implemented to automatically relog.">
-          <Alert status="warning">
-            <AlertIcon />
-            <AlertTitle>Make sure you are logged in!</AlertTitle>
-          </Alert>
-        </Tooltip>
-
         <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
 
         <FormControl isDisabled={eventId == null}>
           <FormLabel>Stage name</FormLabel>
           <Input onChange={event => setStageName(event.target.value)} marginBottom="1rem"/>
-          {previousStageName !== "" ? `Previous stage name was ${previousStageName}` : ""}
+          {previousStageName !== "" ? `Stage ${previousStageIndex} was ${previousStageName}` : ""}
         </FormControl>
 
-        <ConfirmationButton isDisabled={stageName === ""} onClick={createStage}>Create stage and matches</ConfirmationButton>
+        <ConfirmationButton isDisabled={stageName === ""} onClick={createStageWrapper}>Create stage and matches</ConfirmationButton>
 
       </Stack>
     </div>
@@ -49,23 +36,64 @@ export default function AutofillStage() {
 
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
-    const previousStages: [number, number][] = []; // array of [id, index]
-    fetch(backendUrl + `/backend/event/${newEventId}/stages/`)
+    fetch(backendUrl + `/backend/event/${newEventId}/stages/`,
+    {
+      headers: [["Authorization", `Bearer ${localStorage.getItem("jws")}`]]
+    })
     .then(response => response.json())
     .then(stages => {
       let highestIndex = -1;
       for (let stage of stages) {
-        previousStages.push([stage.stageId, stage.stageIndex]);
         if (stage.stageIndex > highestIndex) {
+          highestIndex = stage.stageIndex;
           setPreviousStageName(stage.stageName);
+          setPreviousStageIndex(stage.stageIndex);
         }
       }
-      console.debug(previousStages);
+      if (highestIndex === -1) {
+        setPreviousStageName("");
+        setPreviousStageIndex(-1);
+      }
+      getTeams(newEventId);
     })
     .catch(error => console.error("Error", error));
   }
 
-  function createStage() {
-    
+  function createStageWrapper() {
+    createStage(eventId as number, stageName, teamIds as number[], toast, previousStageIndex + 1);
+  }
+
+  function getTeams(eventId: number) {
+    const teams: number[] = [];
+    fetch(backendUrl + `/backend/event/${eventId}/`)
+    .then(response => response.json())
+    .then(data => fetch(backendUrl + `/backend/team/list/participating/${data.gameId}/false/`)
+    .then(response => response.json())
+    .then(data => {
+      for (let team of data) {
+        if (!teams.includes(team.teamId)) {
+          teams.push(team.teamId);
+        }
+      }
+    })
+    .then(() => fetch(backendUrl + `/backend/event/${eventId}/matches/`,
+    {
+      headers: [["Authorization", `Bearer ${localStorage.getItem("jws")}`]]
+    })
+    .then(response => response.json())
+    .then(matches => {
+      for (let match of matches) {
+        const firstTeam = teams.findIndex((id) => id === match.firstTeamId)
+        const secondTeam = teams.findIndex((id) => id === match.secondTeamId)
+
+        if (match.firstTeamResult > match.secondTeamResult && secondTeam !== -1) {
+          teams.splice(secondTeam, 1);
+        } else if (match.secondTeamResult > match.firstTeamResult && firstTeam !== -1) {
+          teams.splice(firstTeam, 1);
+        }
+      }
+
+      setTeamIds(teams);
+    })))
   }
 }
