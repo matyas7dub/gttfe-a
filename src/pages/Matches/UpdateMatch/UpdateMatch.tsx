@@ -23,11 +23,11 @@ export default function UpdateMatch() {
       <Breadcrumbs />
 
       <Stack direction="column" spacing="3rem" className="Form">
-        <DataPicker dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
+        <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
 
-        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
+        <DataPicker value={stageId} options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
 
-        <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
+        <DataPicker value={matchId} options={{eventId: eventId?? undefined, stageId: stageId?? undefined}} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
 
         <TeamResultInput isDisabled={!matchId} stageId={stageId?? undefined}
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}
@@ -39,8 +39,19 @@ export default function UpdateMatch() {
     </div>
   )
 
+  function selectEvent(newEventId: number) {
+    setEventId(newEventId);
+    if (newEventId === 0) {
+      setStageId(0);
+      setMatchId(0);
+    }
+  }
+
   function selectStage(newStageId: number) {
     setStageId(newStageId);
+    if (newStageId === 0) {
+      setMatchId(0);
+    }
     if (!eventId) {
       fetch(backendUrl + `/backend/stage/${newStageId}/`)
       .then(response => response.json())
@@ -51,18 +62,17 @@ export default function UpdateMatch() {
 
   function selectMatch(newMatchId: number) {
     setMatchId(newMatchId);
-    if (!stageId) {
-      fetch(backendUrl + `/backend/match/${newMatchId}/`)
-      .then(response => response.json())
-      .then(data => {
-        setStageId(Number(data.stageId))
-        setFirstTeamId(Number(data.firstTeamId))
-        setFirstTeamResult(Number(data.firstTeamResult))
-        setSecondTeamId(Number(data.secondTeamId))
-        setSecondTeamResult(Number(data.secondTeamResult))
-      })
-      .catch(error => console.error("Error", error));
-    }
+
+    fetch(backendUrl + `/backend/match/${newMatchId}/`)
+    .then(response => response.json())
+    .then(data => {
+      selectStage(Number(data.stageId))
+      setFirstTeamId(Number(data.firstTeamId))
+      setFirstTeamResult(Number(data.firstTeamResult))
+      setSecondTeamId(Number(data.secondTeamId))
+      setSecondTeamResult(Number(data.secondTeamResult))
+    })
+    .catch(error => console.error("Error", error));
   }
 
   function updateMatch() {
