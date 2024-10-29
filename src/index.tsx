@@ -17,8 +17,10 @@ root.render(
   <ColorModeScript />
   <ChakraProvider theme={theme}>
       <BrowserRouter basename={publicUrl}>
-      <Navbar />
-      <App />
+      <div style={{ minHeight: "80vh"}}>
+        <Navbar />
+        <App />
+      </div>
       <Footer />
     </BrowserRouter>
   </ChakraProvider>
