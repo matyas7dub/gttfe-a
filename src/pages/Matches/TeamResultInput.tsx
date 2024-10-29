@@ -40,11 +40,11 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   return (
     <Stack direction="row" spacing={horizontalFormSpacing}>
       <Stack direction="column" spacing="3rem">
-        <DataPicker options={{gameId: gameId}} value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} />
+        <DataPicker title="First team" options={{gameId: gameId}} value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} />
 
         <FormControl>
           <FormLabel>First team result</FormLabel>
-          <NumberInput isDisabled={props.isDisabled} defaultValue={props.firstTeamResult?? undefined} onChange={(_, value) => {props.setFirstTeamResult(value)}}>
+          <NumberInput isDisabled={props.isDisabled} value={props.firstTeamResult?? undefined} onChange={(_, value) => {props.setFirstTeamResult(value)}}>
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
@@ -59,11 +59,11 @@ export default function TeamResultInput(props: TeamResultInputProps) {
       </div>
 
       <Stack direction="column" spacing="3rem">
-        <DataPicker options={{gameId: gameId}} value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} />
+        <DataPicker title="Second team" options={{gameId: gameId}} value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} />
 
         <FormControl>
           <FormLabel>Second team result</FormLabel>
-          <NumberInput isDisabled={props.isDisabled} defaultValue={props.secondTeamResult?? undefined} onChange={(_, value) => {props.setSecondTeamResult(value)}}>
+          <NumberInput isDisabled={props.isDisabled} value={props.secondTeamResult?? undefined} onChange={(_, value) => {props.setSecondTeamResult(value)}}>
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />

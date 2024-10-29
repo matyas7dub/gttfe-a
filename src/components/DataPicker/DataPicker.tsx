@@ -41,11 +41,13 @@ export default function DataPicker(props: DataPickerProps) {
 
 
   useEffect(() => {
+    if (props.isDisabled) {
+      return;
+    }
+
     let location = "";
     let invalid = false;
     let headersRequired = false;
-
-
 
     switch (props.dataType) {
       case dataType.game:
@@ -69,14 +71,17 @@ export default function DataPicker(props: DataPickerProps) {
         setFormLabel("Stage");
         setPlaceholder("Select a stage");
         setErrorMessage("You must select a stage!");
+        headersRequired = true;
         break;
       case dataType.match:
         if (props.options !== undefined && props.options.stageId) {
           location = `/backend/stage/${props.options.stageId}/matches/`;
+          headersRequired = true;
         } else if (props.options !== undefined && props.options.eventId) {
           location = `/backend/event/${props.options.eventId}/matches/`;
         } else {
           location = "/backend/match/listAll/";
+          headersRequired = true;
         }
         setFormLabel("Match");
         setPlaceholder("Select a match");
@@ -122,7 +127,7 @@ export default function DataPicker(props: DataPickerProps) {
 
       fetch(backendUrl + location, options)
       .then(response => response.json())
-      .then(data => {
+      .then(async data => {
         switch (props.dataType) {
           case dataType.game:
             let gameElems: JSX.Element[] = [];
@@ -154,20 +159,27 @@ export default function DataPicker(props: DataPickerProps) {
             break;
           case dataType.match:
             let matchElems: JSX.Element[] = [];
+            let teamNamesMap = new Map<number, string>();
+            if (data.length >= 1) {
+              teamNamesMap = await getTeamNamesMap(data[0].stageId);
+            }
             for (let match of data) {
               matchElems.push(
-                // the endpoint doesn't return the team names and getting the form each team seems like it would be **very** slow
-                <option key={match.matchId} value={match.matchId}>{`${match.firstTeamId} vs ${match.secondTeamId} (${match.firstTeamResult}:${match.secondTeamResult})`}</option>
+                <option key={match.matchId} value={match.matchId}>{`${teamNamesMap.get(match.firstTeamId)} vs ${teamNamesMap.get(match.secondTeamId)} (${match.firstTeamResult}:${match.secondTeamResult})`}</option>
               );
             }
             setOptionElems(matchElems);
             break;
           case dataType.teams:
             let teamElems: JSX.Element[] = [];
+            const teamIds: number[] = [];
             for (let team of data) {
-              teamElems.push(
-                <option key={team.teamId} value={team.teamId}>{team.name}</option>
-              );
+              if (!teamIds.includes(team.teamId)) {
+                teamIds.push(team.teamId);
+                teamElems.push(
+                  <option key={team.teamId} value={team.teamId}>{team.name}</option>
+                );
+              }
             }
             setOptionElems(teamElems);
             break;
@@ -239,5 +251,28 @@ export default function DataPicker(props: DataPickerProps) {
     }
 
     return prettyName;
+  }
+
+  async function getTeamNamesMap(stageId: number): Promise<Map<number, string>> {
+    const teamNamesMap = new Map<number, string>();
+
+    await fetch(backendUrl + `/backend/stage/${stageId}/`)
+    .then(response => response.json())
+    .then(data => fetch(backendUrl + `/backend/event/${data.eventId}/`)
+    .then(response => response.json())
+    .then(data => fetch(backendUrl + `/backend/team/list/participating/${data.gameId}/false/`)
+    .then(response => response.json())
+    .then(data => {
+      const teamIds: number[] = [];
+      for (let team of data) {
+        if (!teamIds.includes(team.teamId)) {
+          teamIds.push(team.teamId);
+          teamNamesMap.set(team.teamId, team.name);
+        }
+      }
+    })))
+    .catch(error => console.error("Error: ", error));
+
+    return teamNamesMap;
   }
 }
