@@ -114,7 +114,7 @@ export default function Login() {
             <Stack direction="column">
               <Center>{roleBadges}</Center>
               <>
-              Your login expires at
+              Your login expire{validLoginState? "s" : "d"} at
               {` ${new Date((jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000).toLocaleTimeString()}`}
               </>
               <Center><Button onClick={logout}>Logout</Button></Center>
