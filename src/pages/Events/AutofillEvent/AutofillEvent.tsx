@@ -9,8 +9,7 @@ import { backendUrl } from "../../../config/config";
 export default function AutofillEvent() {
   const [eventId, setEventId] = useState<number>();
   const [stageName, setStageName] = useState("");
-  const [teamIds, setTeamIds] = useState<any[]>();
-  const [createdStage, setCreatedStage] = useState(false);
+  const [teamIds, setTeamIds] = useState<number[]>();
   const toast = useToast();
   return (
     <div>
@@ -19,12 +18,12 @@ export default function AutofillEvent() {
       <Stack direction="column" spacing="3rem" className="Form">
         <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
 
-        <FormControl isDisabled={eventId == null || createdStage}>
+        <FormControl isDisabled={eventId == null}>
           <FormLabel>Stage name</FormLabel>
           <Input onChange={event => setStageName(event.target.value)}/>
         </FormControl>
 
-        <ConfirmationButton isDisabled={stageName === "" || createdStage} onClick={createStage}>Create stage and matches</ConfirmationButton>
+        <ConfirmationButton isDisabled={stageName === ""} onClick={createStageWrapper}>Create stage and matches</ConfirmationButton>
       </Stack>
     </div>
   )
@@ -51,30 +50,33 @@ export default function AutofillEvent() {
     .catch(error => console.error("Error", error));
   }
 
-  function createStage() {
-    setCreatedStage(true);
-    fetchGracefully(backendUrl + "/backend/stage/create",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          eventId: eventId,
-          stageName: stageName,
-          stageIndex: 0
-        }),
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("jws")}`,
-          "Content-Type": "application/json"
-        }
-      },
-      "Created stage successfully", toast)
-    .then(async response => {
-      if (response.ok) {
-        const stage = await response.json();
-        autofillMatches(stage.stageId, teamIds as number[], toast);
-      }
-    })
-    .catch(error => console.error("Error", error));
+  function createStageWrapper() {
+    createStage(eventId as number, stageName, teamIds as number[], toast);
   }
+}
+
+export function createStage(eventId: number, stageName: string, teamIds: number[], toast: CreateToastFnReturn, stageIndex?: number) {
+  fetchGracefully(backendUrl + "/backend/stage/create",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        eventId: eventId,
+        stageName: stageName,
+        stageIndex: stageIndex?? 0
+      }),
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("jws")}`,
+        "Content-Type": "application/json"
+      }
+    },
+    "Created stage successfully", toast)
+  .then(async response => {
+    if (response.ok) {
+      const stage = await response.json();
+      autofillMatches(stage.stageId, teamIds as number[], toast);
+    }
+  })
+  .catch(error => console.error("Error", error));
 }
 
 export function autofillMatches(stageId: number, teamIds: number[], toast: CreateToastFnReturn) {
