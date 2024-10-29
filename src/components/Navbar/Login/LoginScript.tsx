@@ -47,8 +47,10 @@ export default function LoginScript() {
   )
 }
 
-export async function fetchGracefully(url: string, init: RequestInit, successMessage: string, toast: CreateToastFnReturn): Promise<Response> {
-  successMessage = successMessage?? "Success";
+export async function fetchGracefully(url: string, init: RequestInit, successMessage: string | undefined | null, toast: CreateToastFnReturn): Promise<Response> {
+  if (successMessage !== null) {
+    successMessage = successMessage?? "Success";
+  }
 
   await new Promise((resolve, reject) => {
     if (!localStorage.getItem("jws") || (jose.decodeJwt(localStorage.getItem("jws")?? "").exp?? 0) * 1000 < Date.now()) {
@@ -93,28 +95,32 @@ export async function fetchGracefully(url: string, init: RequestInit, successMes
   return fetchWithToast(url, init, successMessage, toast);
 }
 
-async function fetchWithToast(url: string, init: RequestInit, successMessage: string, toast: CreateToastFnReturn): Promise<Response> {
+async function fetchWithToast(url: string, init: RequestInit, successMessage: string | null, toast: CreateToastFnReturn): Promise<Response> {
   return new Promise((resolve, reject) => {
     fetch(url, init)
     .then(async response => {
       if (response.ok) {
-        toast({
-          title: successMessage,
-          status: 'success',
-          duration: 5000,
-          isClosable: true
-        })
+        if (successMessage !== null) {
+          toast({
+            title: successMessage,
+            status: 'success',
+            duration: 5000,
+            isClosable: true
+          })
+        }
         resolve(response);
       } else {
-        const data = await response.json();
-        const error = data.msg?? data.message?? 'Unknown error.';
-        toast({
-          title: 'Error',
-          description: error,
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        })
+        if (successMessage !== null) {
+          const data = await response.json();
+          const error = data.msg?? data.message?? 'Unknown error.';
+          toast({
+            title: 'Error',
+            description: error,
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+          })
+        }
         reject(response);
       }
     })
