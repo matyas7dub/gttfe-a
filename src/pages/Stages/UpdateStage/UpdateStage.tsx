@@ -71,6 +71,11 @@ export default function UpdateStage() {
     }
 
     fetchGracefully(backendUrl + `/backend/stage/${stageId}/`,
-    "PUT", JSON.stringify(body), headers, "Stage updated successfully", toast);
+    {
+      method: "PUT",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Stage updated successfully", toast);
   }
 }

@@ -80,6 +80,11 @@ export default function UpdateMatch() {
     }
 
     fetchGracefully(backendUrl + `/backend/match/${matchId}/`,
-      "PUT", JSON.stringify(body), headers, "Match updated successfully", toast);
+    {
+      method: "PUT",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Match updated successfully", toast);
   }
 }

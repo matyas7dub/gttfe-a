@@ -76,6 +76,11 @@ export default function CreateGame() {
     }
 
     fetchGracefully(backendUrl + "/backend/game/create",
-    "POST", JSON.stringify(body), headers, "Game created successfully", toast);
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Game created successfully", toast);
   }
 }

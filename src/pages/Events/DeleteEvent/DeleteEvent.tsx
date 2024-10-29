@@ -45,7 +45,11 @@ export default function DeleteEvent() {
     ];
 
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
-    "DELETE", null, headers, "Event deleted successfully", toast);
+    {
+      method: "DELETE",
+      headers: headers
+    },
+    "Event deleted successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);
   }

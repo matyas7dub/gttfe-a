@@ -15,15 +15,16 @@ export default function Upload() {
     if (file === null) {
       return;
     }
-    await fetchGracefully(
-      backendUrl + `/backend/file/${fileName}`,
-      'PUT',
-      file,
-      [
+    await fetchGracefully(backendUrl + `/backend/file/${fileName}`,
+    {
+      method: "PUT",
+      body: file,
+      headers: [
         ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
         ['Content-Type', file.type,]
-      ],
-      "File uploaded successfully", toast);
+      ]
+    },
+    "File uploaded successfully", toast);
   }
 
   return (

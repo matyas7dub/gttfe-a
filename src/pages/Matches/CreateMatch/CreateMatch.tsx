@@ -45,6 +45,11 @@ export default function CreateMatch() {
     }
 
     fetchGracefully(backendUrl + `/backend/match/create/`,
-    "POST", JSON.stringify(body), headers, "Match created successfully", toast);
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Match created successfully", toast);
   }
 }

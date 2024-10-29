@@ -58,7 +58,12 @@ export default function CreateStage() {
     }
 
     fetchGracefully(backendUrl + `/backend/stage/create`,
-    "POST", JSON.stringify(body), headers, "Stage created successfully", toast);
+    {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Stage created successfully", toast);
   }
 }
 

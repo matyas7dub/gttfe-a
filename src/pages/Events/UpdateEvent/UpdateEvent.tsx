@@ -98,7 +98,12 @@ export default function UpdateEvent() {
     }
 
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
-    "PUT", JSON.stringify(body), headers, "Event updated successfully", toast);
+    {
+      method: "PUT",
+      body: JSON.stringify(body),
+      headers: headers
+    },
+    "Event updated successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);
   }
