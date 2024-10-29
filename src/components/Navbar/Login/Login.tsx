@@ -138,6 +138,7 @@ export default function Login() {
   }
 
   function login() {
+    localStorage.removeItem("loginResult");
     window.open(authUrl, "_blank");
 
     const interval = setInterval(() => {
