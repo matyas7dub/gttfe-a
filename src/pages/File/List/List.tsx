@@ -12,6 +12,7 @@ interface ListAPI {
 
 export default function List() {
   const [files, setFiles] = useState<JSX.Element[]>([<div></div>]);
+  const [empty, setEmpty] = useState(false);
 
   const toast = useToast();
 
@@ -36,7 +37,7 @@ export default function List() {
           ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
         ],
       },
-      "Files listed successfully", toast);
+      null, toast);
     if (typeof result === "undefined") {
       return
     }
@@ -53,6 +54,12 @@ export default function List() {
         </Card>
       </div>)
     }
+    if (tmpFiles.length === 0) {
+      setEmpty(true);
+    } else {
+      setEmpty(false);
+    }
+
     setFiles(tmpFiles);
   }
   useEffect(() => {
@@ -66,7 +73,7 @@ export default function List() {
       <Breadcrumbs />
 
       <Stack direction="column" spacing="3rem" className="Form">
-        {files}  
+        {empty ? <div>No files</div> : files}
       </Stack>
     </div>
   );
