@@ -1,7 +1,7 @@
 html {
   padding-top: calc(1em + 3vh);
-  padding-left: calc(1em + 3vw);
-  padding-right: calc(1em + 3vw);
+  padding-left: calc(1em + 5vw);
+  padding-right: calc(1em + 5vw);
 }
 
 @font-face {
@@ -19,14 +19,6 @@ a {
   flex-direction: column;
 }
 
-.Home {
-  @include verticalFlex;
-}
-
-.Heading {
-  margin-bottom: 0.5rem;
-}
-
 .LinkList {
   @include verticalFlex;
 
@@ -34,18 +26,4 @@ a {
     margin: 0.1em;
     margin-left: 0.5em;
   }
-}
-
-.Form {
-  margin-top: 5rem;
-  width: 75%;
-}
-
-.Breadcrumbs {
-  margin-bottom: 1rem;
-}
-
-.Divider {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
 }

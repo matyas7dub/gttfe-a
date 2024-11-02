@@ -4,6 +4,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -19,7 +20,7 @@ export default function CreateStage() {
   return (
     <div>
       <Breadcrumbs />
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker dataType={dataType.event} changeHandler={(event)=>{setEventId(Number(event.target.value))}} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
@@ -41,7 +42,7 @@ export default function CreateStage() {
         </Stack>
 
         <ConfirmationButton isDisabled={eventId == null || stageName === "" || stageIndex == null} onClick={createStage}>Create stage</ConfirmationButton>
-      </Stack>
+      </EndpointForm>
     </div>
   )
 

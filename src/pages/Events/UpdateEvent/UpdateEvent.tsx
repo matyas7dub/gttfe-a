@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -22,7 +23,7 @@ export default function UpdateEvent() {
   return (
     <div>
       <Breadcrumbs />
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker dataType={dataType.event} key={eventPickerKey} value={eventId?? 0} changeHandler={event => selectEvent(Number(event.target.value))} />
 
         <DataPicker dataType={dataType.game} isDisabled={eventId == null || eventId === 0} value={gameId} changeHandler={event => setGameId(Number(event.target.value))} />
@@ -50,8 +51,7 @@ export default function UpdateEvent() {
         </FormControl>
 
         <ConfirmationButton isDisabled={eventId == null || eventId === 0} onClick={updateEvent}>Update event</ConfirmationButton>
-      </Stack>
-
+      </EndpointForm>
     </div>
   )
 

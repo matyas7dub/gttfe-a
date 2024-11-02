@@ -5,6 +5,7 @@ import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import { backendUrl } from "../../../config/config";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 
 export default function UpdateGame() {
   const horizontalFormSpacing = "2rem";
@@ -24,7 +25,7 @@ export default function UpdateGame() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker dataType={dataType.game} isInvalid={gameErr} changeHandler={(event) => selectGame(event.target.value)}/>
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
@@ -56,7 +57,7 @@ export default function UpdateGame() {
 
         <ConfirmationButton isDisabled={gameId == null} onClick={updateGame}>Update game</ConfirmationButton> 
 
-      </Stack>
+      </EndpointForm>
     </div>
   );
 

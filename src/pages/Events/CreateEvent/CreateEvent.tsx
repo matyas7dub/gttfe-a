@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -26,7 +27,7 @@ export default function CreateEvent() {
   return (
     <div>
       <Breadcrumbs />
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker dataType={dataType.game} isInvalid={gameError} changeHandler={(event) => {setGameId(Number(event.target.value)); setGameError(false)}} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
@@ -56,8 +57,7 @@ export default function CreateEvent() {
         </FormControl>
 
         <ConfirmationButton onClick={createEvent}>Create event</ConfirmationButton>
-      </Stack>
-
+      </EndpointForm>
     </div>
   )
 

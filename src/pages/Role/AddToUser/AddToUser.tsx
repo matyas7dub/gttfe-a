@@ -3,6 +3,7 @@ import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -19,7 +20,7 @@ export default function AddToUser() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <FormControl>
           <FormLabel>User ID</FormLabel>
           <Input type="number" onChange={(event) => selectUser(event.target.value)}/>
@@ -35,8 +36,7 @@ export default function AddToUser() {
         <DataPicker dataType={dataType.assignedRoles} changeHandler={event => setRoleId(Number(event.target.value))} />
 
         <ConfirmationButton onClick={addRole}>Add role</ConfirmationButton> 
-
-      </Stack>
+      </EndpointForm>
     </div>
   );
 

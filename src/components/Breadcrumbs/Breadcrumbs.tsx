@@ -52,7 +52,7 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <div className={"Breadcrumbs"}>
+    <div style={{marginBottom: "1rem"}}>
       <Breadcrumb separator={<ChevronRightIcon/>}>
         {returnValue}
       </Breadcrumb>

@@ -1,9 +1,10 @@
-import { Button, Card, Link as ChakraLink, Flex, Stack, useToast } from "@chakra-ui/react";
+import { Button, Card, Link as ChakraLink, Flex, useToast } from "@chakra-ui/react";
 import { DeleteIcon } from '@chakra-ui/icons';
 import { useEffect, useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 
 interface ListAPI {
   fileName: string,
@@ -72,9 +73,9 @@ export default function List() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         {empty ? <div>No files</div> : files}
-      </Stack>
+      </EndpointForm>
     </div>
   );
 
