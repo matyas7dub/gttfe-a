@@ -1,15 +1,16 @@
 import { LinkIcon } from "@chakra-ui/icons";
-import { Heading, Link as ChakraLink } from "@chakra-ui/react";
+import { Link as ChakraLink } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
+import GroupHeading from "../../components/GroupHeading/GroupHeading";
 
 export default function Matches() {
   return (
     <div>
       <Breadcrumbs />
 
-      <Heading className="Heading">Matches</Heading>
+      <GroupHeading>Matches</GroupHeading>
       <MatchesContent />
     </div>
   )

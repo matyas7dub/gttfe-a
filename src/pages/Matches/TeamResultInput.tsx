@@ -1,6 +1,7 @@
-import { Divider, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
+import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import DataPicker, { dataType } from "../../components/DataPicker/DataPicker";
+import FormDivider from "../../components/FormDivider/FormDivider";
 import { backendUrl } from "../../config/config";
 
 type TeamResultInputProps = {
@@ -55,7 +56,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
       </Stack>
 
       <div>
-        <Divider orientation="vertical" className="Divider" />
+        <FormDivider orientation="vertical" />
       </div>
 
       <Stack direction="column" spacing="3rem">

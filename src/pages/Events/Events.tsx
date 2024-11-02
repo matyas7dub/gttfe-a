@@ -1,14 +1,15 @@
 import { LinkIcon } from "@chakra-ui/icons";
-import { Heading, Link as ChakraLink } from "@chakra-ui/react";
+import { Link as ChakraLink } from "@chakra-ui/react";
 import { useLocation, Link as RouterLink } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
+import GroupHeading from "../../components/GroupHeading/GroupHeading";
 
 export default function Events() {
   return (
     <div>
       <Breadcrumbs />
 
-     <Heading className="Heading">Events</Heading>
+     <GroupHeading>Events</GroupHeading>
      <EventsContent />
     </div>
   )

@@ -1,7 +1,8 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, FormControl, FormLabel, Input, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -74,7 +75,7 @@ export default function Upload() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <Alert status="info">
           <AlertIcon />
           <AlertTitle>Tip</AlertTitle>
@@ -89,7 +90,7 @@ export default function Upload() {
         {fileRenameElems}
 
         <ConfirmationButton isDisabled={files ? files.length === 0 : true} onClick={uploadFiles}>Upload file{files && files.length > 1 ? "s" : ""}</ConfirmationButton>
-      </Stack>
+      </EndpointForm>
     </div>
   );
 

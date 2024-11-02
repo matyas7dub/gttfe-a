@@ -1,8 +1,9 @@
-import { FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
+import { FormControl, FormLabel, Input, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { backendUrl } from "../../../config/config";
 import { createStage } from "../../Events/AutofillEvent/AutofillEvent";
 
@@ -19,7 +20,7 @@ export default function AutofillStage() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
 
         <FormControl isDisabled={eventId == null}>
@@ -29,8 +30,7 @@ export default function AutofillStage() {
         </FormControl>
 
         <ConfirmationButton isDisabled={stageName === ""} onClick={createStageWrapper}>Create stage and matches</ConfirmationButton>
-
-      </Stack>
+      </EndpointForm>
     </div>
   )
 

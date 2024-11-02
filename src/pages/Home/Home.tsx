@@ -1,8 +1,7 @@
 import { Link as RouterLink } from 'react-router-dom';
 import {
   Link as ChakraLink,
-  Heading,
-  Divider,
+  Stack,
 } from '@chakra-ui/react';
 import { RoleContent } from '../Role/Role';
 import { GameContent } from '../Game/Game';
@@ -10,34 +9,36 @@ import { EventsContent } from '../Events/Events';
 import { StagesContent } from '../Stages/Stages';
 import { MatchesContent } from '../Matches/Matches';
 import { FileContent } from '../File/File';
+import GroupHeading from '../../components/GroupHeading/GroupHeading';
+import FormDivider from '../../components/FormDivider/FormDivider';
 
 function Home() {
   return (
-    <div className={'Home'}>
-      <ChakraLink as={RouterLink} to="game"><Heading className={'Heading'}>Game</Heading></ChakraLink>
+    <Stack direction="column" minWidth="20em" width="fit-content">
+      <ChakraLink as={RouterLink} to="game"><GroupHeading>Game</GroupHeading></ChakraLink>
       <GameContent />
-      <Divider className={'Divider'} />
+      <FormDivider />
 
-      <ChakraLink as={RouterLink} to="role"><Heading className={'Heading'}>Role</Heading></ChakraLink>
+      <ChakraLink as={RouterLink} to="role"><GroupHeading>Role</GroupHeading></ChakraLink>
       <RoleContent />
-      <Divider className={'Divider'} />
+      <FormDivider />
 
-      <ChakraLink as={RouterLink} to="events"><Heading className={'Heading'}>Events</Heading></ChakraLink>
+      <ChakraLink as={RouterLink} to="events"><GroupHeading>Events</GroupHeading></ChakraLink>
       <EventsContent />
-      <Divider className={'Divider'} />
+      <FormDivider />
 
-      <ChakraLink as={RouterLink} to="stages"><Heading className={'Heading'}>Stages</Heading></ChakraLink>
+      <ChakraLink as={RouterLink} to="stages"><GroupHeading>Stages</GroupHeading></ChakraLink>
       <StagesContent />
-      <Divider className={'Divider'} />
+      <FormDivider />
 
-      <ChakraLink as={RouterLink} to="matches"><Heading className={'Heading'}>Matches</Heading></ChakraLink>
+      <ChakraLink as={RouterLink} to="matches"><GroupHeading>Matches</GroupHeading></ChakraLink>
       <MatchesContent />
-      <Divider className={'Divider'} />
+      <FormDivider />
 
-      <ChakraLink as={RouterLink} to="file"><Heading className={'Heading'}>File</Heading></ChakraLink>
+      <ChakraLink as={RouterLink} to="file"><GroupHeading>File</GroupHeading></ChakraLink>
       <FileContent />
-      <Divider className={'Divider'} />
-    </div>
+      <FormDivider />
+    </Stack>
   );
 }
 

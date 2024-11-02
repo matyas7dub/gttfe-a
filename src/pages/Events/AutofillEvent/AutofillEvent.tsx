@@ -1,8 +1,9 @@
-import { CreateToastFnReturn, FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
+import { CreateToastFnReturn, FormControl, FormLabel, Input, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -15,7 +16,7 @@ export default function AutofillEvent() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
 
         <FormControl isDisabled={eventId == null}>
@@ -24,7 +25,7 @@ export default function AutofillEvent() {
         </FormControl>
 
         <ConfirmationButton isDisabled={stageName === ""} onClick={createStageWrapper}>Create stage and matches</ConfirmationButton>
-      </Stack>
+      </EndpointForm>
     </div>
   )
 

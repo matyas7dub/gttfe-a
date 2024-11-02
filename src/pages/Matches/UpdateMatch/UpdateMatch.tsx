@@ -1,8 +1,9 @@
-import { Stack, useToast } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
+import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 import TeamResultInput from "../TeamResultInput";
@@ -22,7 +23,7 @@ export default function UpdateMatch() {
     <div>
       <Breadcrumbs />
 
-      <Stack direction="column" spacing="3rem" className="Form">
+      <EndpointForm>
         <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
 
         <DataPicker value={stageId} options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
@@ -35,7 +36,7 @@ export default function UpdateMatch() {
 
         <ConfirmationButton isDisabled={!matchId} onClick={updateMatch}>Update match</ConfirmationButton>
 
-      </Stack>
+      </EndpointForm>
     </div>
   )
 
