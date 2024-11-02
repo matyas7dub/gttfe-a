@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
@@ -6,25 +6,68 @@ import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
 export default function Upload() {
-  const [fileName, setFileName] = useState<String>("");
-  const [file, setFile] = useState<File|null>(null);
+  const [fileNames, setFileNames] = useState<Map<string, string>>(new Map());
+  const [fileRenameElems, setFileRenameElems] = useState<JSX.Element[]>();
+  const [files, setFiles] = useState<FileList | null>();
 
   const toast = useToast();
 
-  async function uploadFile() {
-    if (file === null) {
+  function uploadFiles() {
+    if (files === null) {
       return;
     }
-    await fetchGracefully(backendUrl + `/backend/file/${fileName}`,
-    {
-      method: "PUT",
-      body: file,
-      headers: [
-        ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-        ['Content-Type', file.type,]
-      ]
-    },
-    "File uploaded successfully", toast);
+
+    for (let file = 0; file < (files ? files?.length : 0); file++) {
+      const fileName = fileNames.get(files ? (files.item(file) as File).name : "");
+      if (fileName === "" || fileName === undefined) {
+        // shouldn't happen (I think)
+        console.error("Couldn't get original file name");
+        toast({
+          title: "Couldn't upload a file",
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+        continue;
+      }
+
+      fetchGracefully(backendUrl + `/backend/file/${fileName}`,
+      {
+        method: "PUT",
+        body: (files as FileList)[file],
+        headers: [
+          ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
+          ['Content-Type', (files as FileList)[file].type,]
+        ]
+      },
+      `${fileName} uploaded successfully`, toast);
+    }
+  }
+
+  function selectFiles(newFiles: FileList) {
+    setFiles(newFiles);
+
+    const tempFileNames: Map<string, string> = new Map();
+    const renameElems: JSX.Element[] = [];
+    for (let file = 0; file < newFiles.length; file++) {
+      const name = (newFiles.item(file) as File).name;
+      tempFileNames.set(name, name);
+      renameElems.push(<FormControl>
+        <FormLabel>Rename {name}</FormLabel>
+        <Input type="text" placeholder={name} onChange={event => {
+          let newName = event.target.value;
+          const temp = fileNames;
+          if (newName !== "") {
+            temp.set(name, event.target.value)
+          } else {
+            temp.set(name, name);
+          }
+          setFileNames(temp);
+        }} />
+      </FormControl>)
+    }
+    setFileNames(tempFileNames);
+    setFileRenameElems(renameElems);
   }
 
   return (
@@ -32,14 +75,20 @@ export default function Upload() {
       <Breadcrumbs />
 
       <Stack direction="column" spacing="3rem" className="Form">
+        <Alert status="info">
+          <AlertIcon />
+          <AlertTitle>Tip</AlertTitle>
+          <AlertDescription>You can upload multiple files</AlertDescription>
+        </Alert>
+
         <FormControl>
           <FormLabel>File</FormLabel>
-          <Input type="text" onChange={(event) => setFileName(event.target.value)}/>
-          <Input type="file" onChange={(event) => setFile(event.target.files !== null?event.target.files[0]: null)}/>
+          <Input type="file" multiple={true} onChange={(event) => selectFiles(event.target.files ? event.target.files : new FileList())}/>
         </FormControl>
 
-        <ConfirmationButton isDisabled={fileName === ""} onClick={uploadFile}>Upload file</ConfirmationButton>        
+        {fileRenameElems}
 
+        <ConfirmationButton isDisabled={files ? files.length === 0 : true} onClick={uploadFiles}>Upload file{files && files.length > 1 ? "s" : ""}</ConfirmationButton>
       </Stack>
     </div>
   );

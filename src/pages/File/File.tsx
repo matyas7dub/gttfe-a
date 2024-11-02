@@ -19,8 +19,8 @@ export function FileContent() {
   const url = location.pathname === '/file' ? '' : '/file/';
   return (
     <div className={"LinkList"}>
-      <ChakraLink as={RouterLink} to={`${url}upload`}>upload file<LinkIcon /></ChakraLink>
-      <ChakraLink as={RouterLink} to={`${url}list`}>list files<LinkIcon /></ChakraLink>
+      <ChakraLink as={RouterLink} to={`${url}upload`}>Upload file<LinkIcon /></ChakraLink>
+      <ChakraLink as={RouterLink} to={`${url}list`}>List files<LinkIcon /></ChakraLink>
     </div>
   )
 }
