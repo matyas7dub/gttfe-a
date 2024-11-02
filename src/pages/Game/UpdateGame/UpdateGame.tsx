@@ -30,12 +30,12 @@ export default function UpdateGame() {
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
             <FormLabel>Registration start</FormLabel>
-            <Input max={regEnd} type='date' value={regStart} onChange={(event) => setRegStart(event.target.value)}/>
+            <Input max={regEnd} type='datetime-local' value={regStart} onChange={(event) => setRegStart(event.target.value)}/>
           </FormControl>
 
           <FormControl>
             <FormLabel>Registration end</FormLabel>
-            <Input min={regStart}  type='date' value={regEnd} onChange={(event) => setRegEnd(event.target.value)} />
+            <Input min={regStart}  type='datetime-local' value={regEnd} onChange={(event) => setRegEnd(event.target.value)} />
           </FormControl>
         </Stack>
 
@@ -76,15 +76,13 @@ export default function UpdateGame() {
       if (data.registrationStart != null) {
         setRegStart(data.registrationStart);
       } else {
-        const now = new Date().toISOString().split('T')[0].replace(/-/g, '-');
-        setRegStart(now);
+        setRegStart(new Date().toISOString());
       }
 
       if (data.registrationEnd != null) {
         setRegEnd(data.registrationEnd);
       } else {
-        const now = new Date().toISOString().split('T')[0].replace(/-/g, '-');
-        setRegEnd(now);
+        setRegEnd(new Date().toISOString());
       }
 
       if (data.maxTeams != null) {
