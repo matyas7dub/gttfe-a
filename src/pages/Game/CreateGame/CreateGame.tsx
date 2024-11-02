@@ -30,12 +30,12 @@ export default function CreateGame() {
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
             <FormLabel>Registration start</FormLabel>
-            <Input max={regEnd !== "" ? String(regEnd) : undefined} type='date' onChange={(event) => setRegStart(event.target.value)}/>
+            <Input max={regEnd !== "" ? String(regEnd) : undefined} type='datetime-local' onChange={(event) => setRegStart(event.target.value)}/>
           </FormControl>
 
           <FormControl>
             <FormLabel>Registration end</FormLabel>
-            <Input min={regStart !== "" ? String(regStart) : undefined} type='date' onChange={(event) => setRegEnd(event.target.value)} />
+            <Input min={regStart !== "" ? String(regStart) : undefined} type='datetime-local' onChange={(event) => setRegEnd(event.target.value)} />
           </FormControl>
         </Stack>
 
