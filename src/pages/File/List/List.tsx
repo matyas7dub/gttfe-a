@@ -49,7 +49,7 @@ export default function List() {
       tmpFiles.push(<div>
         <Card width="fit-content" minWidth="30%" marginTop="-2rem">
           <Flex justifyContent="space-between" alignItems="center"padding="1rem">
-            <ChakraLink href={file.address}>{file.fileName}</ChakraLink>
+            <ChakraLink href={backendUrl + file.address}>{file.fileName}</ChakraLink>
             <Button onClick={() => { deleteFile(file.fileName) }}><DeleteIcon></DeleteIcon></Button>
           </Flex>
         </Card>
