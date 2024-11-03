@@ -6,6 +6,7 @@ import UpdateGame from './pages/Game/UpdateGame/UpdateGame';
 import CreateGame from './pages/Game/CreateGame/CreateGame';
 import Role from './pages/Role/Role';
 import AddAssignedRole from './pages/Role/AddAssignedRole/AddAssignedRole';
+import RemoveAssignedRole from './pages/Role/RemoveAssignedRole.tsx/RemoveAssignedRole';
 import './App.scss';
 import LoginScript from './components/Navbar/Login/LoginScript';
 import Events from './pages/Events/Events';
@@ -40,6 +41,7 @@ function App() {
       <Route path="/game/create" element={<CreateGame />} />
       <Route path="/role" element={<Role />} />
       <Route path="/role/add-to-user" element={<AddAssignedRole />} />
+      <Route path="/role/remove-from-user" element={<RemoveAssignedRole />} />
       <Route path="/events" element={<Events />} />
       <Route path="/events/create" element={<CreateEvent />} />
       <Route path="/events/update" element={<UpdateEvent />} />

@@ -21,6 +21,7 @@ export function RoleContent() {
   return (
     <div className={"LinkList"}>
       <ChakraLink as={RouterLink} to={`${url}add-to-user`}>Add role to a user<LinkIcon /></ChakraLink>
+      { /* <ChakraLink as={RouterLink} to={`${url}remove-from-user`}>Remove role from a user<LinkIcon /></ChakraLink> */ }
     </div>
   )
 }
