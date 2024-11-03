@@ -96,7 +96,7 @@ export async function fetchGracefully(url: string, init: RequestInit, successMes
 }
 
 async function fetchWithToast(url: string, init: RequestInit, successMessage: string | null, toast: CreateToastFnReturn): Promise<Response> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     fetch(url, init)
     .then(async response => {
       if (response.ok) {
@@ -108,7 +108,6 @@ async function fetchWithToast(url: string, init: RequestInit, successMessage: st
             isClosable: true
           })
         }
-        resolve(response);
       } else {
         if (successMessage !== null) {
           const data = await response.json();
@@ -121,8 +120,8 @@ async function fetchWithToast(url: string, init: RequestInit, successMessage: st
             isClosable: true
           })
         }
-        reject(response);
       }
+      resolve(response);
     })
     .catch(error => console.error("Error:", error));
   })
