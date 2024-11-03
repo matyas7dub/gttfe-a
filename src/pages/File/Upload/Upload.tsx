@@ -57,13 +57,12 @@ export default function Upload() {
         <FormLabel>Rename {name}</FormLabel>
         <Input type="text" placeholder={name} onChange={event => {
           let newName = event.target.value;
-          const temp = fileNames;
           if (newName !== "") {
-            temp.set(name, event.target.value)
+            tempFileNames.set(name, newName)
           } else {
-            temp.set(name, name);
+            tempFileNames.set(name, name);
           }
-          setFileNames(temp);
+          setFileNames(tempFileNames);
         }} />
       </FormControl>)
     }
