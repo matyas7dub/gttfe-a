@@ -7,7 +7,7 @@ import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
-export default function AddToUser() {
+export default function AddAssignedRole() {
   const [pfpUrl, setPfpUrl] = useState("");
   const [userName, setUserName] = useState("");
   const [userUsername, setUserUsername] = useState("");

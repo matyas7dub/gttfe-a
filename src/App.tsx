@@ -5,7 +5,7 @@ import PageUpdate from './pages/Game/PageUpdate/PageUpdate';
 import UpdateGame from './pages/Game/UpdateGame/UpdateGame';
 import CreateGame from './pages/Game/CreateGame/CreateGame';
 import Role from './pages/Role/Role';
-import AddToUser from './pages/Role/AddToUser/AddToUser';
+import AddAssignedRole from './pages/Role/AddAssignedRole/AddAssignedRole';
 import './App.scss';
 import LoginScript from './components/Navbar/Login/LoginScript';
 import Events from './pages/Events/Events';
@@ -25,19 +25,21 @@ import AutofillStage from './pages/Stages/AutofillStage/AutofillStage';
 import File from './pages/File/File';
 import Upload from './pages/File/Upload/Upload';
 import List from './pages/File/List/List';
+import NotFound from './pages/NotFound/NotFound';
 
 import { loginPathRelative } from './config/config';
 
 function App() {
   return (
     <Routes>
+      <Route path="*" element={<NotFound />} />
       <Route path="/" element={<Home />} />
       <Route path="/game" element={<Game />} />
       <Route path="/game/page-update" element={<PageUpdate />} />
       <Route path="/game/update" element={<UpdateGame/>} />
       <Route path="/game/create" element={<CreateGame />} />
       <Route path="/role" element={<Role />} />
-      <Route path="/role/add-to-user" element={<AddToUser />} />
+      <Route path="/role/add-to-user" element={<AddAssignedRole />} />
       <Route path="/events" element={<Events />} />
       <Route path="/events/create" element={<CreateEvent />} />
       <Route path="/events/update" element={<UpdateEvent />} />
