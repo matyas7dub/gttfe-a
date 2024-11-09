@@ -21,7 +21,7 @@ export default function AddAssignedRole() {
       <EndpointForm>
         <UserPicker callback={id => setUserId(id)} toast={toast} />
 
-        <DataPicker dataType={dataType.assignedRoles} changeHandler={event => setRoleId(Number(event.target.value))} />
+        <DataPicker dataType={dataType.assignedRoles} changeHandler={event => setRoleId(Number(event.target.value))} toast={toast} />
 
         <ConfirmationButton isDisabled={userId === "" || roleId === 0} onClick={addRole}>Add role</ConfirmationButton> 
       </EndpointForm>

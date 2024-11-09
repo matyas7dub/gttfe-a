@@ -1,11 +1,14 @@
 import { FormControl, FormErrorMessage, FormLabel } from "@chakra-ui/form-control";
+import { CreateToastFnReturn } from "@chakra-ui/react";
 import { Select } from "@chakra-ui/select";
 import { ChangeEventHandler, useState, useEffect } from "react";
 import { backendUrl } from "../../config/config";
+import { fetchGracefully } from "../Navbar/Login/LoginScript";
 
 type DataPickerProps = {
   dataType: dataType,
   changeHandler: ChangeEventHandler<HTMLSelectElement>,
+  toast: CreateToastFnReturn,
   isInvalid?: boolean,
   placeholder?: string,
   title?: string,
@@ -150,9 +153,10 @@ export default function DataPicker(props: DataPickerProps) {
             break;
           case dataType.stage:
             let stageElems: JSX.Element[] = [];
+            let eventNamesMap = await getEventNamesMap(props.toast);
             for (let stage of data) {
               stageElems.push(
-                <option key={stage.stageId} value={stage.stageId}>{namePrettyPrint(stage.stageName)}</option>
+                <option key={stage.stageId} value={stage.stageId}>{namePrettyPrint(eventNamesMap.get(stage.eventId)?? "") + " > " + namePrettyPrint(stage.stageName)}</option>
               );
             }
             setOptionElems(stageElems);
@@ -206,7 +210,7 @@ export default function DataPicker(props: DataPickerProps) {
       })
       .catch(error => console.error('Error:', error));
     }
-  }, [props.isDisabled, props.dataType, props.options]);
+  }, [props.isDisabled, props.dataType, props.options, props.toast]);
 
   return (
     <FormControl isInvalid={props.isInvalid ?? undefined}>
@@ -274,5 +278,23 @@ export default function DataPicker(props: DataPickerProps) {
     .catch(error => console.error("Error: ", error));
 
     return teamNamesMap;
+  }
+
+  async function getEventNamesMap(toast: CreateToastFnReturn): Promise<Map<number, string>> {
+    const eventNamesMap = new Map<number, string>();
+
+    await fetchGracefully(backendUrl + "/backend/event/listAll",
+    {
+      headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
+    }, null, toast)
+    .then(response => response.json())
+    .then(events => {
+      for (let event of events) {
+        eventNamesMap.set(event.eventId, event.description);
+      }
+    })
+    .catch(error => console.error("Error: ", error));
+
+    return eventNamesMap;
   }
 }

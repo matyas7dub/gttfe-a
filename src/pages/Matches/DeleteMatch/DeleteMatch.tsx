@@ -23,11 +23,11 @@ export default function DeleteMatch() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} />
+        <DataPicker dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
+        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}}  dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
+        <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}}  dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} toast={toast} />
 
         <ConfirmationButton isDisabled={!matchId} onClick={onOpen}>Delete match</ConfirmationButton>
 

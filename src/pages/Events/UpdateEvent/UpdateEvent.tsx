@@ -24,9 +24,9 @@ export default function UpdateEvent() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.event} key={eventPickerKey} value={eventId?? 0} changeHandler={event => selectEvent(Number(event.target.value))} />
+        <DataPicker dataType={dataType.event} key={eventPickerKey} value={eventId?? 0} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
-        <DataPicker dataType={dataType.game} isDisabled={eventId == null || eventId === 0} value={gameId} changeHandler={event => setGameId(Number(event.target.value))} />
+        <DataPicker dataType={dataType.game} isDisabled={eventId == null || eventId === 0} value={gameId} changeHandler={event => setGameId(Number(event.target.value))} toast={toast} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>

@@ -20,7 +20,7 @@ export default function PageUpdate() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.game} isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} />
+        <DataPicker dataType={dataType.game} isInvalid={selectorError} changeHandler={(event) => {updateCurrentGame(event.target.value)}} toast={toast} />
         <MDEditor value={page} onChange={(change: any) => {setPage(change)}} height={500} />
         <ConfirmationButton onClick={uploadGamePage}>Update page</ConfirmationButton>
       </EndpointForm>

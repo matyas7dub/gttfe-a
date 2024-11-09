@@ -51,9 +51,9 @@ export default function CreateGame() {
           </NumberInput>
         </FormControl>
 
-        <DataPicker title="Backdrop" dataType={dataType.file} changeHandler={event => {setBackdrop(event.target.value)}} />
+        <DataPicker title="Backdrop" dataType={dataType.file} changeHandler={event => {setBackdrop(event.target.value)}} toast={toast} />
 
-        <DataPicker title="Icon" dataType={dataType.file} changeHandler={event => {setIcon(event.target.value)}} />
+        <DataPicker title="Icon" dataType={dataType.file} changeHandler={event => {setIcon(event.target.value)}} toast={toast} />
 
         <ConfirmationButton isDisabled={gameName === "" || regStart === "" || regEnd === ""} onClick={createGame}>Update game</ConfirmationButton> 
 
