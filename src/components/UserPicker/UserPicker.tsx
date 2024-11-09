@@ -50,9 +50,9 @@ export default function UserPicker(props: UserPickerProps) {
         if (user.discord_user_object) {
           setUserUsername(user.discord_user_object.username);
           setPfpUrl(`https://cdn.discordapp.com/avatars/${user.discord_user_object.id}/${user.discord_user_object.avatar}`);
-          props.callback(id);
-          return;
         }
+        props.callback(id);
+        return;
       }
       props.callback("");
       setUserUsername("");
