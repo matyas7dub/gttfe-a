@@ -9,8 +9,8 @@ import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
 export default function UpdateStage() {
-  const [eventId, setEventId] = useState<Number>();
-  const [stageId, setStageId] = useState<Number>();
+  const [eventId, setEventId] = useState<number>();
+  const [stageId, setStageId] = useState<number>();
   const [stageName, setStageName] = useState("");
   const [stageIndex, setStageIndex] = useState<number>();
 
@@ -20,9 +20,9 @@ export default function UpdateStage() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker title="Event (Optional)" dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} toast={toast} />
+        <DataPicker title="Event (Optional)" value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
+        <DataPicker options={{eventId: eventId?? undefined}} value={stageId} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
 
         <FormControl>
           <FormLabel>Name</FormLabel>
@@ -31,7 +31,7 @@ export default function UpdateStage() {
 
         <FormControl>
           <FormLabel>Index/Level <Tooltip label="i. e. quarterfinals = 1, semifinals = 2, finals = 3"><QuestionIcon /></Tooltip></FormLabel>
-          <NumberInput isDisabled={!stageId} defaultValue={stageIndex} onChange={(_, value) => {setStageIndex(value)}}>
+          <NumberInput isDisabled={!stageId} value={stageIndex} onChange={(_, value) => {setStageIndex(value)}}>
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
@@ -45,7 +45,15 @@ export default function UpdateStage() {
     </div>
   )
 
-  function selectStage(newStageId: Number) {
+  function selectEvent(newEventId: number) {
+    setEventId(newEventId);
+
+    if (newEventId === 0) {
+      setStageId(0);
+    }
+  }
+
+  function selectStage(newStageId: number) {
     setStageId(newStageId);
 
     fetch(backendUrl + `/backend/stage/${newStageId}/`)
