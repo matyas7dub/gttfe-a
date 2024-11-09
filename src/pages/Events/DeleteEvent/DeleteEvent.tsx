@@ -21,7 +21,7 @@ export default function DeleteEvent() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.event} key={eventPickerKey} changeHandler={event => selectEvent(Number(event.target.value))} />
+        <DataPicker dataType={dataType.event} key={eventPickerKey} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
         <ConfirmationButton isDisabled={eventId === -1} onClick={onOpen}>Delete event</ConfirmationButton>
 
         <ConfirmationModal isOpen={isOpen} onClose={onClose} body={`Do you really want to delete ${eventName === "" ? "Unnamed" : eventName}`} confirmFunction={deleteEvent} />

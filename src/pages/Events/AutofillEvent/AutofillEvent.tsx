@@ -17,7 +17,7 @@ export default function AutofillEvent() {
       <Breadcrumbs />
 
       <EndpointForm>
-        <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
+        <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
         <FormControl isDisabled={eventId == null}>
           <FormLabel>Stage name</FormLabel>

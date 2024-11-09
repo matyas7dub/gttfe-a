@@ -21,7 +21,7 @@ export default function CreateStage() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.event} changeHandler={(event)=>{setEventId(Number(event.target.value))}} />
+        <DataPicker dataType={dataType.event} changeHandler={(event)=>{setEventId(Number(event.target.value))}} toast={toast} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>

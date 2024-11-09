@@ -28,7 +28,7 @@ export default function CreateEvent() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.game} isInvalid={gameError} changeHandler={(event) => {setGameId(Number(event.target.value)); setGameError(false)}} />
+        <DataPicker dataType={dataType.game} isInvalid={gameError} changeHandler={(event) => {setGameId(Number(event.target.value)); setGameError(false)}} toast={toast} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl isInvalid={startError}>

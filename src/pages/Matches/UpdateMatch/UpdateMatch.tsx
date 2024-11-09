@@ -24,13 +24,13 @@ export default function UpdateMatch() {
       <Breadcrumbs />
 
       <EndpointForm>
-        <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} />
+        <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
-        <DataPicker value={stageId} options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} />
+        <DataPicker value={stageId} options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
 
-        <DataPicker value={matchId} options={{eventId: eventId?? undefined, stageId: stageId?? undefined}} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} />
+        <DataPicker value={matchId} options={{eventId: eventId?? undefined, stageId: stageId?? undefined}} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} toast={toast} />
 
-        <TeamResultInput isDisabled={!matchId} stageId={stageId?? undefined}
+        <TeamResultInput isDisabled={!matchId} stageId={stageId?? undefined} toast={toast}
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}
           secondTeamId={secondTeamId} setSecondTeamId={setSecondTeamId} secondTeamResult={secondTeamResult} setSecondTeamResult={setSecondTeamResult} />
 

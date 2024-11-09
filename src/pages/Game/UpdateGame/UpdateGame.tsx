@@ -26,7 +26,7 @@ export default function UpdateGame() {
       <Breadcrumbs />
 
       <EndpointForm>
-        <DataPicker dataType={dataType.game} isInvalid={gameErr} changeHandler={(event) => selectGame(event.target.value)}/>
+        <DataPicker dataType={dataType.game} isInvalid={gameErr} changeHandler={(event) => selectGame(event.target.value)} toast={toast} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
@@ -51,9 +51,9 @@ export default function UpdateGame() {
           </NumberInput>
         </FormControl>
 
-        <DataPicker title="Backdrop" value={backdrop} dataType={dataType.file} changeHandler={event => {setBackdrop(event.target.value)}} />
+        <DataPicker title="Backdrop" value={backdrop} dataType={dataType.file} changeHandler={event => {setBackdrop(event.target.value)}} toast={toast} />
 
-        <DataPicker title="Icon" value={icon} dataType={dataType.file} changeHandler={event => {setIcon(event.target.value)}} />
+        <DataPicker title="Icon" value={icon} dataType={dataType.file} changeHandler={event => {setIcon(event.target.value)}} toast={toast} />
 
         <ConfirmationButton isDisabled={gameId == null} onClick={updateGame}>Update game</ConfirmationButton> 
 
