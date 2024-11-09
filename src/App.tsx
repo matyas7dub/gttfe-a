@@ -29,6 +29,8 @@ import List from './pages/File/List/List';
 import NotFound from './pages/NotFound/NotFound';
 
 import { loginPathRelative } from './config/config';
+import Users from './pages/Users/Users';
+import ShowUser from './pages/Users/ShowUser/ShowUser';
 
 function App() {
   return (
@@ -59,6 +61,8 @@ function App() {
       <Route path="/file" element={<File />} />
       <Route path="/file/upload" element={<Upload />} />
       <Route path="/file/list" element={<List />} />
+      <Route path="/users" element={<Users />} />
+      <Route path="/users/show" element={<ShowUser />} />
       <Route path={`${loginPathRelative}`} element={<LoginScript />} />
     </Routes>
   )
