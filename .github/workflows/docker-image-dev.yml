@@ -11,7 +11,7 @@ env:
   REACT_APP_AUTH_REDIRECT: /login
   REACT_APP_BACKEND_URL: ''
   PUBLIC_URL: "/admin"
-  REACT_APP_COMMIT_HASH: $GITHUB_SHA
+  REACT_APP_COMMIT_HASH: ${{ github.sha }}
 
 jobs:
 
