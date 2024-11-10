@@ -43,6 +43,17 @@ export default function Login() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => afterLogin(), [])
 
+  useEffect(() => {setInterval(() => {
+    const loginResult = localStorage.getItem("loginResult");
+    if (loginResult) {
+      if (loginResult === "success") {
+        afterLogin();
+      }
+      localStorage.removeItem("loginResult");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, 5000)}, [])
+
   function afterLogin() {
     const validLogin = validJws();
     setValidLoginState(validLogin);
