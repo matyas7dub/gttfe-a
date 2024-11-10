@@ -47,7 +47,7 @@ export default function LoginScript() {
   )
 }
 
-export async function fetchGracefully(url: string, init: RequestInit, successMessage: string | undefined | null, toast: CreateToastFnReturn): Promise<Response> {
+export async function fetchGracefully(url: string, init: RequestInit, successMessage: string | null, toast: CreateToastFnReturn): Promise<Response> {
   if (successMessage !== null) {
     successMessage = successMessage?? "Success";
   }
@@ -109,17 +109,15 @@ async function fetchWithToast(url: string, init: RequestInit, successMessage: st
           })
         }
       } else {
-        if (successMessage !== null) {
-          const data = await response.json();
-          const error = data.msg?? data.message?? 'Unknown error.';
-          toast({
-            title: 'Error',
-            description: error,
-            status: 'error',
-            duration: 5000,
-            isClosable: true
-          })
-        }
+        const data = await response.json();
+        const error = data.msg?? data.message?? 'Unknown error.';
+        toast({
+          title: 'Error',
+          description: error,
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
       }
       resolve(response);
     })
