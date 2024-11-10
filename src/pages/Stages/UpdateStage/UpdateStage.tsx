@@ -22,7 +22,7 @@ export default function UpdateStage() {
       <EndpointForm>
         <DataPicker title="Event (Optional)" value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined}} value={stageId} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
+        <DataPicker eventId={eventId} value={stageId} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
 
         <FormControl>
           <FormLabel>Name</FormLabel>

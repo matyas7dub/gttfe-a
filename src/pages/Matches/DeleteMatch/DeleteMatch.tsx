@@ -23,11 +23,11 @@ export default function DeleteMatch() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} toast={toast} />
+        <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(event)} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
+        <DataPicker value={stageId} eventId={eventId} dataType={dataType.stage} changeHandler={event => selectStage(event)} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined, stageId: stageId?? undefined}}  dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} toast={toast} />
+        <DataPicker value={matchId} eventId={eventId} stageId={stageId}  dataType={dataType.match} changeHandler={event => selectMatch(event)} toast={toast} />
 
         <ConfirmationButton isDisabled={!matchId} onClick={onOpen}>Delete match</ConfirmationButton>
 
@@ -36,38 +36,65 @@ export default function DeleteMatch() {
     </div>
   )
 
-  function selectStage(newStageId: number) {
+  function selectEvent(event: React.ChangeEvent<HTMLSelectElement>) {
+    const newEventId = Number(event.target.value);
+    setEventId(newEventId);
+
+    if (newEventId !== eventId || !newEventId) {
+      setStageId(0);
+      setMatchId(0);
+    }
+  }
+
+  function selectStage(event: React.ChangeEvent<HTMLSelectElement>) {
+    const newStageId = Number(event.target.value);
     setStageId(newStageId);
+    inferEvent(newStageId);
+
+    if (newStageId !== stageId || !newStageId) {
+      setMatchId(0);
+    }
+  }
+
+  function inferEvent(stage: number) {
     if (!eventId) {
-      fetch(backendUrl + `/backend/stage/${newStageId}/`)
+      fetch(backendUrl + `/backend/stage/${stage}/`)
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
       .catch(error => console.error("Error", error));
     }
   }
 
-  function selectMatch(newMatchId: number) {
+  function selectMatch(event: React.ChangeEvent<HTMLSelectElement>) {
+    const newMatchId = Number(event.target.value);
     setMatchId(newMatchId);
-    if (!stageId) {
-      fetch(backendUrl + `/backend/match/${newMatchId}/`)
-      .then(response => response.json())
-      .then(data => {
-        setStageId(Number(data.stageId));
-        setFirstTeamName(getTeamName(Number(data.firstTeamId)));
-        setSecondTeamName(getTeamName(Number(data.secondTeamId)));
-      })
-      .catch(error => console.error("Error", error));
-    }
-  }
 
-  function getTeamName(teamId: number): string {
-    fetch(backendUrl + `/backend/team/id/${teamId}/`)
+    if (!newMatchId) {
+      return;
+    }
+
+    fetch(backendUrl + `/backend/match/${newMatchId}/`)
     .then(response => response.json())
-    .then(data => {
-      return data.name
+    .then(async data => {
+      setStageId(Number(data.stageId));
+      inferEvent(Number(data.stageId));
+      setFirstTeamName(await getTeamName(data.firstTeamId));
+      setSecondTeamName(await getTeamName(data.secondTeamId));
     })
     .catch(error => console.error("Error", error));
-    return "Error";
+  }
+
+  async function getTeamName(teamId: number): Promise<string> {
+    let name = "Error";
+
+    await fetch(backendUrl + `/backend/team/id/${teamId}/`)
+    .then(response => response.json())
+    .then(data => {
+      name = data.name
+    })
+    .catch(error => console.error("Error", error));
+
+    return name;
   }
 
   function deleteMatch() {
