@@ -1,4 +1,4 @@
-import { CreateToastFnReturn, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
+import { CreateToastFnReturn, Flex, FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Spacer, Stack } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import DataPicker, { dataType } from "../../components/DataPicker/DataPicker";
 import FormDivider from "../../components/FormDivider/FormDivider";
@@ -19,8 +19,6 @@ type TeamResultInputProps = {
 }
 
 export default function TeamResultInput(props: TeamResultInputProps) {
-  const horizontalFormSpacing = "2rem";
-
   const [gameId, setGameId] = useState<Number>();
 
   useEffect(() => {
@@ -40,12 +38,12 @@ export default function TeamResultInput(props: TeamResultInputProps) {
   }
 
   return (
-    <Stack direction="row" spacing={horizontalFormSpacing}>
-      <Stack direction="column" spacing="3rem">
+    <Flex>
+      <Stack direction="column" spacing="3rem" flexGrow="1">
         <DataPicker title="First team" options={{gameId: gameId}} value={props.firstTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} toast={props.toast} />
 
         <FormControl>
-          <FormLabel>First team result</FormLabel>
+          <FormLabel>First team score</FormLabel>
           <NumberInput isDisabled={props.isDisabled} value={props.firstTeamResult?? undefined} onChange={(_, value) => {props.setFirstTeamResult(value)}}>
             <NumberInputField />
             <NumberInputStepper>
@@ -56,15 +54,15 @@ export default function TeamResultInput(props: TeamResultInputProps) {
         </FormControl>
       </Stack>
 
-      <div>
+      <div style={{marginLeft: "2rem", marginRight: "2rem"}}>
         <FormDivider orientation="vertical" />
       </div>
 
-      <Stack direction="column" spacing="3rem">
+      <Stack direction="column" spacing="3rem" flexGrow="1">
         <DataPicker title="Second team" options={{gameId: gameId}} value={props.secondTeamId?? undefined} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setSecondTeamId(Number(event.target.value))}} toast={props.toast} />
 
         <FormControl>
-          <FormLabel>Second team result</FormLabel>
+          <FormLabel>Second team score</FormLabel>
           <NumberInput isDisabled={props.isDisabled} value={props.secondTeamResult?? undefined} onChange={(_, value) => {props.setSecondTeamResult(value)}}>
             <NumberInputField />
             <NumberInputStepper>
@@ -74,6 +72,6 @@ export default function TeamResultInput(props: TeamResultInputProps) {
           </NumberInput>
         </FormControl>
       </Stack>
-    </Stack>
+    </Flex>
   )
 }
