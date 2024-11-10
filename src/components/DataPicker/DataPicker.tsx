@@ -14,11 +14,8 @@ type DataPickerProps = {
   title?: string,
   value?: number | string,
   isDisabled?: boolean,
-  options?: DataPickerOptions
-}
 
-// optional props for some data types
-type DataPickerOptions = {
+  // optional props for some data types
   gameId?: Number,
   eventId?: Number,
   stageId?: Number
@@ -44,10 +41,6 @@ export default function DataPicker(props: DataPickerProps) {
 
 
   useEffect(() => {
-    if (props.isDisabled) {
-      return;
-    }
-
     let location = "";
     let invalid = false;
     let headersRequired = false;
@@ -66,8 +59,8 @@ export default function DataPicker(props: DataPickerProps) {
         setErrorMessage("You must select an event!");
         break;
       case dataType.stage:
-        if (props.options !== undefined && props.options.eventId) {
-          location = `/backend/event/${props.options.eventId}/stages/`
+        if (props.eventId) {
+          location = `/backend/event/${props.eventId}/stages/`
         } else {
           location = "/backend/stage/listAll/";
         }
@@ -77,26 +70,24 @@ export default function DataPicker(props: DataPickerProps) {
         headersRequired = true;
         break;
       case dataType.match:
-        if (props.options !== undefined && props.options.stageId) {
-          location = `/backend/stage/${props.options.stageId}/matches/`;
-          headersRequired = true;
-        } else if (props.options !== undefined && props.options.eventId) {
-          location = `/backend/event/${props.options.eventId}/matches/`;
+        headersRequired = true;
+        if (props.stageId) {
+          location = `/backend/stage/${props.stageId}/matches/`;
+        } else if (props.eventId) {
+          location = `/backend/event/${props.eventId}/matches/`;
         } else {
           location = "/backend/match/listAll/";
-          headersRequired = true;
         }
         setFormLabel("Match");
         setPlaceholder("Select a match");
         setErrorMessage("You must select a match!");
         break;
       case dataType.teams:
-        if (props.options !== undefined) {
-          if (!props.options.gameId) {
-            console.error("You need to provide a gameId for the teams data picker")
-            invalid = true;
-          }
-          location = `/backend/team/list/participating/${props.options.gameId}/false/`
+        if (!props.gameId && !props.isDisabled) {
+          console.error("You need to provide a gameId for the teams data picker or disable it.")
+          invalid = true;
+        } else {
+          location = `/backend/team/list/participating/${props.gameId}/false/`
           setFormLabel("Team")
           setPlaceholder("Select a team");
           setErrorMessage("You must select a team!");
@@ -210,7 +201,7 @@ export default function DataPicker(props: DataPickerProps) {
       })
       .catch(error => console.error('Error:', error));
     }
-  }, [props.isDisabled, props.dataType, props.options, props.toast]);
+  }, [props.isDisabled, props.dataType, props.gameId, props.eventId, props.stageId, props.toast]);
 
   return (
     <FormControl isInvalid={props.isInvalid ?? undefined}>

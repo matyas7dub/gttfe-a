@@ -9,8 +9,8 @@ import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
 export default function DeleteStage() {
-  const [eventId, setEventId] = useState<Number>();
-  const [stageId, setStageId] = useState<Number>();
+  const [eventId, setEventId] = useState<number>();
+  const [stageId, setStageId] = useState<number>();
   const [stageName, setStageName] = useState("");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -21,9 +21,9 @@ export default function DeleteStage() {
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker title="Event (Optional)" dataType={dataType.event} changeHandler={event => setEventId(Number(event.target.value))} toast={toast} />
+        <DataPicker title="Event (Optional)" value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
-        <DataPicker options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
+        <DataPicker eventId={eventId} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
 
         <ConfirmationButton isDisabled={!stageId} onClick={onOpen}>Delete stage</ConfirmationButton>
 
@@ -32,12 +32,25 @@ export default function DeleteStage() {
     </div>
   )
 
-  function selectStage(newStageId: Number) {
+  function selectEvent(newEventId: number) {
+    setEventId(newEventId);
+
+    if (newEventId === 0) {
+      setStageId(0);
+    }
+  }
+
+  function selectStage(newStageId: number) {
     setStageId(newStageId);
+
+    if (newStageId === 0) {
+      return;
+    }
 
     fetch(backendUrl + `/backend/stage/${newStageId}/`)
     .then(response => response.json())
     .then(data => {
+      setEventId(data.eventId);
       setStageName(data.stageName);
     })
     .catch(error => console.error("Error", error));

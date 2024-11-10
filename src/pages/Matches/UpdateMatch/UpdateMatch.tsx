@@ -11,26 +11,26 @@ import TeamResultInput from "../TeamResultInput";
 export default function UpdateMatch() {
   const toast = useToast();
 
-  const [eventId, setEventId] = useState<number>();
-  const [stageId, setStageId] = useState<number>();
-  const [matchId, setMatchId] = useState<number>();
+  const [eventId, setEventId] = useState(0);
+  const [stageId, setStageId] = useState(0);
+  const [matchId, setMatchId] = useState(0);
 
-  const [firstTeamId, setFirstTeamId] = useState<number>();
+  const [firstTeamId, setFirstTeamId] = useState(0);
   const [firstTeamResult, setFirstTeamResult] = useState<number>();
-  const [secondTeamId, setSecondTeamId] = useState<number>();
+  const [secondTeamId, setSecondTeamId] = useState(0);
   const [secondTeamResult, setSecondTeamResult] = useState<number>();
   return (
     <div>
       <Breadcrumbs />
 
       <EndpointForm>
-        <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
+        <DataPicker value={eventId} dataType={dataType.event} changeHandler={event => selectEvent(event)} toast={toast} />
 
-        <DataPicker value={stageId} options={{eventId: eventId?? undefined}} dataType={dataType.stage} changeHandler={event => selectStage(Number(event.target.value))} toast={toast} />
+        <DataPicker value={stageId} eventId={eventId} dataType={dataType.stage} changeHandler={event => selectStage(event)} toast={toast} />
 
-        <DataPicker value={matchId} options={{eventId: eventId?? undefined, stageId: stageId?? undefined}} dataType={dataType.match} changeHandler={event => selectMatch(Number(event.target.value))} toast={toast} />
+        <DataPicker value={matchId} eventId={eventId} stageId={stageId} dataType={dataType.match} changeHandler={event => selectMatch(event)} toast={toast} />
 
-        <TeamResultInput isDisabled={!matchId} stageId={stageId?? undefined} toast={toast}
+        <TeamResultInput isDisabled={!matchId} stageId={stageId} toast={toast}
           firstTeamId={firstTeamId} setFirstTeamId={setFirstTeamId} firstTeamResult={firstTeamResult} setFirstTeamResult={setFirstTeamResult}
           secondTeamId={secondTeamId} setSecondTeamId={setSecondTeamId} secondTeamResult={secondTeamResult} setSecondTeamResult={setSecondTeamResult} />
 
@@ -40,38 +40,52 @@ export default function UpdateMatch() {
     </div>
   )
 
-  function selectEvent(newEventId: number) {
+  function selectEvent(event: React.ChangeEvent<HTMLSelectElement>) {
+    const newEventId = Number(event.target.value);
     setEventId(newEventId);
-    if (newEventId === 0) {
+
+    if (newEventId !== eventId || !newEventId) {
       setStageId(0);
       setMatchId(0);
     }
   }
 
-  function selectStage(newStageId: number) {
+  function selectStage(event: React.ChangeEvent<HTMLSelectElement>) {
+    const newStageId = Number(event.target.value);
     setStageId(newStageId);
-    if (newStageId === 0) {
+    inferEvent(newStageId);
+
+    if (newStageId !== stageId || !newStageId) {
       setMatchId(0);
     }
-    if (!eventId) {
-      fetch(backendUrl + `/backend/stage/${newStageId}/`)
+  }
+
+  function inferEvent(stage: number) {
+    if (eventId === 0) {
+      fetch(backendUrl + `/backend/stage/${stage}/`)
       .then(response => response.json())
       .then(data => setEventId(Number(data.eventId)))
       .catch(error => console.error("Error", error));
     }
   }
 
-  function selectMatch(newMatchId: number) {
+  function selectMatch(event: React.ChangeEvent<HTMLSelectElement>) {
+    const newMatchId = Number(event.target.value);
     setMatchId(newMatchId);
+
+    if (!newMatchId) {
+      return;
+    }
 
     fetch(backendUrl + `/backend/match/${newMatchId}/`)
     .then(response => response.json())
     .then(data => {
-      selectStage(Number(data.stageId))
-      setFirstTeamId(Number(data.firstTeamId))
-      setFirstTeamResult(Number(data.firstTeamResult))
-      setSecondTeamId(Number(data.secondTeamId))
-      setSecondTeamResult(Number(data.secondTeamResult))
+      setStageId(Number(data.stageId));
+      inferEvent(Number(data.stageId));
+      setFirstTeamId(Number(data.firstTeamId));
+      setFirstTeamResult(Number(data.firstTeamResult));
+      setSecondTeamId(Number(data.secondTeamId));
+      setSecondTeamResult(Number(data.secondTeamResult));
     })
     .catch(error => console.error("Error", error));
   }
