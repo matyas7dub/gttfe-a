@@ -31,6 +31,7 @@ import NotFound from './pages/NotFound/NotFound';
 import { loginPathRelative } from './config/config';
 import Users from './pages/Users/Users';
 import ShowUser from './pages/Users/ShowUser/ShowUser';
+import EventBracket from './pages/Events/EventBracket/EventBracket';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
       <Route path="/events/update" element={<UpdateEvent />} />
       <Route path="/events/delete" element={<DeleteEvent />} />
       <Route path="/events/fill" element={<AutofillEvent />} />
+      <Route path="/events/bracket" element={<EventBracket />} />
       <Route path="/stages" element={<Stages />} />
       <Route path="/stages/create" element={<CreateStage />} />
       <Route path="/stages/update" element={<UpdateStage />} />
