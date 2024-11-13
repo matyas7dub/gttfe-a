@@ -1,7 +1,9 @@
-import { CreateToastFnReturn } from '@chakra-ui/react';
+import { ColorMode, CreateToastFnReturn, useColorMode } from '@chakra-ui/react';
 import { SingleEliminationBracket, Match, SVGViewer, MatchType } from '@g-loot/react-tournament-brackets/dist/cjs';
+import { useWindowSize } from '@uidotdev/usehooks';
 import { useEffect, useState } from 'react';
 import { backendUrl } from '../../config/config';
+import theme from '../../theme';
 import { fetchGracefully } from '../Navbar/Login/LoginScript';
 
 type BracketProps = {
@@ -12,6 +14,9 @@ type BracketProps = {
 
 export default function Bracket(props: BracketProps) {
   const [bracket, setBracket] = useState<JSX.Element>(<></>);
+  // this *might* be a bad idea since it can cause a lot of rerenders and thus DOS the backend
+  const {width, height} = useWindowSize();
+  const {colorMode}  = useColorMode();
 
   useEffect(() => {
     if (props.eventId === 0) {
@@ -21,13 +26,13 @@ export default function Bracket(props: BracketProps) {
     getMatches(props.eventId, props.toast)
     .then(matches => {
       if (matches !== null) {
-        setBracket(SingleElimination(matches));
+        setBracket(SingleElimination(matches, width, height, colorMode));
       } else {
         setBracket(<div>error - duplicate stage levels</div>);
       }
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.eventId]);
+  }, [props.eventId, colorMode, width, height]);
 
   if (props.type === "DoubleElimination") {
     return (
@@ -38,12 +43,13 @@ export default function Bracket(props: BracketProps) {
   return bracket;
 }
 
-const SingleElimination = (matches: MatchType[]) => (
+const SingleElimination = (matches: MatchType[], width: number | null, height: number | null, colorMode: ColorMode) => (
   <SingleEliminationBracket
     matches={matches}
     matchComponent={Match}
     svgWrapper={({ children, ...props }) => (
-      <SVGViewer width={1000} {...props}>
+      <SVGViewer width={width !== null ? width * 0.8 : undefined} height={height !== null ? height * 0.6 : undefined}
+       SVGBackground={colorMode === "light" ? "white" : theme.colors.GttBlue[100]} {...props}>
         {children}
       </SVGViewer>
     )}
