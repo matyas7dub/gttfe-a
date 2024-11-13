@@ -1,4 +1,5 @@
-import { ColorMode, CreateToastFnReturn, useColorMode } from '@chakra-ui/react';
+import { RepeatIcon } from '@chakra-ui/icons';
+import { Button, ColorMode, CreateToastFnReturn, Stack, useColorMode } from '@chakra-ui/react';
 import { SingleEliminationBracket, Match, SVGViewer, MatchType } from '@g-loot/react-tournament-brackets/dist/cjs';
 import { useWindowSize } from '@uidotdev/usehooks';
 import { useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ export default function Bracket(props: BracketProps) {
   const {width, height} = useWindowSize();
   const {colorMode}  = useColorMode();
   const [matches, setMatches] = useState<MatchType[] | null>(null);
+  const [drawKey, setDrawKey] = useState(0);
 
   useEffect(() => {
     if (props.eventId === 0) {
@@ -28,7 +30,7 @@ export default function Bracket(props: BracketProps) {
       renderBracket(setBracket, output, width, height, colorMode);
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.eventId]);
+  }, [props.eventId, drawKey]);
 
   useEffect(() => {
     if (props.eventId === 0) {
@@ -47,7 +49,14 @@ export default function Bracket(props: BracketProps) {
     }
   }
 
-  return bracket;
+  return (
+    <div>
+      <Stack direction="row">
+      {bracket}
+      {props.eventId !== 0 ? <Button onClick={() => {setDrawKey(drawKey + 1)}}><RepeatIcon /></Button> : <></>}
+      </Stack>
+    </div>
+  );
 }
 
 const SingleElimination = (matches: MatchType[], width: number | null, height: number | null, colorMode: ColorMode) => (
