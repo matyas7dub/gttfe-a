@@ -98,7 +98,7 @@ export default function Login() {
         const roleBadges: JSX.Element[] = [];
         for (let role of data) {
           roleBadges.push(
-            <Badge marginRight="0.3em">{role.roleName}</Badge>
+            <Badge key={role.assignedRoleId} marginRight="0.3em">{role.roleName}</Badge>
           );
         }
         setRoleBadges(roleBadges);
