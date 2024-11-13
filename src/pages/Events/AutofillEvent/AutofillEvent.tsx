@@ -11,20 +11,22 @@ export default function AutofillEvent() {
   const [eventId, setEventId] = useState<number>();
   const [stageName, setStageName] = useState("");
   const [teamIds, setTeamIds] = useState<number[]>();
+  const [invalidEvent, setInvalidEvent] = useState(false);
   const toast = useToast();
   return (
     <div>
       <Breadcrumbs />
 
       <EndpointForm>
-        <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
+        <DataPicker dataType={dataType.event} isInvalid={invalidEvent} errorMessage={"This event already has existing stages"}
+         changeHandler={event => selectEvent(Number(event.target.value))} toast={toast} />
 
         <FormControl isDisabled={eventId == null}>
           <FormLabel>Stage name</FormLabel>
           <Input onChange={event => setStageName(event.target.value)}/>
         </FormControl>
 
-        <ConfirmationButton isDisabled={stageName === ""} onClick={createStageWrapper}>Create stage and matches</ConfirmationButton>
+        <ConfirmationButton isDisabled={stageName === "" || invalidEvent} onClick={createStageWrapper}>Create stage and matches</ConfirmationButton>
       </EndpointForm>
     </div>
   )
@@ -49,6 +51,19 @@ export default function AutofillEvent() {
       .catch(error => console.error("Error", error));
     })
     .catch(error => console.error("Error", error));
+
+    fetchGracefully(backendUrl + `/backend/event/${newEventId}/stages/`,
+    {
+      headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
+    }, null, toast)
+    .then(response => response.json())
+    .then(stages => {
+      if (stages.length === 0) {
+        setInvalidEvent(false);
+      } else {
+        setInvalidEvent(true);
+      }
+    })
   }
 
   function createStageWrapper() {
