@@ -119,7 +119,7 @@ export default function DataPicker(props: DataPickerProps) {
         Object.assign(options, { headers: headers });
       }
 
-      fetch(backendUrl + location, options)
+      fetchGracefully(backendUrl + location, options, null, props.toast)
       .then(response => response.json())
       .then(async data => {
         switch (props.dataType) {
