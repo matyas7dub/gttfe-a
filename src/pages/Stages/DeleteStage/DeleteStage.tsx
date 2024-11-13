@@ -56,14 +56,9 @@ export default function DeleteStage() {
     .catch(error => console.error("Error", error));
   }
   function deleteStage() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-    ];
-
     fetchGracefully(backendUrl + `/backend/stage/${stageId}/`,
     {
-      method: "DELETE",
-      headers: headers
+      method: "DELETE"
     },
     "Stage deleted successfully", toast);
   }

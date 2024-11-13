@@ -44,7 +44,6 @@ export default function DataPicker(props: DataPickerProps) {
   useEffect(() => {
     let location = "";
     let invalid = false;
-    let headersRequired = false;
 
     switch (props.dataType) {
       case dataType.game:
@@ -68,10 +67,8 @@ export default function DataPicker(props: DataPickerProps) {
         setFormLabel("Stage");
         setPlaceholder("Select a stage");
         setErrorMessage("You must select a stage!");
-        headersRequired = true;
         break;
       case dataType.match:
-        headersRequired = true;
         if (props.stageId) {
           location = `/backend/stage/${props.stageId}/matches/`;
         } else if (props.eventId) {
@@ -105,22 +102,12 @@ export default function DataPicker(props: DataPickerProps) {
         setFormLabel("File");
         setPlaceholder("Select a file");
         setErrorMessage("You must select a file!");
-        headersRequired = true;
         break;
     }
 
     if (!invalid && !props.isDisabled) {
-      const headers = new Headers();
-      headers.append("Authorization", `Bearer ${localStorage.getItem("jws")}`);
-      headers.append("Content-Type", "application/json");
 
-      const options = {};
-
-      if(headersRequired) {
-        Object.assign(options, { headers: headers });
-      }
-
-      fetchGracefully(backendUrl + location, options, null, props.toast)
+      fetchGracefully(backendUrl + location, {}, null, props.toast)
       .then(response => response.json())
       .then(async data => {
         switch (props.dataType) {
@@ -275,10 +262,7 @@ export default function DataPicker(props: DataPickerProps) {
   async function getEventNamesMap(toast: CreateToastFnReturn): Promise<Map<number, string>> {
     const eventNamesMap = new Map<number, string>();
 
-    await fetchGracefully(backendUrl + "/backend/event/listAll",
-    {
-      headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-    }, null, toast)
+    await fetchGracefully(backendUrl + "/backend/event/listAll", {}, null, toast)
     .then(response => response.json())
     .then(events => {
       for (let event of events) {

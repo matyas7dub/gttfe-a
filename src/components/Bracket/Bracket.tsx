@@ -88,10 +88,7 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
   let maxStageLevel = 0;
   let invalidStages = false;
 
-  await fetchGracefully(backendUrl + `/backend/event/${eventId}/stages/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  await fetchGracefully(backendUrl + `/backend/event/${eventId}/stages/`, {}, null, toast)
   .then(response => response.json())
   .then(stages => {
     for (let stage of stages) {
@@ -113,16 +110,10 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
 
   const teamNamesById: Map<number, string> = new Map();
 
-  await fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  await fetchGracefully(backendUrl + `/backend/event/${eventId}/`, {}, null, toast)
   .then(response => response.json())
   .then(data => 
-  fetchGracefully(backendUrl + `/backend/team/list/participating/${data.gameId}/false/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  fetchGracefully(backendUrl + `/backend/team/list/participating/${data.gameId}/false/`, {}, null, toast)
   .then(response => response.json())
   .then(teams => {
     for (let team of teams) {
@@ -166,10 +157,7 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
 
   const matchIndexesByStage: Map<number, number[]> = new Map();
 
-  await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
   .then(response => response.json())
   .then(data => {
     for (let match of data) {

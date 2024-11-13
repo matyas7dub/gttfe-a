@@ -47,22 +47,15 @@ export default function CreateStage() {
   )
 
   function createStage() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-      
-    const body = {
-      eventId: eventId,
-      stageName: stageName,
-      stageIndex: stageIndex
-    }
-
     fetchGracefully(backendUrl + `/backend/stage/create`,
     {
       method: "POST",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        eventId: eventId,
+        stageName: stageName,
+        stageIndex: stageIndex
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Stage created successfully", toast);
   }

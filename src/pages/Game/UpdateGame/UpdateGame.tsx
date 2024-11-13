@@ -107,24 +107,17 @@ export default function UpdateGame() {
   }
 
   async function updateGame() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-
-    const body = {
-      registrationStart: regStart,
-      registrationEnd: regEnd,
-      maxTeams: maxTeams,
-      backdrop: backdrop,
-      icon: icon
-    };
-    
     fetchGracefully(backendUrl + `/backend/game/${gameId}/`,
     {
       method: "PUT",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        registrationStart: regStart,
+        registrationEnd: regEnd,
+        maxTeams: maxTeams,
+        backdrop: backdrop,
+        icon: icon
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Game updated successfully", toast);
   }

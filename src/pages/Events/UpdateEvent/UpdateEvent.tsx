@@ -83,25 +83,18 @@ export default function UpdateEvent() {
 
     const endTime = `${end}:00`;
 
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-
-    const body = {
-      date: startDate,
-      beginTime: startTime,
-      endTime: endTime,
-      gameId: gameId,
-      description: description,
-      eventType: eventType
-    }
-
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     {
       method: "PUT",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        date: startDate,
+        beginTime: startTime,
+        endTime: endTime,
+        gameId: gameId,
+        description: description,
+        eventType: eventType
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Event updated successfully", toast);
 

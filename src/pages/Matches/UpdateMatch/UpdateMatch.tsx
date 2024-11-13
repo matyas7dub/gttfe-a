@@ -107,24 +107,17 @@ export default function UpdateMatch() {
   }
 
   function updateMatch() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-    
-    const body = {
-      stageId: stageId,
-      firstTeamId: firstTeamId,
-      secondTeamId: secondTeamId,
-      firstTeamResult: firstTeamResult,
-      secondTeamResult: secondTeamResult
-    }
-
     fetchGracefully(backendUrl + `/backend/match/${matchId}/`,
     {
       method: "PUT",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        stageId: stageId,
+        firstTeamId: firstTeamId,
+        secondTeamId: secondTeamId,
+        firstTeamResult: firstTeamResult,
+        secondTeamResult: secondTeamResult
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Match updated successfully", toast);
   }

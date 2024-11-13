@@ -61,8 +61,7 @@ export async function fetchGracefully(url: string, init: RequestInit, successMes
         const oldJws = localStorage.getItem("jws");
         const interval = setInterval(() => {
           if (oldJws !== localStorage.getItem("jws")) {
-            clearInterval(interval);
-            resolve(`Bearer ${localStorage.getItem("jws")}`);
+            clearInterval(interval); resolve("Successfully logged in.");
           }
         }, 1000);
       })
@@ -72,13 +71,6 @@ export async function fetchGracefully(url: string, init: RequestInit, successMes
       });
     } else {
       resolve("Already logged in.");
-    }
-  })
-  .then((response) => {
-    if ((response as string).startsWith("Bearer ")) {
-      const newHeaders = new Headers(init.headers);
-      newHeaders.set("Authorization", response as string);
-      init.headers = newHeaders;
     }
   })
   .catch(error => {
@@ -91,6 +83,10 @@ export async function fetchGracefully(url: string, init: RequestInit, successMes
       isClosable: true
     })
   })
+
+  const newHeaders = new Headers(init.headers);
+  newHeaders.set("Authorization", `Bearer ${localStorage.getItem("jws")}`);
+  init.headers = newHeaders;
 
   return fetchWithToast(url, init, successMessage, toast);
 }

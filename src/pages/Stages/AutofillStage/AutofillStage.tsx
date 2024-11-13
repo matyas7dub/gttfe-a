@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
+import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 import { createStage } from "../../Events/AutofillEvent/AutofillEvent";
 
@@ -36,10 +37,7 @@ export default function AutofillStage() {
 
   function selectEvent(newEventId: number) {
     setEventId(newEventId);
-    fetch(backendUrl + `/backend/event/${newEventId}/stages/`,
-    {
-      headers: [["Authorization", `Bearer ${localStorage.getItem("jws")}`]]
-    })
+    fetchGracefully(backendUrl + `/backend/event/${newEventId}/stages/`, {}, null, toast)
     .then(response => response.json())
     .then(stages => {
       let highestIndex = -1;
@@ -76,10 +74,7 @@ export default function AutofillStage() {
         }
       }
     })
-    .then(() => fetch(backendUrl + `/backend/event/${eventId}/matches/`,
-    {
-      headers: [["Authorization", `Bearer ${localStorage.getItem("jws")}`]]
-    })
+    .then(() => fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
     .then(response => response.json())
     .then(matches => {
       for (let match of matches) {

@@ -52,10 +52,7 @@ export default function AutofillEvent() {
     })
     .catch(error => console.error("Error", error));
 
-    fetchGracefully(backendUrl + `/backend/event/${newEventId}/stages/`,
-    {
-      headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-    }, null, toast)
+    fetchGracefully(backendUrl + `/backend/event/${newEventId}/stages/`, {}, null, toast)
     .then(response => response.json())
     .then(stages => {
       if (stages.length === 0) {
@@ -80,10 +77,7 @@ export function createStage(eventId: number, stageName: string, teamIds: number[
         stageName: stageName,
         stageIndex: stageIndex?? 0
       }),
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("jws")}`,
-        "Content-Type": "application/json"
-      }
+      headers: {"Content-Type": "application/json"}
     },
     "Created stage successfully", toast)
   .then(async response => {
@@ -134,10 +128,7 @@ export function autofillMatches(stageId: number, teamIds: number[], toast: Creat
           firstTeamResult: 0,
           secondTeamResult: 0
         }),
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("jws")}`,
-          "Content-Type": "application/json"
-        }
+        headers: {"Content-Type": "application/json"}
       }, null, toast)
     .then(response => {
       if (!response.ok) {

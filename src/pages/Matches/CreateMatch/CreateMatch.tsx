@@ -32,24 +32,17 @@ export default function CreateMatch() {
   )
 
   function createMatch() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-    
-    const body = {
-      stageId: stageId,
-      firstTeamId: firstTeamId,
-      firstTeamResult: firstTeamResult,
-      secondTeamId: secondTeamId,
-      secondTeamResult: secondTeamResult
-    }
-
     fetchGracefully(backendUrl + `/backend/match/create/`,
     {
       method: "POST",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        stageId: stageId,
+        firstTeamId: firstTeamId,
+        firstTeamResult: firstTeamResult,
+        secondTeamId: secondTeamId,
+        secondTeamResult: secondTeamResult
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Match created successfully", toast);
   }

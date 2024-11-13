@@ -39,9 +39,6 @@ export default function UserPicker(props: UserPickerProps) {
     fetchGracefully(backendUrl + `/backend/user/${id}/`,
     {
       method: "GET",
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("jws")}`
-      }
     }, null, props.toast)
     .then(async response => {
       if (response.ok) {

@@ -111,11 +111,6 @@ export default function CreateEvent() {
 
     const endTime = `${end}:00`;
 
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-
     const body = {
       date: startDate,
       beginTime: startTime,
@@ -129,7 +124,7 @@ export default function CreateEvent() {
     {
       method: "POST",
       body: JSON.stringify(body),
-      headers: headers
+      headers: {"Content-Type": "application/json"}
     },
     "Event created successfully", toast);
   }
