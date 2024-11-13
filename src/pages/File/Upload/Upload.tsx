@@ -36,10 +36,7 @@ export default function Upload() {
       {
         method: "PUT",
         body: (files as FileList)[file],
-        headers: [
-          ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-          ['Content-Type', (files as FileList)[file].type,]
-        ]
+        headers: {'Content-Type': (files as FileList)[file].type,}
       },
       `${fileName} uploaded successfully`, toast);
     }

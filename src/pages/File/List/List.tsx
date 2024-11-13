@@ -21,9 +21,6 @@ export default function List() {
     await fetchGracefully(backendUrl + `/backend/file/${fileName}`,
     {
       method: "DELETE",
-      headers: [
-        ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
-      ]
     },
     "Files deleted successfully", toast);
     listFiles()
@@ -34,9 +31,6 @@ export default function List() {
       backendUrl + "/backend/file/list",
       {
         method: "GET",
-        headers: [
-          ["Authorization", `Bearer ${localStorage.getItem("jws")}`]
-        ],
       },
       null, toast);
     if (typeof result === "undefined") {

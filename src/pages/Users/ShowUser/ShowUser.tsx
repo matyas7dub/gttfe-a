@@ -29,12 +29,7 @@ export default function ShowUser() {
 
     console.debug(id);
 
-    fetchGracefully(backendUrl + `/backend/user/${id}/`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("jws")}`
-      }
-    }, null, toast)
+    fetchGracefully(backendUrl + `/backend/user/${id}/`, {}, null, toast)
     .then(response => response.json())
     .then(async userData => {
       console.debug(userData);
@@ -92,10 +87,7 @@ async function getSchool(schoolId: number) {
 async function getTeam(userId: String, toast: CreateToastFnReturn) {
   let teamName = "None";
 
-  await fetchGracefully(backendUrl + `/backend/user/${userId}/teams/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  await fetchGracefully(backendUrl + `/backend/user/${userId}/teams/`, {}, null, toast)
   .then(response => response.json())
   .then(teams => {
     for (let i = 0; i < teams.length; i++) {
@@ -114,10 +106,7 @@ async function getTeam(userId: String, toast: CreateToastFnReturn) {
 async function getAssignedRoles(userId: String, toast: CreateToastFnReturn) {
   let roles: JSX.Element[] = [];
 
-  await fetchGracefully(backendUrl + `/backend/user/${userId}/assignedRoles/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  await fetchGracefully(backendUrl + `/backend/user/${userId}/assignedRoles/`, {}, null, toast)
   .then(response => response.json())
   .then(data => {
     for (let role of data) {
@@ -136,10 +125,7 @@ async function getAssignedRoles(userId: String, toast: CreateToastFnReturn) {
 async function getGeneratedRoles(userId: String, toast: CreateToastFnReturn) {
   let roles: JSX.Element[] = [];
 
-  await fetchGracefully(backendUrl + `/backend/user/${userId}/generatedRoles/`,
-  {
-    headers: {Authorization: `Bearer ${localStorage.getItem("jws")}`}
-  }, null, toast)
+  await fetchGracefully(backendUrl + `/backend/user/${userId}/generatedRoles/`, {}, null, toast)
   .then(response => response.json())
   .then(data => {
     for (let role of data) {

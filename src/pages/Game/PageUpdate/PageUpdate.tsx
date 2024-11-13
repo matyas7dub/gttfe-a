@@ -56,21 +56,14 @@ export default function PageUpdate() {
       return;
     }
 
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-
-    const body = {
-      game_id: gameId,
-      gamePage: page
-    }
-
     fetchGracefully(backendUrl + `/backend/game/${gameId}/page/`,
     {
       method: "PUT",
-      body: JSON.stringify(body),
-      headers: headers
+        body: JSON.stringify({
+        game_id: gameId,
+        gamePage: page
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Page updated successfully", toast);
   }

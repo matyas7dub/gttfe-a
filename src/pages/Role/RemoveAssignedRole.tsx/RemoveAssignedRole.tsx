@@ -32,12 +32,7 @@ export default function RemoveAssignedRole() {
   function selectUser(newId: string) {
     setUserId(newId);
 
-    fetchGracefully(backendUrl + `/backend/user/${newId}/assignedRoles`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("jws")}`
-      }
-    }, null, toast)
+    fetchGracefully(backendUrl + `/backend/user/${newId}/assignedRoles`, {}, null, toast)
     .then(response => response.json())
     .then(rolesData => {
       const tempRoleElems: JSX.Element[] = [];

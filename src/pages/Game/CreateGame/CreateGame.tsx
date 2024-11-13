@@ -62,25 +62,18 @@ export default function CreateGame() {
   )
 
   function createGame() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-
-    const body = {
-      name: gameName,
-      registrationStart: regStart,
-      registrationEnd: regEnd,
-      maxTeams: maxTeams,
-      backdrop: backdrop,
-      icon: icon
-    }
-
     fetchGracefully(backendUrl + "/backend/game/create",
     {
       method: "POST",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        name: gameName,
+        registrationStart: regStart,
+        registrationEnd: regEnd,
+        maxTeams: maxTeams,
+        backdrop: backdrop,
+        icon: icon
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Game created successfully", toast);
   }

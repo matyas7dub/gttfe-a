@@ -98,14 +98,9 @@ export default function DeleteMatch() {
   }
 
   function deleteMatch() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-    ];
-
     fetchGracefully(backendUrl + `/backend/match/${matchId}/`,
     {
-      method: "DELETE",
-      headers: headers
+      method: "DELETE"
     },
     "Match deleted successfully", toast);
   }

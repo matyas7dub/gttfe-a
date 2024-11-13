@@ -29,21 +29,14 @@ export default function AddAssignedRole() {
   );
 
   function addRole() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-
-    const body = {
-      assignedRoleId: roleId,
-      userId: userId
-    }
-
     fetchGracefully(backendUrl + `/backend/userRole/create`,
     {
       method: "POST",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        assignedRoleId: roleId,
+        userId: userId
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Role added successfully", toast);
   }

@@ -67,22 +67,15 @@ export default function UpdateStage() {
   }
 
   function updateStage() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-      ["Content-Type", "application/json"]
-    ];
-    
-    const body = {
-      eventId: eventId,
-      stageName: stageName,
-      stageIndex: stageIndex
-    }
-
     fetchGracefully(backendUrl + `/backend/stage/${stageId}/`,
     {
       method: "PUT",
-      body: JSON.stringify(body),
-      headers: headers
+      body: JSON.stringify({
+        eventId: eventId,
+        stageName: stageName,
+        stageIndex: stageIndex
+      }),
+      headers: {"Content-Type": "application/json"}
     },
     "Stage updated successfully", toast);
   }

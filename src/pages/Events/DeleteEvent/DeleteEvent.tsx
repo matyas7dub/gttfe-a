@@ -41,14 +41,9 @@ export default function DeleteEvent() {
   }
 
   function deleteEvent() {
-    const headers: [string, string][] = [
-      ["Authorization", `Bearer ${localStorage.getItem("jws")}`],
-    ];
-
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     {
-      method: "DELETE",
-      headers: headers
+      method: "DELETE"
     },
     "Event deleted successfully", toast);
 
