@@ -16,7 +16,7 @@ export default function EventBracket() {
       <EndpointForm>
         <DataPicker dataType={dataType.event} value={eventId} changeHandler={event => setEventId(Number(event.target.value))} toast={toast} />
 
-        <Bracket eventId={eventId} type="SingleElimination" toast={toast} />
+        <Bracket eventId={eventId} toast={toast} />
       </EndpointForm>
     </div>
   )

@@ -8,7 +8,6 @@ import { fetchGracefully } from '../Navbar/Login/LoginScript';
 
 type BracketProps = {
   eventId: number,
-  type: "SingleElimination" | "DoubleElimination"
   toast: CreateToastFnReturn
 }
 
@@ -46,12 +45,6 @@ export default function Bracket(props: BracketProps) {
     } else {
       setState(<div>error - duplicate stage levels</div>);
     }
-  }
-
-  if (props.type === "DoubleElimination") {
-    return (
-      <div>error - DoubleElimination not implemented yet</div>
-    )
   }
 
   return bracket;
