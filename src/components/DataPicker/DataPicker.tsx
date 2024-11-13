@@ -10,6 +10,7 @@ type DataPickerProps = {
   changeHandler: ChangeEventHandler<HTMLSelectElement>,
   toast: CreateToastFnReturn,
   isInvalid?: boolean,
+  errorMessage?: string,
   placeholder?: string,
   title?: string,
   value?: number | string,
@@ -210,7 +211,7 @@ export default function DataPicker(props: DataPickerProps) {
         placeholder={props.placeholder?? placeholder}>
         {optionElems}
       </Select>
-      <FormErrorMessage>{errorMessage}</FormErrorMessage>
+      <FormErrorMessage>{props.errorMessage?? errorMessage}</FormErrorMessage>
     </FormControl>
   )
 
