@@ -14,9 +14,9 @@ type BracketProps = {
 
 export default function Bracket(props: BracketProps) {
   const [bracket, setBracket] = useState<JSX.Element>(<></>);
-  // this *might* be a bad idea since it can cause a lot of rerenders and thus DOS the backend
   const {width, height} = useWindowSize();
   const {colorMode}  = useColorMode();
+  const [matches, setMatches] = useState<MatchType[] | null>(null);
 
   useEffect(() => {
     if (props.eventId === 0) {
@@ -24,15 +24,29 @@ export default function Bracket(props: BracketProps) {
     }
 
     getMatches(props.eventId, props.toast)
-    .then(matches => {
-      if (matches !== null) {
-        setBracket(SingleElimination(matches, width, height, colorMode));
-      } else {
-        setBracket(<div>error - duplicate stage levels</div>);
-      }
+    .then(output => {
+      setMatches(output);
+      renderBracket(setBracket, output, width, height, colorMode);
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.eventId, colorMode, width, height]);
+  }, [props.eventId]);
+
+  useEffect(() => {
+    if (props.eventId === 0) {
+      return;
+    }
+
+    renderBracket(setBracket, matches, width, height, colorMode);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorMode, width, height]);
+
+  function renderBracket(setState: React.Dispatch<React.SetStateAction<JSX.Element>>, matches: MatchType[] | null, width: number | null, height: number | null, colorMode: ColorMode) {
+    if (matches !== null) {
+      setState(SingleElimination(matches, width, height, colorMode));
+    } else {
+      setState(<div>error - duplicate stage levels</div>);
+    }
+  }
 
   if (props.type === "DoubleElimination") {
     return (
