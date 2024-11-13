@@ -9,7 +9,8 @@ import { fetchGracefully } from '../Navbar/Login/LoginScript';
 
 type BracketProps = {
   eventId: number,
-  toast: CreateToastFnReturn
+  toast: CreateToastFnReturn,
+  callback?: (id: string) => void
 }
 
 export default function Bracket(props: BracketProps) {
@@ -27,7 +28,7 @@ export default function Bracket(props: BracketProps) {
     getMatches(props.eventId, props.toast)
     .then(output => {
       setMatches(output);
-      renderBracket(setBracket, output, width, height, colorMode);
+      renderBracket(setBracket, output, width, height, colorMode, props.callback);
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.eventId, drawKey]);
@@ -37,13 +38,13 @@ export default function Bracket(props: BracketProps) {
       return;
     }
 
-    renderBracket(setBracket, matches, width, height, colorMode);
+    renderBracket(setBracket, matches, width, height, colorMode, props.callback);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorMode, width, height]);
 
-  function renderBracket(setState: React.Dispatch<React.SetStateAction<JSX.Element>>, matches: MatchType[] | null, width: number | null, height: number | null, colorMode: ColorMode) {
+  function renderBracket(setState: React.Dispatch<React.SetStateAction<JSX.Element>>, matches: MatchType[] | null, width: number | null, height: number | null, colorMode: ColorMode, callback: ((id: string) => void) | undefined) {
     if (matches !== null) {
-      setState(SingleElimination(matches, width, height, colorMode));
+      setState(SingleElimination(matches, width, height, colorMode, callback));
     } else {
       setState(<div>error - duplicate stage levels</div>);
     }
@@ -59,7 +60,7 @@ export default function Bracket(props: BracketProps) {
   );
 }
 
-const SingleElimination = (matches: MatchType[], width: number | null, height: number | null, colorMode: ColorMode) => (
+const SingleElimination = (matches: MatchType[], width: number | null, height: number | null, colorMode: ColorMode, callback: ((id: string) => void) | undefined) => (
   <SingleEliminationBracket
     matches={matches}
     matchComponent={Match}
@@ -69,6 +70,11 @@ const SingleElimination = (matches: MatchType[], width: number | null, height: n
         {children}
       </SVGViewer>
     )}
+    onMatchClick={callback !== undefined ?
+    data => {
+      callback(data.match.id as string);
+    } :
+    undefined}
   />
 );
 
