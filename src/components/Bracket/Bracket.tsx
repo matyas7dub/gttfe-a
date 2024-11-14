@@ -142,7 +142,7 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
   .catch(error => console.error("Error: ", error));
 
   const stageCount = stageLevelsById.size;
-  const totalStageCount = Math.ceil(Math.sqrt(teamNamesById.size));
+  const totalStageCount = Math.ceil(Math.log2(teamNamesById.size));
   let fakeMatchCount = 1;
   let previousFakeIds = [-fakeMatchCount];
   if (stageCount !== totalStageCount) {
@@ -211,6 +211,8 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
     nextTeamMatch.set(thisMatch.participants[1].id, thisMatch.id);
   }
 
+  fakeMatchCount = addFakeMatches(matches, previousFakeIds, maxStageLevel, matchIndexes.length, fakeMatchCount, teamNamesById.size)
+
   for (let stageLevel = maxStageLevel - 1; stageLevel >= 0; stageLevel--) {
     const matchIndexes = matchIndexesByStage.get(stageIdsByLevel.get(stageLevel)?? -1)?? [];
 
@@ -232,7 +234,24 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
       nextTeamMatch.set(firstTeam, thisMatch.id);
       nextTeamMatch.set(secondTeam, thisMatch.id);
     }
+
+    fakeMatchCount = addFakeMatches(matches, previousFakeIds, stageLevel, matchIndexes.length, fakeMatchCount, teamNamesById.size)
   }
 
   return matches;
+}
+
+function addFakeMatches(matches: MatchType[], previousFakeIds: number[], stageLevel: number, realMatchCount: number, fakeMatchCount: number, teamCount: number) {
+  const stageMatchCount = Math.pow(2, Math.ceil(Math.log2(teamCount)) - (stageLevel + 1));
+  for (let fakeMatch = 0; fakeMatch + realMatchCount < stageMatchCount; fakeMatch++) {
+    matches.push({
+      id: -fakeMatchCount,
+      nextMatchId: previousFakeIds[Math.floor(fakeMatch/2)],
+      startTime: "",
+      state: "",
+      participants: []
+    });
+    fakeMatchCount++;
+  }
+  return fakeMatchCount;
 }
