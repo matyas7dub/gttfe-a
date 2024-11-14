@@ -21,8 +21,6 @@ import CreateMatch from './pages/Matches/CreateMatch/CreateMatch';
 import UpdateMatch from './pages/Matches/UpdateMatch/UpdateMatch';
 import DeleteMatch from './pages/Matches/DeleteMatch/DeleteMatch';
 import Matches from './pages/Matches/Matches';
-import AutofillEvent from './pages/Events/AutofillEvent/AutofillEvent';
-import AutofillStage from './pages/Stages/AutofillStage/AutofillStage';
 import File from './pages/File/File';
 import Upload from './pages/File/Upload/Upload';
 import List from './pages/File/List/List';
@@ -32,6 +30,7 @@ import { loginPathRelative } from './config/config';
 import Users from './pages/Users/Users';
 import ShowUser from './pages/Users/ShowUser/ShowUser';
 import EventBracket from './pages/Events/EventBracket/EventBracket';
+import GenerateStage from './pages/Stages/GenerateStage/GenerateStage';
 
 function App() {
   return (
@@ -49,13 +48,12 @@ function App() {
       <Route path="/events/create" element={<CreateEvent />} />
       <Route path="/events/update" element={<UpdateEvent />} />
       <Route path="/events/delete" element={<DeleteEvent />} />
-      <Route path="/events/fill" element={<AutofillEvent />} />
       <Route path="/events/bracket" element={<EventBracket />} />
       <Route path="/stages" element={<Stages />} />
       <Route path="/stages/create" element={<CreateStage />} />
       <Route path="/stages/update" element={<UpdateStage />} />
       <Route path="/stages/delete" element={<DeleteStage />} />
-      <Route path="/stages/fill" element={<AutofillStage />} />
+      <Route path="/stages/generate" element={<GenerateStage />} />
       <Route path="/matches" element={<Matches />} />
       <Route path="/matches/create" element={<CreateMatch />} />
       <Route path="/matches/update" element={<UpdateMatch />} />
