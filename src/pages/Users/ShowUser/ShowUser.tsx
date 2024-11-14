@@ -27,12 +27,9 @@ export default function ShowUser() {
       return;
     }
 
-    console.debug(id);
-
     fetchGracefully(backendUrl + `/backend/user/${id}/`, {}, null, toast)
     .then(response => response.json())
     .then(async userData => {
-      console.debug(userData);
       const tempUser: JSX.Element[] = [];
       const school = getSchool(userData.schoolId);
       const team = getTeam(id, toast);
