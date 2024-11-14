@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
+import EventTypeSelector from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
 
@@ -16,90 +17,42 @@ export default function CreateEvent() {
   const [description, setDescription] = useState("");
   const [eventType, setEventType] = useState("");
 
-  const [gameError, setGameError] = useState(false);
-  const [startError, setStartError] = useState(false);
-  const [endError, setEndError] = useState(false);
-  const [descriptionError, setDescriptionError] = useState(false);
-  const [eventTypeError, setEventTypeError] = useState(false);
-
   const toast = useToast();
 
   return (
     <div>
       <Breadcrumbs />
       <EndpointForm>
-        <DataPicker dataType={dataType.game} isInvalid={gameError} changeHandler={(event) => {setGameId(Number(event.target.value)); setGameError(false)}} toast={toast} />
+        <DataPicker dataType={dataType.game} changeHandler={(event) => {setGameId(Number(event.target.value))}} toast={toast} />
 
         <Stack direction="row" spacing={horizontalFormSpacing}>
-          <FormControl isInvalid={startError}>
+          <FormControl>
             <FormLabel>Start time</FormLabel>
-            <Input type="datetime-local" onChange={(event) => {setStart(event.target.value); setStartError(false)}} />
+            <Input type="datetime-local" onChange={(event) => {setStart(event.target.value)}} />
             <FormErrorMessage>You must pick a start time!</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={endError}>
+          <FormControl>
             <FormLabel>End time</FormLabel>
-            <Input type="time" onChange={(event) => {setEnd(event.target.value); setEndError(false)}} />
+            <Input type="time" onChange={(event) => {setEnd(event.target.value)}} />
             <FormErrorMessage>You must pick an end time later than the start time!</FormErrorMessage>
           </FormControl>
         </Stack>
 
-        <FormControl isInvalid={descriptionError}>
+        <FormControl>
           <FormLabel>Description</FormLabel>
-          <Input type="text" placeholder="This should be a descriptive name" onChange={(event) => {setDescription(event.target.value); setDescriptionError(false)}} />
+          <Input type="text" placeholder="This should be a descriptive name" onChange={(event) => {setDescription(event.target.value)}} />
           <FormErrorMessage>You must include a description!</FormErrorMessage>
         </FormControl>
 
-        <FormControl isInvalid={eventTypeError}>
-          <FormLabel>Event type</FormLabel>
-          <Input type="text" onChange={(event) => {setEventType(event.target.value); setEventTypeError(false)}} />
-          <FormErrorMessage>You must pick an event type!</FormErrorMessage>
-        </FormControl>
+        <EventTypeSelector changeHandler={event => {setEventType(event.target.value)}} />
 
-        <ConfirmationButton onClick={createEvent}>Create event</ConfirmationButton>
+        <ConfirmationButton isDisabled={!gameId || !start || !end || !description || !eventType} onClick={createEvent}>Create event</ConfirmationButton>
       </EndpointForm>
     </div>
   )
 
   function createEvent() {
-    let invalid = false;
-  
-    if (gameId == null) {
-      setGameError(true);
-      invalid = true;
-    }
-
-    if (start === "") {
-      setStartError(true);
-      invalid = true;
-    }
-
-    if (end === "") {
-      setEndError(true);
-      invalid = true;
-    }
-
-    if (description === "") {
-      setDescriptionError(true);
-      invalid = true;
-    }
-
-    if (eventType === "") {
-      setEventTypeError(true);
-      invalid = true;
-    }
-
-    if (invalid) {
-      toast({
-        title: 'Error',
-        description: "Invalid input",
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
-      return;
-    }
-
     // formatting hell
     const startTimestamp = Date.parse(start);
     const startDateObject = new Date(startTimestamp);
