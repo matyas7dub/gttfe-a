@@ -2,9 +2,10 @@ import { RepeatIcon } from '@chakra-ui/icons';
 import { Button, ColorMode, CreateToastFnReturn, Stack, useColorMode } from '@chakra-ui/react';
 import { SingleEliminationBracket, Match, SVGViewer, MatchType } from '@g-loot/react-tournament-brackets/dist/cjs';
 import { useWindowSize } from '@uidotdev/usehooks';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { backendUrl } from '../../config/config';
 import theme from '../../theme';
+import { EventType } from '../EventTypeSelector/EventTypeSelector';
 import { fetchGracefully } from '../Navbar/Login/LoginScript';
 
 type BracketProps = {
@@ -20,21 +21,32 @@ export default function Bracket(props: BracketProps) {
   const [matches, setMatches] = useState<MatchType[] | null>(null);
   const [drawKey, setDrawKey] = useState(0);
 
+  let eventType = useRef(EventType.none);
+
   useEffect(() => {
+    makeBracket();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.eventId, drawKey]);
+
+  async function makeBracket(){
     if (props.eventId === 0) {
       return;
     }
+
+    await fetchGracefully(backendUrl + `/backend/event/${props.eventId}/`, {}, null, props.toast)
+    .then(response => response.json())
+    .then(data => {eventType.current = data.eventType})
+    .catch(error => console.error("Error: ", error));
 
     getMatches(props.eventId, props.toast)
     .then(output => {
       setMatches(output);
       renderBracket(setBracket, output, width, height, colorMode, props.callback);
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.eventId, drawKey]);
+  }
 
   useEffect(() => {
-    if (props.eventId === 0) {
+    if (props.eventId === 0 || eventType.current === EventType.none) {
       return;
     }
 
@@ -43,10 +55,15 @@ export default function Bracket(props: BracketProps) {
   }, [colorMode, width, height]);
 
   function renderBracket(setState: React.Dispatch<React.SetStateAction<JSX.Element>>, matches: MatchType[] | null, width: number | null, height: number | null, colorMode: ColorMode, callback: ((id: string) => void) | undefined) {
-    if (matches !== null) {
+    console.debug(eventType.current);
+    if (eventType.current === EventType.playoff && matches !== null) {
       setState(SingleElimination(matches, width, height, colorMode, callback));
+    } else if (eventType.current.startsWith(EventType.swiss)) {
+      setState(<div>swiss - TODO</div>);
+    } else if (eventType.current.startsWith(EventType.groups)) {
+      setState(<div>groups - TODO</div>);
     } else {
-      setState(<div>error - duplicate stage levels</div>);
+      setState(<div>Error</div>);
     }
   }
 
@@ -122,6 +139,7 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
       }
     }
   }))
+  .catch(error => console.error("Error: ", error));
 
   const stageCount = stageLevelsById.size;
   const totalStageCount = Math.ceil(Math.sqrt(teamNamesById.size));
