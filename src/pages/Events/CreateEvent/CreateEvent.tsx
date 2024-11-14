@@ -6,11 +6,9 @@ import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker"
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import EventTypeSelector from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
-import { backendUrl } from "../../../config/config";
+import { backendUrl, horizontalFormSpacing } from "../../../config/config";
 
 export default function CreateEvent() {
-  const horizontalFormSpacing = "2rem";
-
   const [gameId, setGameId] = useState<Number>();
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");

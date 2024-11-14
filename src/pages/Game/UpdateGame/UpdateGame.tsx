@@ -4,12 +4,10 @@ import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker"
 import { useState } from "react";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
-import { backendUrl } from "../../../config/config";
+import { backendUrl, horizontalFormSpacing } from "../../../config/config";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 
 export default function UpdateGame() {
-  const horizontalFormSpacing = "2rem";
-
   const toast = useToast();
 
   const [gameErr, setGameErr] = useState(false);

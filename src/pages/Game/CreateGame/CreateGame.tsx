@@ -5,11 +5,9 @@ import ConfirmationButton from "../../../components/ConfirmationButton/Confirmat
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
-import { backendUrl } from "../../../config/config";
+import { backendUrl, horizontalFormSpacing } from "../../../config/config";
 
 export default function CreateGame() {
-  const horizontalFormSpacing = "2rem";
-
   const [gameName, setGameName] = useState("");
   const [regStart, setRegStart] = useState("");
   const [regEnd, setRegEnd] = useState("");

@@ -2,7 +2,7 @@ import { CreateToastFnReturn, Flex, FormControl, FormLabel, NumberDecrementStepp
 import { useEffect, useState } from "react";
 import DataPicker, { dataType } from "../../components/DataPicker/DataPicker";
 import FormDivider from "../../components/FormDivider/FormDivider";
-import { backendUrl } from "../../config/config";
+import { backendUrl, horizontalFormSpacing } from "../../config/config";
 
 type TeamResultInputProps = {
   stageId: number | undefined,
@@ -39,7 +39,7 @@ export default function TeamResultInput(props: TeamResultInputProps) {
 
   return (
     <Flex>
-      <Stack direction="column" spacing="3rem" flexGrow="1">
+      <Stack direction="column" spacing={horizontalFormSpacing} flexGrow="1">
         <DataPicker title="First team" gameId={gameId} value={props.firstTeamId} dataType={dataType.teams} isDisabled={!gameId || props.isDisabled} changeHandler={(event) => {props.setFirstTeamId(Number(event.target.value))}} toast={props.toast} />
 
         <FormControl>
