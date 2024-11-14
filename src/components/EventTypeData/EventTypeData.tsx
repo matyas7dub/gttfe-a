@@ -5,7 +5,9 @@ import { EventType } from "../EventTypeSelector/EventTypeSelector"
 
 type EventTypeDataProps = {
   eventType: EventType,
-  changeHandler: (data: string) => void
+  changeHandler: (data: string) => void,
+  teamCount?: number,
+  advancingTeamCount?: number
 }
 
 export type SwissData = {
@@ -52,11 +54,11 @@ export default function EventTypeData(props: EventTypeDataProps) {
     <div>
       {
       props.eventType === EventType.playoff ? <></> :
-      props.eventType === EventType.swiss ?
+      props.eventType.startsWith(EventType.swiss) ?
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
             <FormLabel>Advancing team count</FormLabel>
-            <NumberInput min={1} value={swissTeamCount} onChange={(_, value) => setSwissTeamCount(value)}>
+            <NumberInput min={1} value={props.teamCount?? swissTeamCount} onChange={(_, value) => setSwissTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -65,11 +67,11 @@ export default function EventTypeData(props: EventTypeDataProps) {
             </NumberInput>
           </FormControl>
         </Stack> :
-      props.eventType === EventType.groups ?
+      props.eventType.startsWith(EventType.groups) ?
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
             <FormLabel>Team count in one group</FormLabel>
-            <NumberInput min={1} value={groupsTeamCount} onChange={(_, value) => setGroupsTeamCount(value)}>
+            <NumberInput min={1} value={props.teamCount?? groupsTeamCount} onChange={(_, value) => setGroupsTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -80,7 +82,7 @@ export default function EventTypeData(props: EventTypeDataProps) {
 
           <FormControl>
             <FormLabel>Advancing team count</FormLabel>
-            <NumberInput min={1} value={groupsAdvancingTeamCount} onChange={(_, value) => setGroupsAdvancingTeamCount(value)}>
+            <NumberInput min={1} value={props.advancingTeamCount?? groupsAdvancingTeamCount} onChange={(_, value) => setGroupsAdvancingTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
