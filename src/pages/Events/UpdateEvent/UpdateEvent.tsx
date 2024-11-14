@@ -4,7 +4,8 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
-import EventTypeSelector from "../../../components/EventTypeSelector/EventTypeSelector";
+import EventTypeData from "../../../components/EventTypeData/EventTypeData";
+import EventTypeSelector, { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl, horizontalFormSpacing } from "../../../config/config";
 
@@ -14,7 +15,8 @@ export default function UpdateEvent() {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [description, setDescription] = useState("");
-  const [eventType, setEventType] = useState("");
+  const [eventType, setEventType] = useState<EventType>(EventType.none);
+  const [eventTypeData, setEventTypeData] = useState("");
   const [eventPickerKey, setEventPickerKey] = useState(1); // this causes an upate on the event picker so that description changes show
 
   const toast = useToast();
@@ -44,7 +46,8 @@ export default function UpdateEvent() {
           <Input isDisabled={eventId == null || eventId === 0} value={description} type="text" placeholder="This should be a descriptive name" onChange={(event) => {setDescription(event.target.value)}} />
         </FormControl>
 
-        <EventTypeSelector isDisabled={eventId == null || eventId === 0} value={eventType} changeHandler={event => setEventType(event.target.value)} />
+        <EventTypeSelector isDisabled={eventId == null || eventId === 0} value={eventType} changeHandler={event => setEventType(event.target.value as EventType)} />
+        <EventTypeData eventType={eventType} changeHandler={value => setEventTypeData(value)} />
 
         <ConfirmationButton isDisabled={eventId == null || eventId === 0} onClick={updateEvent}>Update event</ConfirmationButton>
       </EndpointForm>
@@ -88,7 +91,7 @@ export default function UpdateEvent() {
         endTime: endTime,
         gameId: gameId,
         description: description,
-        eventType: eventType
+        eventType: eventType + eventTypeData
       }),
       headers: {"Content-Type": "application/json"}
     },
