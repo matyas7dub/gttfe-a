@@ -24,6 +24,7 @@ export default function EventTypeSelector(props: EventTypeSelectorProps) {
 }
 
 export enum EventType {
+  none = "none",
   playoff = "playoff",
   swiss = "swiss",
   groups = "groups"
