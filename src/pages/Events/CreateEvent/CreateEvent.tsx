@@ -4,7 +4,8 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
-import EventTypeSelector from "../../../components/EventTypeSelector/EventTypeSelector";
+import EventTypeData from "../../../components/EventTypeData/EventTypeData";
+import EventTypeSelector, { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl, horizontalFormSpacing } from "../../../config/config";
 
@@ -14,6 +15,7 @@ export default function CreateEvent() {
   const [end, setEnd] = useState("");
   const [description, setDescription] = useState("");
   const [eventType, setEventType] = useState("");
+  const [eventTypeData, setEventTypeData] = useState("");
 
   const toast = useToast();
 
@@ -44,6 +46,7 @@ export default function CreateEvent() {
         </FormControl>
 
         <EventTypeSelector changeHandler={event => {setEventType(event.target.value)}} />
+        <EventTypeData eventType={eventType as EventType} changeHandler={value => setEventTypeData(value)} />
 
         <ConfirmationButton isDisabled={!gameId || !start || !end || !description || !eventType} onClick={createEvent}>Create event</ConfirmationButton>
       </EndpointForm>
@@ -68,7 +71,7 @@ export default function CreateEvent() {
       endTime: endTime,
       gameId: gameId,
       description: description,
-      eventType: eventType
+      eventType: eventType + eventTypeData
     }
 
     fetchGracefully(backendUrl + "/backend/event/create",
