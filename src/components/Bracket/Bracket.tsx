@@ -1,5 +1,5 @@
 import { RepeatIcon } from '@chakra-ui/icons';
-import { Button, ColorMode, CreateToastFnReturn, Stack, useColorMode } from '@chakra-ui/react';
+import { Button, ColorMode, CreateToastFnReturn, Stack, Table, TableContainer, Tbody, Td, Th, Thead, Tr, useColorMode } from '@chakra-ui/react';
 import { SingleEliminationBracket, Match, SVGViewer, MatchType } from '@g-loot/react-tournament-brackets/dist/cjs';
 import { useWindowSize } from '@uidotdev/usehooks';
 import { useEffect, useRef, useState } from 'react';
@@ -21,7 +21,8 @@ export default function Bracket(props: BracketProps) {
   const [matches, setMatches] = useState<MatchType[] | null>(null);
   const [drawKey, setDrawKey] = useState(0);
 
-  let eventType = useRef(EventType.none);
+  const eventType = useRef(EventType.none);
+  const gameId = useRef(0);
 
   useEffect(() => {
     makeBracket();
@@ -35,14 +36,26 @@ export default function Bracket(props: BracketProps) {
 
     await fetchGracefully(backendUrl + `/backend/event/${props.eventId}/`, {}, null, props.toast)
     .then(response => response.json())
-    .then(data => {eventType.current = data.eventType})
+    .then(data => {
+      eventType.current = data.eventType
+      gameId.current = data.gameId;
+    })
     .catch(error => console.error("Error: ", error));
 
-    getMatches(props.eventId, props.toast)
-    .then(output => {
-      setMatches(output);
-      renderBracket(setBracket, output, width, height, colorMode, props.callback);
-    })
+    if (eventType.current === EventType.playoff) {
+      getPlayoffMatches(props.eventId, gameId.current, props.toast)
+      .then(output => {
+        setMatches(output);
+        renderBracket(setBracket, output, width, height, colorMode, props.callback);
+      })
+    } else if(eventType.current.startsWith(EventType.swiss)) {
+      getSwissTable(props.eventId, gameId.current, props.toast)
+      .then(table => {
+        setBracket(table);
+      })
+    } else {
+      setBracket(<div>Invalid event type</div>);
+    }
   }
 
   useEffect(() => {
@@ -50,7 +63,9 @@ export default function Bracket(props: BracketProps) {
       return;
     }
 
-    renderBracket(setBracket, matches, width, height, colorMode, props.callback);
+    if (eventType.current === EventType.playoff) {
+      renderBracket(setBracket, matches, width, height, colorMode, props.callback);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorMode, width, height]);
 
@@ -58,8 +73,6 @@ export default function Bracket(props: BracketProps) {
     console.debug(eventType.current);
     if (eventType.current === EventType.playoff && matches !== null) {
       setState(SingleElimination(matches, width, height, colorMode, callback));
-    } else if (eventType.current.startsWith(EventType.swiss)) {
-      setState(<div>swiss - TODO</div>);
     } else if (eventType.current.startsWith(EventType.groups)) {
       setState(<div>groups - TODO</div>);
     } else {
@@ -95,7 +108,112 @@ const SingleElimination = (matches: MatchType[], width: number | null, height: n
   />
 );
 
-async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<MatchType[] | null> {
+type cellData = {
+  teamId: number,
+  opponentId: number,
+  score: number
+}
+
+async function getSwissTable(eventId: number, gameId: number, toast: CreateToastFnReturn) {
+  const cellsByStageLevel: cellData[][] = [];
+  const stageIdsByLevel: Map<number, number> = new Map();
+  const teamScoreMapByStageLevel: Map<number, number>[] = [];
+
+  await fetchGracefully(backendUrl + `/backend/event/${eventId}/stages/`, {}, null, toast)
+  .then(response => response.json())
+  .then(stages => {
+    for (let stage of stages) {
+      stageIdsByLevel.set(stage.stageIndex, stage.stageId);
+      cellsByStageLevel.push([]);
+      teamScoreMapByStageLevel.push(new Map());
+    }
+  })
+
+  await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
+  .then(response => response.json())
+  .then(matches => {
+    for (let stageLevel = 0; stageLevel < cellsByStageLevel.length; stageLevel++) {
+      for (let match of matches) {
+        if (match.stageIndex === stageLevel) {
+          cellsByStageLevel[stageLevel].push({
+            teamId: match.firstTeamId,
+            opponentId: match.secondTeamId,
+            score: 0
+          });
+          cellsByStageLevel[stageLevel].push({
+            teamId: match.secondTeamId,
+            opponentId: match.firstTeamId,
+            score: 0
+          })
+          teamScoreMapByStageLevel[stageLevel].set(match.firstTeamId, match.firstTeamResult);
+          teamScoreMapByStageLevel[stageLevel].set(match.secondTeamId, match.secondTeamResult);
+        }
+      }
+    }
+  })
+
+  const globalScore: Map<number, number> = new Map();
+  for (let stageLevel = 0; stageLevel < cellsByStageLevel.length; stageLevel++) {
+    const stageMap: Map<number, number> = teamScoreMapByStageLevel[stageLevel]?? (new Map<number, number>()) as Map<number, number>;
+    for (let cell of cellsByStageLevel[stageLevel]) {
+      const teamScore = globalScore.get(cell.teamId)?? 0;
+      const stageScore = stageMap.get(cell.teamId)?? 0;
+      const score = teamScore + stageScore;
+      globalScore.set(cell.teamId, score);
+      cell.score = score;
+    }
+  }
+
+  const teamNameMap: Map<number, string> = new Map();
+  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
+  .then(response => response.json())
+  .then(teams => {
+    for (let team of teams) {
+      if (!teamNameMap.has(team.teamId)) {
+        teamNameMap.set(team.teamId, team.name);
+      }
+    }
+  })
+
+  const tableHead = [];
+  const table = [];
+  tableHead.push([<Th></Th>]);
+  for (let round = 1; round <= cellsByStageLevel.length; round++) {
+    tableHead[0].push(<Th>{`Round ${round}`}</Th>);
+  }
+  cellsByStageLevel[0].sort((a, b) => {return a.teamId - b.teamId})
+
+  const teamRowMap: Map<number, number> = new Map();
+
+  for (let cell of cellsByStageLevel[0]) {
+    const row = table.push([<Td>{teamNameMap.get(cell.teamId)}</Td>]) - 1;
+    teamRowMap.set(cell.teamId, row);
+    table[row].push(<Td>{`vs. ${teamNameMap.get(cell.opponentId)} (${cell.score})`}</Td>);
+  }
+  console.debug("rows:", teamRowMap);
+
+  for (let stageLevel = 1; stageLevel < cellsByStageLevel.length; stageLevel++) {
+    for (let cell of cellsByStageLevel[stageLevel]) {
+      table[teamRowMap.get(cell.teamId)?? -1].push(<Td>{`vs. ${teamNameMap.get(cell.opponentId)} (${cell.score})`}</Td>);
+    }
+  }
+
+  const rows: JSX.Element[] = [];
+  for (let row = 0; row < table.length; row++) {
+    rows.push(<Tr>{table[row]}</Tr>)
+  }
+
+  return (
+    <TableContainer>
+      <Table variant="striped">
+        <Thead><Tr>{tableHead}</Tr></Thead>
+        <Tbody>{rows}</Tbody>
+      </Table>
+    </TableContainer>
+  )
+}
+
+async function getPlayoffMatches(eventId: number, gameId: number, toast: CreateToastFnReturn): Promise<MatchType[] | null> {
   // this heavily assumes that no 2 stages have the same index/level
   
   const matches: MatchType[] = [];
@@ -127,10 +245,7 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
 
   const teamNamesById: Map<number, string> = new Map();
 
-  await fetchGracefully(backendUrl + `/backend/event/${eventId}/`, {}, null, toast)
-  .then(response => response.json())
-  .then(data => 
-  fetchGracefully(backendUrl + `/backend/team/list/participating/${data.gameId}/false/`, {}, null, toast)
+  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
   .then(response => response.json())
   .then(teams => {
     for (let team of teams) {
@@ -138,7 +253,7 @@ async function getMatches(eventId: number, toast: CreateToastFnReturn): Promise<
         teamNamesById.set(team.teamId, team.name);
       }
     }
-  }))
+  })
   .catch(error => console.error("Error: ", error));
 
   const stageCount = stageLevelsById.size;
