@@ -49,9 +49,14 @@ export default function Bracket(props: BracketProps) {
         renderBracket(setBracket, output, width, height, colorMode, props.callback);
       })
     } else if(eventType.current.startsWith(EventType.swiss)) {
-      getSwissTable(props.eventId, gameId.current, props.toast)
+      getSwissTable(props.eventId, gameId.current, props.toast, props.callback)
       .then(table => {
         setBracket(table);
+      })
+    }else if (eventType.current.startsWith(EventType.groups)) {
+      getGroupsTables(props.eventId, gameId.current, props.toast, props.callback)
+      .then(tables => {
+        setBracket(tables);
       })
     } else {
       setBracket(<div>Invalid event type</div>);
@@ -70,7 +75,6 @@ export default function Bracket(props: BracketProps) {
   }, [colorMode, width, height]);
 
   function renderBracket(setState: React.Dispatch<React.SetStateAction<JSX.Element>>, matches: MatchType[] | null, width: number | null, height: number | null, colorMode: ColorMode, callback: ((id: string) => void) | undefined) {
-    console.debug(eventType.current);
     if (eventType.current === EventType.playoff && matches !== null) {
       setState(SingleElimination(matches, width, height, colorMode, callback));
     } else if (eventType.current.startsWith(EventType.groups)) {
@@ -109,12 +113,14 @@ const SingleElimination = (matches: MatchType[], width: number | null, height: n
 );
 
 type cellData = {
+  matchId: number,
   teamId: number,
   opponentId: number,
   score: number
 }
 
-async function getSwissTable(eventId: number, gameId: number, toast: CreateToastFnReturn) {
+async function getSwissTable(eventId: number, gameId: number, toast: CreateToastFnReturn, callback?: (id: string) => void) {
+  const teamNameMap = await getTeamNames(gameId, toast);
   const cellsByStageLevel: cellData[][] = [];
   const stageIdsByLevel: Map<number, number> = new Map();
   const teamScoreMapByStageLevel: Map<number, number>[] = [];
@@ -136,11 +142,13 @@ async function getSwissTable(eventId: number, gameId: number, toast: CreateToast
       for (let match of matches) {
         if (match.stageIndex === stageLevel) {
           cellsByStageLevel[stageLevel].push({
+            matchId: match.matchId,
             teamId: match.firstTeamId,
             opponentId: match.secondTeamId,
             score: 0
           });
           cellsByStageLevel[stageLevel].push({
+            matchId: match.matchId,
             teamId: match.secondTeamId,
             opponentId: match.firstTeamId,
             score: 0
@@ -152,6 +160,100 @@ async function getSwissTable(eventId: number, gameId: number, toast: CreateToast
     }
   })
 
+  return await getTable(cellsByStageLevel, stageIdsByLevel, teamScoreMapByStageLevel, teamNameMap, callback);
+}
+
+async function getGroupsTables(eventId: number, gameId: number, toast: CreateToastFnReturn, callback?: (id: string) => void) {
+  const tables: JSX.Element[] = [];
+
+  const teamNameMap = await getTeamNames(gameId, toast);
+  const groupMap: Map<string, any> = new Map();
+  const groupLetters: string[] = [];
+
+  await fetchGracefully(backendUrl + `/backend/event/${eventId}/stages/`, {}, null, toast)
+  .then(response => response.json())
+  .then(stages => {
+    for (let stage of stages) {
+      const regex = String(stage.stageName).match(/[A-Z]+ - \d+/);
+      const groupLetter: string = regex !== null? regex[0].toString().substring(0, regex[0].toString().indexOf(" - ")) : "error";
+
+      if (!groupMap.has(groupLetter)) {
+        groupLetters.push(groupLetter);
+      }
+
+      const group = groupMap.get(groupLetter)?? [];
+      group.push(stage);
+      groupMap.set(groupLetter, group);
+    }
+  })
+
+  for (let group = 0; group < groupLetters.length; group++) {
+    const groupLetter = groupLetters[group];
+    const cellsByStageLevel: cellData[][] = [];
+    const stageIdsByLevel: Map<number, number> = new Map();
+    const teamScoreMapByStageLevel: Map<number, number>[] = [];
+
+    for (let stage of groupMap.get(groupLetter)) {
+      stageIdsByLevel.set(stage.stageIndex, stage.stageId);
+      cellsByStageLevel.push([]);
+      teamScoreMapByStageLevel.push(new Map());
+    }
+
+    await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
+    .then(response => response.json())
+    .then(matches => {
+      for (let stageLevel = 0; stageLevel < cellsByStageLevel.length; stageLevel++) {
+        for (let match of matches) {
+          if (match.stageIndex === stageLevel) {
+            cellsByStageLevel[stageLevel].push({
+              matchId: match.matchId,
+              teamId: match.firstTeamId,
+              opponentId: match.secondTeamId,
+              score: 0
+            });
+            cellsByStageLevel[stageLevel].push({
+              matchId: match.matchId,
+              teamId: match.secondTeamId,
+              opponentId: match.firstTeamId,
+              score: 0
+            })
+            teamScoreMapByStageLevel[stageLevel].set(match.firstTeamId, match.firstTeamResult);
+            teamScoreMapByStageLevel[stageLevel].set(match.secondTeamId, match.secondTeamResult);
+          }
+        }
+      }
+    })
+
+    tables.push(
+      <Stack direction="column">
+        <p>Group {groupLetter}</p>
+        {await getTable(cellsByStageLevel, stageIdsByLevel, teamScoreMapByStageLevel, teamNameMap, callback)}
+      </Stack>
+    );
+  }
+
+  return (
+    <Stack direction="column">
+      {tables}
+    </Stack>
+  )
+}
+
+async function getTeamNames(gameId: number, toast: CreateToastFnReturn) {
+  const teamNameMap: Map<number, string> = new Map();
+  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
+  .then(response => response.json())
+  .then(teams => {
+    for (let team of teams) {
+      if (!teamNameMap.has(team.teamId)) {
+        teamNameMap.set(team.teamId, team.name);
+      }
+    }
+  })
+  return teamNameMap;
+}
+
+async function getTable(cellsByStageLevel: cellData[][], stageIdsByLevel: Map<number, number>, teamScoreMapByStageLevel: Map<number, number>[], teamNameMap: Map<number, string>, callback?: (id: string) => void) {
   const globalScore: Map<number, number> = new Map();
   for (let stageLevel = 0; stageLevel < cellsByStageLevel.length; stageLevel++) {
     const stageMap: Map<number, number> = teamScoreMapByStageLevel[stageLevel]?? (new Map<number, number>()) as Map<number, number>;
@@ -163,17 +265,6 @@ async function getSwissTable(eventId: number, gameId: number, toast: CreateToast
       cell.score = score;
     }
   }
-
-  const teamNameMap: Map<number, string> = new Map();
-  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
-  .then(response => response.json())
-  .then(teams => {
-    for (let team of teams) {
-      if (!teamNameMap.has(team.teamId)) {
-        teamNameMap.set(team.teamId, team.name);
-      }
-    }
-  })
 
   const tableHead = [];
   const table = [];
@@ -188,13 +279,13 @@ async function getSwissTable(eventId: number, gameId: number, toast: CreateToast
   for (let cell of cellsByStageLevel[0]) {
     const row = table.push([<Td>{teamNameMap.get(cell.teamId)}</Td>]) - 1;
     teamRowMap.set(cell.teamId, row);
-    table[row].push(<Td>{`vs. ${teamNameMap.get(cell.opponentId)} (${cell.score})`}</Td>);
+    table[row].push(<Td cursor={callback ? "pointer" : undefined} onClick={callback ? () => callback(String(cell.matchId)) : undefined}>{`vs. ${teamNameMap.get(cell.opponentId)} (${cell.score})`}</Td>);
   }
-  console.debug("rows:", teamRowMap);
 
   for (let stageLevel = 1; stageLevel < cellsByStageLevel.length; stageLevel++) {
     for (let cell of cellsByStageLevel[stageLevel]) {
-      table[teamRowMap.get(cell.teamId)?? -1].push(<Td>{`vs. ${teamNameMap.get(cell.opponentId)} (${cell.score})`}</Td>);
+      table[teamRowMap.get(cell.teamId)?? -1].push(<Td cursor={callback ? "pointer" : undefined}
+      onClick={callback ? () => callback(String(cell.matchId)) : undefined}>{`vs. ${teamNameMap.get(cell.opponentId)} (${cell.score})`}</Td>);
     }
   }
 
