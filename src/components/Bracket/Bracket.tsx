@@ -314,9 +314,24 @@ async function getPlayoffMatches(eventId: number, gameId: number, toast: CreateT
   let maxStageLevel = 0;
   let invalidStages = false;
 
+  const firstStageTeams: number[] = [];
+
   await fetchGracefully(backendUrl + `/backend/event/${eventId}/stages/`, {}, null, toast)
   .then(response => response.json())
-  .then(stages => {
+  .then(async stages => {
+    await fetchGracefully(backendUrl + `/backend/stage/${stages[0].stageId}/matches/`, {}, null, toast)
+    .then(response => response.json())
+    .then(matches => {
+      for (let match of matches) {
+        if (!firstStageTeams.includes(match.firstTeamId)) {
+          firstStageTeams.push(match.firstTeamId);
+        }
+        if (!firstStageTeams.includes(match.secondTeamId)) {
+          firstStageTeams.push(match.secondTeamId);
+        }
+      }
+    })
+
     for (let stage of stages) {
       stageLevelsById.set(stage.stageId, stage.stageIndex);
       if (stageIdsByLevel.has(stage.stageIndex)) {
@@ -348,7 +363,7 @@ async function getPlayoffMatches(eventId: number, gameId: number, toast: CreateT
   .catch(error => console.error("Error: ", error));
 
   const stageCount = stageLevelsById.size;
-  const totalStageCount = Math.ceil(Math.log2(teamNamesById.size));
+  const totalStageCount = Math.ceil(Math.log2(firstStageTeams.length));
   let fakeMatchCount = 1;
   let previousFakeIds = [-fakeMatchCount];
   if (stageCount !== totalStageCount) {
