@@ -4,6 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
+import { parseSwissData } from "../../../components/EventTypeData/EventTypeData";
 import { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
@@ -129,8 +130,100 @@ export default function GenerateStage() {
       })
       .catch(error => console.error("Error", error));
     } else if (eventType.startsWith(EventType.groups)) {
-      // TODO: generate a stage for each group and call the fill function
+      const stageTeamCount = parseSwissData(eventType).teamCount;
+      const tempTeamIds = teamIds;
+      for (let group = 0; tempTeamIds.length !== 0; group++) {
+        generateGroup(group, tempTeamIds.splice(0, stageTeamCount));
+      }
     }
+  }
+
+  async function generateGroup(groupIndex: number, teams: number[]) {
+    let groupLetter = "";
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if (groupIndex > 26) {
+      const firstLetterIndex = Math.floor(groupIndex / 26);
+      groupLetter += alphabet[firstLetterIndex - 1];
+      const secondLetterIndex = groupIndex % 26;
+      groupLetter += alphabet[secondLetterIndex - 1];
+    } else {
+      groupLetter += alphabet[groupIndex];
+    }
+
+    const stageCount = teams.length - 1;
+    const stages: number[] = [];
+    const promises = [];
+    for (let stage = 0; stage < stageCount; stage++) {
+      promises.push(fetchGracefully(backendUrl + "/backend/stage/create",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          eventId: eventId,
+          stageName: `${stageName} ${groupLetter} - ${stage}`,
+          stageIndex: stage
+        }),
+        headers: {"Content-Type": "application/json"}
+      }, null, toast)
+      .then(response => response.json())
+      .then(data => {
+        stages.push(data.stageId);
+      }))
+    }
+
+    const stageMatches: [number, number][][] = [];
+    const stagePlaying: number[][] = [];
+    for (let stage = 0; stage < stageCount; stage++) {
+      stageMatches[stage] = [];
+      stagePlaying[stage] = [];
+    }
+
+    Promise.allSettled(promises)
+    .then(() => {
+      for (let first = 0; first < teams.length - 1; first ++) {
+        for (let second = first + 1; second < teams.length; second++) {
+          for (let stage = 0; stage < stageCount; stage++) {
+            if (!stagePlaying[stage].includes(first) && !stagePlaying[stage].includes(second)) {
+              stageMatches[stage].push([teams[first], teams[second]]);
+              stagePlaying[stage].push(first);
+              stagePlaying[stage].push(second);
+              break;
+            }
+          }
+        }
+      }
+
+      let success = true;
+      for (let stage = 0; stage < stageCount; stage++) {
+        for (let match of stageMatches[stage]) {
+          fetchGracefully(backendUrl + "/backend/match/create/",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              stageId: stages[stage],
+              firstTeamId: match[0],
+              secondTeamId: match[1],
+              firstTeamResult: 0,
+              secondTeamResult: 0
+            }),
+            headers: {"Content-Type": "application/json"}
+          }, null, toast)
+          // eslint-disable-next-line no-loop-func
+          .then(response => {
+            if (!response.ok) {
+              success = false;
+            }
+          })
+        }
+      }
+      if (success) {
+        toast({
+          title: `Group ${groupLetter} created successfully`,
+          status: 'success',
+          duration: 5000,
+          isClosable: true
+        });
+      }
+    })
   }
 
   async function autofillMatches(stageId: number) {
