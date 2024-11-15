@@ -196,7 +196,7 @@ export default function GenerateStage() {
           body: JSON.stringify({
             eventId: eventId,
             stageName: stageName,
-            stageIndex: previousStageIndex ? previousStageIndex + 1 : 0
+            stageIndex: previousStageIndex !== null ? previousStageIndex + 1 : 0
           }),
           headers: {"Content-Type": "application/json"}
         },
