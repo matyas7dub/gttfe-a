@@ -11,13 +11,13 @@ type EventTypeDataProps = {
 }
 
 export type SwissData = {
-  teamCount: number
+  advancingTeamCount: number
 }
 
 export function parseSwissData(input: string): SwissData {
   const data = input.split(",");
   return {
-    teamCount: Number(data[1])
+    advancingTeamCount: Number(data[1])
   }
 }
 
@@ -41,12 +41,23 @@ export default function EventTypeData(props: EventTypeDataProps) {
   const [groupsAdvancingTeamCount, setGroupsAdvancingTeamCount] = useState(1);
 
   useEffect(() => {
-    props.changeHandler(`,${swissTeamCount}`)
+    if (props.eventType === EventType.playoff) {
+      props.changeHandler("");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.eventType]);
+
+  useEffect(() => {
+    if (props.eventType.startsWith(EventType.swiss)) {
+      props.changeHandler(`,${swissTeamCount}`)
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [swissTeamCount])
 
   useEffect(() => {
-    props.changeHandler(`,${groupsTeamCount},${groupsAdvancingTeamCount}`)
+    if (props.eventType.startsWith(EventType.groups)) {
+      props.changeHandler(`,${groupsTeamCount},${groupsAdvancingTeamCount}`)
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupsTeamCount, groupsAdvancingTeamCount])
 

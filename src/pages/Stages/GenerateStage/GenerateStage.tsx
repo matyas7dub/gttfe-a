@@ -1,10 +1,11 @@
-import { CreateToastFnReturn, FormControl, FormLabel, Input, useToast } from "@chakra-ui/react";
+import { QuestionIcon } from "@chakra-ui/icons";
+import { CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
-import { parseSwissData } from "../../../components/EventTypeData/EventTypeData";
+import { parseGroupsData, parseSwissData } from "../../../components/EventTypeData/EventTypeData";
 import { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
@@ -17,6 +18,9 @@ export default function GenerateStage() {
   const [previousStageIndex, setPreviousStageIndex] = useState<number | null>(null);
   const [stageName, setStageName] = useState("");
   const [teamIds, setTeamIds] = useState<number[]>([]);
+
+  const [previousEventId, setPreviousEventId] = useState<number>();
+  const [previousEventError, setPreviousEventError] = useState(false);
 
   const toast = useToast();
 
@@ -34,6 +38,12 @@ export default function GenerateStage() {
           <Input onChange={event => setStageName(event.target.value)} marginBottom="1rem"/>
           {previousStageIndex !== null ? `Stage ${previousStageIndex} was ${previousStageName}` : (eventId ? "No previous stage" : "")}
         </FormControl>
+
+        {eventId && eventId !== 0 && previousStageIndex === null ?
+        <DataPicker title={<Stack direction="row" align="center"><p>Import teams (optional)</p> <Tooltip label="If you want to import advancing teams from a previous event"><QuestionIcon /></Tooltip></Stack>}
+        isInvalid={previousEventError} errorMessage="This event doesn't have any advancing teams!" value={previousEventId} dataType={dataType.event} changeHandler={event => selectPreviousEvent(event)} toast={toast} />
+        : <></>
+        }
 
         <ConfirmationButton isDisabled={!stageName || (previousStageIndex !== null && eventType.startsWith(EventType.groups))} onClick={() => {createStage()}}>Create stage and matches</ConfirmationButton>
       </EndpointForm>
@@ -76,6 +86,74 @@ export default function GenerateStage() {
     .catch(error => console.error("Error", error));
   }
 
+  function selectPreviousEvent(event: React.ChangeEvent<HTMLSelectElement>) {
+    const previousEvent = event.target.value;
+
+    setPreviousEventError(false);
+    setPreviousEventId(Number(previousEvent));
+
+    if (!previousEvent) {
+      return;
+    }
+
+    fetchGracefully(backendUrl + `/backend/event/${previousEvent}/`, {}, null, toast)
+    .then(response => response.json())
+    .then(event => {
+      const eventType: EventType = event.eventType;
+      let advancingTeams = 0;
+      if (eventType.startsWith(EventType.swiss)) {
+        advancingTeams = parseSwissData(eventType).advancingTeamCount;
+      } else if (eventType.startsWith(EventType.groups)) {
+        advancingTeams = parseGroupsData(eventType).advancingTeamCount;
+      } else {
+        setPreviousEventError(true);
+        return;
+      }
+
+      fetchGracefully(backendUrl + `/backend/event/${previousEvent}/matches/`, {}, null, toast)
+      .then(response => response.json())
+      .then(matches => {
+        const scoreMap: Map<number, number> = new Map();
+        const teams = [];
+
+        for (let match of matches) {
+          const firstTeamId = match.firstTeamId;
+          const secondTeamId = match.secondTeamId;
+
+          if (!scoreMap.has(firstTeamId)) {
+            teams.push({
+              id: firstTeamId,
+              score: 0
+            })
+          }
+          if (!scoreMap.has(secondTeamId)) {
+            teams.push({
+              id: secondTeamId,
+              score: 0
+            })
+          }
+
+          const firstTeamScore = scoreMap.get(firstTeamId)?? 0 + match.firstTeamResult;
+          const secondTeamScore = scoreMap.get(secondTeamId)?? 0 + match.secondTeamResult;
+          scoreMap.set(firstTeamId, firstTeamScore);
+          scoreMap.set(secondTeamId, secondTeamScore);
+        }
+
+        for (let team of teams) {
+          team.score = scoreMap.get(team.id)?? 0;
+        }
+
+        teams.sort((a, b) => {return b.score - a.score});
+        const bestIds = [];
+        for (let team = 0; team < advancingTeams; team++) {
+          bestIds.push(teams[team].id);
+        }
+
+        setTeamIds(bestIds);
+      })
+    })
+  }
+
   function setTeams(eventId: number, eventType: EventType) {
     const teams: number[] = [];
     fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/false/`, {}, null, toast)
@@ -105,6 +183,7 @@ export default function GenerateStage() {
         })
       }
       setTeamIds(teams);
+      setPreviousEventId(0);
     })
     .catch(error => console.error("Error: ", error));
   }
@@ -130,7 +209,7 @@ export default function GenerateStage() {
       })
       .catch(error => console.error("Error", error));
     } else if (eventType.startsWith(EventType.groups)) {
-      const stageTeamCount = parseSwissData(eventType).teamCount;
+      const stageTeamCount = parseGroupsData(eventType).teamCount;
       const tempTeamIds = teamIds;
       for (let group = 0; tempTeamIds.length !== 0; group++) {
         generateGroup(group, tempTeamIds.splice(0, stageTeamCount));
@@ -252,10 +331,12 @@ export default function GenerateStage() {
     let matches: [number, number][] = new Array<[number, number]>();
 
     const tempTeamIds = teamIds;
-    if (eventType === EventType.playoff && tempTeamIds.length % 2 !== 0) {
-      // remove a random team that won't play this stage
-      const randomIndex = Math.floor(Math.random() * tempTeamIds.length);
-      tempTeamIds.splice(randomIndex, 1);
+    if (eventType === EventType.playoff) {
+      if (tempTeamIds.length % 2 !== 0) {
+        // remove a random team that won't play this stage
+        const randomIndex = Math.floor(Math.random() * tempTeamIds.length);
+        tempTeamIds.splice(randomIndex, 1);
+      }
 
       for (let team = 0; team + 1 < tempTeamIds.length; team += 2) {
         matches.push([tempTeamIds[team], tempTeamIds[team + 1]]);

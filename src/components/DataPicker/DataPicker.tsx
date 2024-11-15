@@ -12,7 +12,7 @@ type DataPickerProps = {
   isInvalid?: boolean,
   errorMessage?: string,
   placeholder?: string,
-  title?: string,
+  title?: string | JSX.Element,
   value?: number | string,
   isDisabled?: boolean,
 
