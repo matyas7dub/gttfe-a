@@ -7,6 +7,14 @@ type EventTypeSelectorProps = {
   value?: EventType | string | undefined,
   isDisabled?: boolean
 }
+
+export enum EventType {
+  none = "none",
+  playoff = "playoff",
+  swiss = "swiss",
+  groups = "groups"
+}
+
 export default function EventTypeSelector(props: EventTypeSelectorProps) {
   return (
     <FormControl>
@@ -21,11 +29,4 @@ export default function EventTypeSelector(props: EventTypeSelectorProps) {
       </Select>
     </FormControl>
   )
-}
-
-export enum EventType {
-  none = "none",
-  playoff = "playoff",
-  swiss = "swiss",
-  groups = "groups"
 }
