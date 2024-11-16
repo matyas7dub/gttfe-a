@@ -185,7 +185,7 @@ export default function GenerateStage() {
       setTeamIds(teams);
       setPreviousEventId(0);
     })
-    .catch(error => console.error("Error: ", error));
+    .catch(error => console.error("Error: ", error)); 
   }
 
   function createStage() {
