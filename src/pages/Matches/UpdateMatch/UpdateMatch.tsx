@@ -37,7 +37,7 @@ export default function UpdateMatch() {
 
         <ConfirmationButton isDisabled={!matchId} onClick={updateMatch}>Update match</ConfirmationButton>
 
-        <Bracket eventId={eventId} toast={toast} callback={id => {selectMatchFromBracket(id)}} />
+        <Bracket eventId={eventId} toast={toast} callback={id => {selectMatchInternal(id)}} />
 
       </EndpointForm>
     </div>
@@ -74,15 +74,6 @@ export default function UpdateMatch() {
 
   function selectMatch(event: React.ChangeEvent<HTMLSelectElement>) {
     selectMatchInternal(Number(event.target.value));
-  }
-
-  function selectMatchFromBracket(newId: string) {
-    const newIdNumber = Number(newId);
-    if (!Number.isNaN(newIdNumber)) {
-      selectMatchInternal(newIdNumber);
-    } else {
-      console.error(`Bracket returned ${newId} which is not a number`);
-    }
   }
 
   function selectMatchInternal(newId: number) {

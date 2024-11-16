@@ -11,17 +11,20 @@ type EventTypeDataProps = {
 }
 
 export type SwissData = {
+  type: EventType,
   advancingTeamCount: number
 }
 
 export function parseSwissData(input: string): SwissData {
   const data = input.split(",");
   return {
+    type: EventType.swiss,
     advancingTeamCount: Number(data[1])
   }
 }
 
 export type GroupsData = {
+  type: EventType,
   teamCount: number,
   advancingTeamCount: number
 }
@@ -29,8 +32,21 @@ export type GroupsData = {
 export function parseGroupsData(input: string): GroupsData {
   const data = input.split(",");
   return {
+    type: EventType.groups,
     teamCount: Number(data[1]),
     advancingTeamCount: Number(data[2])
+  }
+}
+
+export function parseEventType(input: EventType) {
+  if (input.startsWith(EventType.playoff)) {
+    return { type: EventType.playoff }
+  } else if (input.startsWith(EventType.swiss)) {
+    return parseSwissData(input);
+  } else if (input.startsWith(EventType.groups)) {
+    return parseGroupsData(input);
+  } else {
+    return { type: EventType.none };
   }
 }
 
