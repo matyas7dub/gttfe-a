@@ -50,6 +50,26 @@ export function parseEventType(input: EventType) {
   }
 }
 
+export function stringifyEventType(type: EventType, advancingTeamCount?: number, teamCount?: number) {
+  if (type === EventType.playoff) {
+    return type;
+  } else if (type === EventType.groups) {
+    if (advancingTeamCount !== undefined && teamCount !== undefined) {
+      return `${type},${teamCount},${advancingTeamCount}`;
+    } else {
+      throw new Error(`Invalid event type arguments: ${advancingTeamCount} ${teamCount}`);
+    }
+  } else if (type === EventType.swiss && advancingTeamCount !== undefined) {
+    if (advancingTeamCount !== undefined) {
+      return `${type},${advancingTeamCount}`
+    } else {
+      throw new Error(`Invalid event type arguments: ${advancingTeamCount}`)
+    }
+  } else {
+    throw new Error(`Invalid event type: ${type}`)
+  }
+}
+
 export default function EventTypeData(props: EventTypeDataProps) {
   const [swissTeamCount, setSwissTeamCount] = useState(1);
 
@@ -108,7 +128,7 @@ export default function EventTypeData(props: EventTypeDataProps) {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Advancing team count</FormLabel>
+            <FormLabel>Advancing team count per group</FormLabel>
             <NumberInput min={1} value={props.advancingTeamCount?? groupsAdvancingTeamCount} onChange={(_, value) => setGroupsAdvancingTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
