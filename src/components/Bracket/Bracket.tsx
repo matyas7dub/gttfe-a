@@ -41,17 +41,21 @@ export default function Bracket(props: BracketProps) {
     if (eventType === EventType.playoff) {
       fetchGracefully(backendUrl + `/backend/event/${props.eventId}/matches/`, {}, null, props.toast)
       .then(response => response.json())
-      .then(async (matches: Match[]) => setBracket(await universalTable(namesMap, matches, false, true, props.callback)));
+      .then(async (matches: Match[]) => setBracket(await universalTable(namesMap, matches, false, true, 0, props.callback)));
     } else if (eventType === EventType.swiss) {
       fetchGracefully(backendUrl + `/backend/event/${props.eventId}/matches/`, {}, null, props.toast)
       .then(response => response.json())
-      .then(async (matches: Match[]) => setBracket(await universalTable(namesMap, matches, true, false, props.callback)));
+      .then(async (matches: Match[]) => setBracket(await universalTable(namesMap, matches, true, false, 3, props.callback)));
     } else if (eventType === EventType.groups) {
       const tables: JSX.Element[] = [];
 
       await fetchGracefully(backendUrl + `/backend/event/${props.eventId}/stages/`, {}, null, props.toast)
       .then(response => response.json())
       .then(async stages => {
+        if (stages.length === 0) {
+          tables.push(<p>No matches</p>);
+          return;
+        }
         const groupLetters = [];
         const stagesByGroup: Map<string, number[]> = new Map();
         for (let stage of stages) {
@@ -83,11 +87,11 @@ export default function Bracket(props: BracketProps) {
           }
           await Promise.allSettled(promises);
 
-          tables.push(<Stack direction="column"><p>Group {group}</p>{await universalTable(namesMap, matches, true, false, props.callback)}</Stack>);
+          tables.push(<Stack direction="column"><p>Group {group}</p>{await universalTable(namesMap, matches, true, false, 0, props.callback)}</Stack>);
         }
       })
 
-      setBracket(<Stack direction="column">{tables}</Stack>);
+      setBracket(<Stack direction="column" spacing="1rem">{tables}</Stack>);
     } else if (eventType === EventType.none) {
       setBracket(<p>Error: malformed event type</p>);
     } else {
@@ -120,10 +124,14 @@ async function getTeamNames(gameId: number, toast: CreateToastFnReturn) {
   return teamNameMap;
 }
 
-async function universalTable(teamNames: Map<number, string>, matches: Match[], accumulateScore: boolean, eliminating: boolean, callback?: (id: number) => void) {
+async function universalTable(teamNames: Map<number, string>, matches: Match[], accumulateScore: boolean, eliminating: boolean, skipPoints: number, callback?: (id: number) => void) {
+  if (matches.length === 0) {
+    return <p>No matches</p>;
+  }
   const teamRows: Map<number, number> = new Map();
   const stageMatchesByLevel: Map<number, Match[]> = new Map();
   const rows: JSX.Element[][] = [];
+  const teamOnRow: number[] = [];
 
   for (let match of matches) {
     const stageMatchesBuffer = stageMatchesByLevel.get(match.stageIndex)?? [];
@@ -134,6 +142,7 @@ async function universalTable(teamNames: Map<number, string>, matches: Match[], 
       if(!teamRows.has(teamId)) {
         teamRows.set(teamId, teamRows.size);
         rows.push([<Td>{teamNames.get(teamId)?? "Unnamed"}</Td>])
+        teamOnRow.push(teamId);
       }
     }
     addRow(match.firstTeamId);
@@ -181,6 +190,8 @@ async function universalTable(teamNames: Map<number, string>, matches: Match[], 
           rows[row].push(<Td></Td>);
         } else {
           rows[row].push(<Td>Skip</Td>);
+          const skippedTeamScore = scoreMap.get(teamOnRow[row]) ?? 0;
+          scoreMap.set(teamOnRow[row], skippedTeamScore + skipPoints);
         }
       }
     }
@@ -205,7 +216,7 @@ async function universalTable(teamNames: Map<number, string>, matches: Match[], 
   table.push(<Tbody>{body}</Tbody>);
 
   return (
-    <TableContainer>
+    <TableContainer marginTop="-1rem">
       <Table variant="striped">
         {table}
       </Table>
