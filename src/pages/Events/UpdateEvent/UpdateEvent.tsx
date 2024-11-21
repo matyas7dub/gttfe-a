@@ -4,7 +4,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
-import EventTypeData from "../../../components/EventTypeData/EventTypeData";
+import EventTypeData, { GroupsData, parseEventType, stringifyEventType, SwissData } from "../../../components/EventTypeData/EventTypeData";
 import EventTypeSelector, { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl, horizontalFormSpacing } from "../../../config/config";
@@ -16,7 +16,8 @@ export default function UpdateEvent() {
   const [end, setEnd] = useState("");
   const [description, setDescription] = useState("");
   const [eventType, setEventType] = useState<EventType>(EventType.none);
-  const [eventTypeData, setEventTypeData] = useState("");
+  const [teamCount ,setTeamCount] = useState<number>();
+  const [advancingTeamCount, setAdvancingTeamCount] = useState<number>();
   const [eventPickerKey, setEventPickerKey] = useState(1); // this causes an upate on the event picker so that description changes show
 
   const toast = useToast();
@@ -47,7 +48,7 @@ export default function UpdateEvent() {
         </FormControl>
 
         <EventTypeSelector isDisabled={eventId == null || eventId === 0} value={eventType} changeHandler={event => setEventType(event.target.value as EventType)} />
-        <EventTypeData eventType={eventType} changeHandler={value => setEventTypeData(value)} />
+        <EventTypeData eventType={eventType} teamCount={teamCount} advancingTeamCount={advancingTeamCount} changeHandler={value => setEventTypeData(value)} />
 
         <ConfirmationButton isDisabled={eventId == null || eventId === 0} onClick={updateEvent}>Update event</ConfirmationButton>
       </EndpointForm>
@@ -65,10 +66,32 @@ export default function UpdateEvent() {
       setStart(`${data.date} ${beginTimeTruncated}`);
       setEnd(endTimeTruncated);
       setDescription(data.description);
-      setEventType(data.eventType);
       setGameId(data.gameId);
+      const eventType = parseEventType(data.eventType);
+      setEventType(eventType.type);
+      if (eventType.type === EventType.groups) {
+        const groups = eventType as GroupsData
+        setTeamCount(groups.teamCount);
+        setAdvancingTeamCount(groups.advancingTeamCount);
+      } else if (eventType.type === EventType.swiss) {
+        const swiss = eventType as SwissData;
+        setAdvancingTeamCount(swiss.advancingTeamCount);
+      }
     })
     .catch(error => console.error("Error", error));
+  }
+
+  function setEventTypeData(data: string) {
+    const fullEventType = (eventType + data) as EventType;
+    const parsed = parseEventType(fullEventType);
+    if (parsed.type === EventType.groups) {
+      const groups = parsed as GroupsData;
+      setTeamCount(groups.teamCount);
+      setAdvancingTeamCount(groups.advancingTeamCount);
+    } else if (parsed.type === EventType.swiss) {
+      const swiss = parsed as SwissData;
+      setAdvancingTeamCount(swiss.advancingTeamCount);
+    }
   }
 
   function updateEvent() {
@@ -82,6 +105,8 @@ export default function UpdateEvent() {
 
     const endTime = `${end}:00`;
 
+    const fullEventType = stringifyEventType(eventType, advancingTeamCount, teamCount);
+
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     {
       method: "PUT",
@@ -91,7 +116,7 @@ export default function UpdateEvent() {
         endTime: endTime,
         gameId: gameId,
         description: description,
-        eventType: eventType + eventTypeData
+        eventType: fullEventType
       }),
       headers: {"Content-Type": "application/json"}
     },
