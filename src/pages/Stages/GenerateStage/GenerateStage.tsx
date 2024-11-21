@@ -1,11 +1,11 @@
 import { QuestionIcon } from "@chakra-ui/icons";
 import { CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
-import { parseGroupsData, parseSwissData } from "../../../components/EventTypeData/EventTypeData";
+import { GroupsData, parseEventType, parseGroupsData, parseSwissData, SwissData } from "../../../components/EventTypeData/EventTypeData";
 import { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
@@ -24,13 +24,19 @@ export default function GenerateStage() {
 
   const toast = useToast();
 
+
+  // DEBUG
+  useEffect(() => {
+    console.debug(teamIds);
+  }, [teamIds]);
+
   return (
     <div>
       <Breadcrumbs />
 
       <EndpointForm>
         <DataPicker dataType={dataType.event} changeHandler={event => selectEvent(Number(event.target.value))} toast={toast}
-          isDisabled={previousStageIndex !== null && eventType.startsWith(EventType.groups)}
+          isInvalid={previousStageIndex !== null && eventType.startsWith(EventType.groups)}
           errorMessage={previousStageIndex !== null && eventType.startsWith(EventType.groups) ? "You cannot have any existing stages when creating a groups event" : undefined}/>
 
         <FormControl isDisabled={eventId == null}>
@@ -99,12 +105,14 @@ export default function GenerateStage() {
     fetchGracefully(backendUrl + `/backend/event/${previousEvent}/`, {}, null, toast)
     .then(response => response.json())
     .then(event => {
-      const eventType: EventType = event.eventType;
+      const eventType = parseEventType(event.eventType);
       let advancingTeams = 0;
-      if (eventType.startsWith(EventType.swiss)) {
-        advancingTeams = parseSwissData(eventType).advancingTeamCount;
-      } else if (eventType.startsWith(EventType.groups)) {
-        advancingTeams = parseGroupsData(eventType).advancingTeamCount;
+      if (eventType.type === EventType.swiss) {
+        const swiss = eventType as SwissData;
+        advancingTeams = swiss.advancingTeamCount;
+      } else if (eventType.type === EventType.groups) {
+        const groups = eventType as GroupsData;
+        advancingTeams = groups.advancingTeamCount;
       } else {
         setPreviousEventError(true);
         return;
@@ -113,45 +121,85 @@ export default function GenerateStage() {
       fetchGracefully(backendUrl + `/backend/event/${previousEvent}/matches/`, {}, null, toast)
       .then(response => response.json())
       .then(matches => {
-        const scoreMap: Map<number, number> = new Map();
-        const teams = [];
+        if (eventType.type === EventType.playoff || eventType.type === EventType.swiss) {
+          setTeamIds(getBestTeamFromMatches(matches, advancingTeams));
+        } else if (eventType.type === EventType.groups) {
+          const groupCache: Map<number, string> = new Map();
+          const groupMatches: Map<string, any[]> = new Map();
+          const groupLetters: string[] = [];
 
-        for (let match of matches) {
-          const firstTeamId = match.firstTeamId;
-          const secondTeamId = match.secondTeamId;
-
-          if (!scoreMap.has(firstTeamId)) {
-            teams.push({
-              id: firstTeamId,
-              score: 0
-            })
+          for (let match of matches) {
+            let group = groupCache.get(match.stageId)?? "";
+            if (group === "") {
+              const regex = String(match.stageName).match(/[A-Z]+ - \d+/);
+              group = regex !== null ? regex[0].toString().substring(0, regex[0].toString().indexOf(" - ")) : "error";
+              groupCache.set(match.stageId, group);
+              if (!groupLetters.includes(group)) {
+                groupLetters.push(group);
+              }
+            }
+            const buffer = groupMatches.get(group)?? [];
+            buffer.push(match);
+            groupMatches.set(group, buffer);
           }
-          if (!scoreMap.has(secondTeamId)) {
-            teams.push({
-              id: secondTeamId,
-              score: 0
-            })
+
+          let bestIds: number[] = [];
+          for (let group of groupLetters) {
+            bestIds = bestIds.concat(getBestTeamFromMatches(groupMatches.get(group)?? [], advancingTeams))
           }
-
-          const firstTeamScore = scoreMap.get(firstTeamId)?? 0 + match.firstTeamResult;
-          const secondTeamScore = scoreMap.get(secondTeamId)?? 0 + match.secondTeamResult;
-          scoreMap.set(firstTeamId, firstTeamScore);
-          scoreMap.set(secondTeamId, secondTeamScore);
+          setTeamIds(bestIds);
         }
-
-        for (let team of teams) {
-          team.score = scoreMap.get(team.id)?? 0;
-        }
-
-        teams.sort((a, b) => {return b.score - a.score});
-        const bestIds = [];
-        for (let team = 0; team < advancingTeams; team++) {
-          bestIds.push(teams[team].id);
-        }
-
-        setTeamIds(bestIds);
       })
     })
+  }
+
+  function getBestTeamFromMatches(matches: any, advancingTeams: number) {
+    const scoreMap: Map<number, number> = new Map();
+    const teams = [];
+
+    for (let match of matches) {
+      const firstTeamId = match.firstTeamId;
+      const secondTeamId = match.secondTeamId;
+
+      if (!scoreMap.has(firstTeamId)) {
+        teams.push({
+          id: firstTeamId,
+          score: 0
+        })
+      }
+      if (!scoreMap.has(secondTeamId)) {
+        teams.push({
+          id: secondTeamId,
+          score: 0
+        })
+      }
+
+      const firstTeamScore = (scoreMap.get(firstTeamId)?? 0) + match.firstTeamResult;
+      const secondTeamScore = (scoreMap.get(secondTeamId)?? 0) + match.secondTeamResult;
+      if (match.firstTeamResult === 3) {
+        console.debug(firstTeamId);
+      }
+      if (match.secondTeamResult === 3) {
+        console.debug(secondTeamId);
+      }
+      scoreMap.set(firstTeamId, firstTeamScore);
+      scoreMap.set(secondTeamId, secondTeamScore);
+    }
+
+    console.debug(scoreMap);
+
+    for (let team of teams) {
+      team.score = scoreMap.get(team.id)?? 0;
+    }
+
+
+    teams.sort((a, b) => {return b.score - a.score});
+    const bestIds = [];
+    for (let team = 0; team < advancingTeams; team++) {
+      bestIds.push(teams[team].id);
+    }
+
+    return bestIds;
   }
 
   function setTeams(eventId: number, eventType: EventType) {
