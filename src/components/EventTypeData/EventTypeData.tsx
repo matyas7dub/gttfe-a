@@ -1,4 +1,5 @@
-import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
+import { QuestionIcon } from "@chakra-ui/icons";
+import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Tooltip } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import { horizontalFormSpacing } from "../../config/config";
 import { EventType } from "../EventTypeSelector/EventTypeSelector"
@@ -117,7 +118,10 @@ export default function EventTypeData(props: EventTypeDataProps) {
       props.eventType.startsWith(EventType.groups) ?
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
-            <FormLabel>Team count in one group</FormLabel>
+            <Stack direction="row" align="center">
+              <FormLabel marginRight="-0.1em">Team count in one group</FormLabel>
+              <Tooltip label="There should be an even number of teams, so that everyone plays every round"><QuestionIcon marginBottom="0.3em" /></Tooltip>
+            </Stack>
             <NumberInput min={1} value={props.teamCount?? groupsTeamCount} onChange={(_, value) => setGroupsTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
