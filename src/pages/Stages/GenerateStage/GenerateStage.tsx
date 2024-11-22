@@ -5,7 +5,7 @@ import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
 import EndpointForm from "../../../components/EndpointForm/EndpointForm";
-import { GroupsData, parseEventType, parseGroupsData, parseSwissData, SwissData } from "../../../components/EventTypeData/EventTypeData";
+import { GroupsData, parseEventType, parseGroupsData, SwissData } from "../../../components/EventTypeData/EventTypeData";
 import { EventType } from "../../../components/EventTypeSelector/EventTypeSelector";
 import { fetchGracefully } from "../../../components/Navbar/Login/LoginScript";
 import { backendUrl } from "../../../config/config";
@@ -405,18 +405,52 @@ export default function GenerateStage() {
         tempTeamIds.pop(); // worst team doesn't play and gets a free win
       }
 
-      while (tempTeamIds.length !== 0) {
-        let i = 1;
-        const opponents = opponentMap.get(tempTeamIds[0]) ?? [];
-        while (opponents.includes(tempTeamIds[i]) && i < tempTeamIds.length) {
-          i++;
+      const pairTeams = (unpairedTeams: number[], matches: [number, number][]): [number, number][] | null => {
+        if (unpairedTeams.length === 0) {
+          return matches;
         }
-        if (i >= tempTeamIds.length) {
-          i = 1; // I am pretty sure this algorithm doesn't always guarantee non-repeating combinations, so here is a failsafe
+        // the unpaired teams need to be cloned to be able to go back in the recursion branches
+        const unpairedTemp: number[] = structuredClone(unpairedTeams);
+
+        const firstTeam = unpairedTemp.pop() as number;
+        const opponents = opponentMap.get(firstTeam)?? [];
+        let i = unpairedTemp.length - 1;
+        while(true) {
+          while(opponents.includes(unpairedTemp[i]) && i >= 0) {
+            i--;
+          }
+          if (i < 0) {
+            return null;
+          }
+          const secondTeam = unpairedTemp[i];
+
+          // copying here for the same reason
+          const matchesTemp = structuredClone(matches);
+          matchesTemp.push([firstTeam, secondTeam]);
+          const unpairedTempTemp: number[] = structuredClone(unpairedTemp);
+          unpairedTempTemp.splice(i, 1);
+
+          const newMatches: [number, number][] | null = pairTeams(unpairedTempTemp, matchesTemp);
+          if (newMatches === null) {
+            i--;
+            continue;
+          } else {
+            return newMatches;
+          }
         }
-        matches.push([tempTeamIds[0], tempTeamIds[i]]);
-        tempTeamIds.splice(0, 1);
-        tempTeamIds.splice(i - 1, 1);
+      }
+
+      const response = pairTeams(tempTeamIds, []);
+      if (response === null) {
+        matches = [];
+        toast({
+          title: "Couldn't pair teams",
+          status: "error",
+          duration: 5000,
+          isClosable: true
+        })
+      } else {
+        matches = response;
       }
     }
 
@@ -442,7 +476,7 @@ export default function GenerateStage() {
       })
       .catch(error => console.error("Error", error));
     }
-    if (success) {
+    if (success && matches.length !== 0) {
       toast({
         title: "Matches created successfully",
         status: 'success',
