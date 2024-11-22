@@ -106,7 +106,7 @@ export default function EventTypeData(props: EventTypeDataProps) {
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
             <FormLabel>Advancing team count</FormLabel>
-            <NumberInput min={1} value={props.teamCount?? swissTeamCount} onChange={(_, value) => setSwissTeamCount(value)}>
+            <NumberInput min={1} value={props.advancingTeamCount} onChange={(_, value) => setSwissTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -122,7 +122,7 @@ export default function EventTypeData(props: EventTypeDataProps) {
               <FormLabel marginRight="-0.1em">Team count in one group</FormLabel>
               <Tooltip label="There should be an even number of teams, so that everyone plays every round"><QuestionIcon marginBottom="0.3em" /></Tooltip>
             </Stack>
-            <NumberInput min={1} value={props.teamCount?? groupsTeamCount} onChange={(_, value) => setGroupsTeamCount(value)}>
+            <NumberInput min={1} value={props.teamCount} onChange={(_, value) => setGroupsTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -133,7 +133,7 @@ export default function EventTypeData(props: EventTypeDataProps) {
 
           <FormControl>
             <FormLabel>Advancing team count per group</FormLabel>
-            <NumberInput min={1} value={props.advancingTeamCount?? groupsAdvancingTeamCount} onChange={(_, value) => setGroupsAdvancingTeamCount(value)}>
+            <NumberInput min={1} value={props.advancingTeamCount} onChange={(_, value) => setGroupsAdvancingTeamCount(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />

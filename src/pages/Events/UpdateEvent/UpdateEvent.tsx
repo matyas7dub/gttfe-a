@@ -1,5 +1,5 @@
 import { FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
@@ -19,6 +19,10 @@ export default function UpdateEvent() {
   const [teamCount ,setTeamCount] = useState<number>();
   const [advancingTeamCount, setAdvancingTeamCount] = useState<number>();
   const [eventPickerKey, setEventPickerKey] = useState(1); // this causes an upate on the event picker so that description changes show
+
+  useEffect(() => {
+    console.debug(advancingTeamCount);
+  }, [advancingTeamCount]);
 
   const toast = useToast();
 
