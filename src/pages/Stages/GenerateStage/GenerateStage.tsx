@@ -1,6 +1,6 @@
 import { QuestionIcon } from "@chakra-ui/icons";
 import { CreateToastFnReturn, FormControl, FormLabel, Input, Stack, Tooltip, useToast } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
@@ -23,12 +23,6 @@ export default function GenerateStage() {
   const [previousEventError, setPreviousEventError] = useState(false);
 
   const toast = useToast();
-
-
-  // DEBUG
-  useEffect(() => {
-    console.debug(teamIds);
-  }, [teamIds]);
 
   return (
     <div>
@@ -391,7 +385,7 @@ export default function GenerateStage() {
       }
   
     } else if (eventType.startsWith(EventType.swiss)) {
-      const result = await getSwissMaps(eventId as number, toast);
+      const result = await getSwissMaps(Number(gameId.current), eventId as number, toast);
       const scoreMap = result[0] as Map<number, number>;
       const opponentMap = result[1] as Map<number, number[]>;
       tempTeamIds.sort((a, b) => {
@@ -487,7 +481,7 @@ export default function GenerateStage() {
   }
 }
 
-async function getSwissMaps(eventId: number, toast: CreateToastFnReturn) {
+async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastFnReturn) {
   const scoreMap: Map<number, number> = new Map();
   const opponentMap: Map<number, number[]> = new Map();
   const playcountMap: Map<number, number> = new Map();
@@ -522,17 +516,27 @@ async function getSwissMaps(eventId: number, toast: CreateToastFnReturn) {
       secondTeamOpponents.push(firstTeamId);
       opponentMap.set(secondTeamId, secondTeamOpponents);
     }
+  });
+
+  const teams: number[] = [];
+  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
+  .then(response => response.json())
+  .then(data => {
+    for (let team of data) {
+      if (!teams.includes(team.teamId)) {
+        teams.push(team.teamId);
+      }
+    }
   })
-  .catch(error => console.error("Error: ", error));
 
   const winPoints = 3;
 
-  for (let teamId in playcountMap) {
-    const playcount = playcountMap.get(Number(teamId))?? 0;
+  for (let team of teams) {
+    const playcount = playcountMap.get(Number(team))?? 0;
 
     if (playcount < maxPlaycount) {
-      const score = scoreMap.get(Number(teamId))?? 0;
-      scoreMap.set(Number(teamId), score + (maxPlaycount - playcount) * winPoints);
+      const score = scoreMap.get(Number(team))?? 0;
+      scoreMap.set(Number(team), score + (maxPlaycount - playcount) * winPoints);
     }
   }
 
