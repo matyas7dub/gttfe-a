@@ -12,6 +12,7 @@ import { FileContent } from '../File/File';
 import GroupHeading from '../../components/GroupHeading/GroupHeading';
 import FormDivider from '../../components/FormDivider/FormDivider';
 import { UsersContent } from '../Users/Users';
+import { TeamsContent } from '../Teams/Teams';
 
 function Home() {
   return (
@@ -30,6 +31,10 @@ function Home() {
 
       <ChakraLink as={RouterLink} to="game"><GroupHeading>Game</GroupHeading></ChakraLink>
       <GameContent />
+      <FormDivider />
+
+      <ChakraLink as={RouterLink} to="teams"><GroupHeading>Teams</GroupHeading></ChakraLink>
+      <TeamsContent />
       <FormDivider />
 
       <ChakraLink as={RouterLink} to="role"><GroupHeading>Role</GroupHeading></ChakraLink>

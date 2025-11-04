@@ -31,6 +31,9 @@ import Users from './pages/Users/Users';
 import ShowUser from './pages/Users/ShowUser/ShowUser';
 import EventBracket from './pages/Events/EventBracket/EventBracket';
 import GenerateStage from './pages/Stages/GenerateStage/GenerateStage';
+import Teams from './pages/Teams/Teams';
+import ShowTeam from './pages/Teams/ShowTeam/ShowTeam';
+import ExportGameTeams from './pages/Teams/ExportGameTeams/ExportGameTeams';
 
 function App() {
   return (
@@ -63,6 +66,9 @@ function App() {
       <Route path="/file/list" element={<List />} />
       <Route path="/users" element={<Users />} />
       <Route path="/users/show" element={<ShowUser />} />
+      <Route path="/teams" element={<Teams />} />
+      <Route path="/teams/show" element={<ShowTeam />} />
+      <Route path="/teams/game-export" element={<ExportGameTeams />} />
       <Route path={`${loginPathRelative}`} element={<LoginScript />} />
     </Routes>
   )
