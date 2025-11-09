@@ -18,6 +18,7 @@ export default function UpdateEvent() {
   const [eventType, setEventType] = useState<EventType>(EventType.none);
   const [teamCount ,setTeamCount] = useState<number>();
   const [advancingTeamCount, setAdvancingTeamCount] = useState<number>();
+  const [qualificationThreshold, setQualificationThreshold] = useState<number>();
   const [eventPickerKey, setEventPickerKey] = useState(1); // this causes an upate on the event picker so that description changes show
 
   useEffect(() => {
@@ -79,7 +80,7 @@ export default function UpdateEvent() {
         setAdvancingTeamCount(groups.advancingTeamCount);
       } else if (eventType.type === EventType.swiss) {
         const swiss = eventType as SwissData;
-        setAdvancingTeamCount(swiss.advancingTeamCount);
+        setQualificationThreshold(swiss.qualificationThreshold);
       }
     })
     .catch(error => console.error("Error", error));
@@ -94,7 +95,7 @@ export default function UpdateEvent() {
       setAdvancingTeamCount(groups.advancingTeamCount);
     } else if (parsed.type === EventType.swiss) {
       const swiss = parsed as SwissData;
-      setAdvancingTeamCount(swiss.advancingTeamCount);
+      setQualificationThreshold(swiss.qualificationThreshold);
     }
   }
 
@@ -109,7 +110,7 @@ export default function UpdateEvent() {
 
     const endTime = `${end}:00`;
 
-    const fullEventType = stringifyEventType(eventType, advancingTeamCount, teamCount);
+    const fullEventType = stringifyEventType(eventType, {teamCount, advancingTeamCount, qualificationThreshold});
 
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     {
@@ -123,8 +124,7 @@ export default function UpdateEvent() {
         eventType: fullEventType
       }),
       headers: {"Content-Type": "application/json"}
-    },
-    "Event updated successfully", toast);
+    }, "Event updated successfully", toast);
 
     setEventPickerKey(eventPickerKey + 1);
   }

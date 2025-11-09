@@ -39,11 +39,13 @@ export default function GenerateStage() {
           {previousStageIndex !== null ? `Stage ${previousStageIndex} was ${previousStageName}` : (eventId ? "No previous stage" : "")}
         </FormControl>
 
+        {/* TODO: reimplement importing for swiss / remove swiss importing completely
         {eventId && eventId !== 0 && previousStageIndex === null ?
         <DataPicker title={<Stack direction="row" align="center"><p>Import teams (optional)</p> <Tooltip label="If you want to import advancing teams from a previous event"><QuestionIcon /></Tooltip></Stack>}
         isInvalid={previousEventError} errorMessage="This event doesn't have any advancing teams!" value={previousEventId} dataType={dataType.event} changeHandler={event => selectPreviousEvent(event)} toast={toast} />
         : <></>
         }
+        */}
 
         <ConfirmationButton isDisabled={!stageName || (previousStageIndex !== null && eventType.startsWith(EventType.groups))} onClick={() => {createStage()}}>Create stage and matches</ConfirmationButton>
       </EndpointForm>
@@ -103,7 +105,7 @@ export default function GenerateStage() {
       let advancingTeams = 0;
       if (eventType.type === EventType.swiss) {
         const swiss = eventType as SwissData;
-        advancingTeams = swiss.advancingTeamCount;
+        // advancingTeams = swiss.advancingTeamCount;
       } else if (eventType.type === EventType.groups) {
         const groups = eventType as GroupsData;
         advancingTeams = groups.advancingTeamCount;

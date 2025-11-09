@@ -8,19 +8,20 @@ type EventTypeDataProps = {
   eventType: EventType,
   changeHandler: (data: string) => void,
   teamCount?: number,
-  advancingTeamCount?: number
+  advancingTeamCount?: number,
+  qualificationThreshold?: number
 }
 
 export type SwissData = {
   type: EventType,
-  advancingTeamCount: number
+  qualificationThreshold: number
 }
 
 export function parseSwissData(input: string): SwissData {
   const data = input.split(",");
   return {
     type: EventType.swiss,
-    advancingTeamCount: Number(data[1])
+    qualificationThreshold: Number(data[1])
   }
 }
 
@@ -51,20 +52,26 @@ export function parseEventType(input: EventType) {
   }
 }
 
-export function stringifyEventType(type: EventType, advancingTeamCount?: number, teamCount?: number) {
+type eventTypeOptions = {
+  advancingTeamCount?: number;
+  teamCount?: number;
+  qualificationThreshold?: number;
+};
+
+export function stringifyEventType(type: EventType, options?: eventTypeOptions) {
   if (type === EventType.playoff) {
     return type;
   } else if (type === EventType.groups) {
-    if (advancingTeamCount !== undefined && teamCount !== undefined) {
-      return `${type},${teamCount},${advancingTeamCount}`;
+    if (options?.advancingTeamCount !== undefined && options?.teamCount !== undefined) {
+      return `${type},${options.teamCount},${options.advancingTeamCount}`;
     } else {
-      throw new Error(`Invalid event type arguments: ${advancingTeamCount} ${teamCount}`);
+      throw new Error(`Invalid event type arguments: ${options?.advancingTeamCount} ${options?.teamCount}`);
     }
-  } else if (type === EventType.swiss && advancingTeamCount !== undefined) {
-    if (advancingTeamCount !== undefined) {
-      return `${type},${advancingTeamCount}`
+  } else if (type === EventType.swiss) {
+    if (options?.qualificationThreshold !== undefined) {
+      return `${type},${options.qualificationThreshold}`
     } else {
-      throw new Error(`Invalid event type arguments: ${advancingTeamCount}`)
+      throw new Error(`Invalid event type arguments: ${options?.advancingTeamCount}`)
     }
   } else {
     throw new Error(`Invalid event type: ${type}`)
@@ -72,7 +79,7 @@ export function stringifyEventType(type: EventType, advancingTeamCount?: number,
 }
 
 export default function EventTypeData(props: EventTypeDataProps) {
-  const [swissTeamCount, setSwissTeamCount] = useState(1);
+  const [swissQualificationThreshold, setSwissQualificationThreshold] = useState(1);
 
   const [groupsTeamCount, setGroupsTeamCount] = useState(1);
   const [groupsAdvancingTeamCount, setGroupsAdvancingTeamCount] = useState(1);
@@ -86,10 +93,10 @@ export default function EventTypeData(props: EventTypeDataProps) {
 
   useEffect(() => {
     if (props.eventType.startsWith(EventType.swiss)) {
-      props.changeHandler(`,${swissTeamCount}`)
+      props.changeHandler(`,${swissQualificationThreshold}`)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swissTeamCount])
+  }, [swissQualificationThreshold])
 
   useEffect(() => {
     if (props.eventType.startsWith(EventType.groups)) {
@@ -105,8 +112,8 @@ export default function EventTypeData(props: EventTypeDataProps) {
       props.eventType.startsWith(EventType.swiss) ?
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
-            <FormLabel>Advancing team count</FormLabel>
-            <NumberInput min={1} value={props.advancingTeamCount} onChange={(_, value) => setSwissTeamCount(value)}>
+            <FormLabel>Qualification / Elimination threshold</FormLabel>
+            <NumberInput min={1} value={props.qualificationThreshold} onChange={(_, value) => setSwissQualificationThreshold(value)}>
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
