@@ -359,7 +359,7 @@ export default function GenerateStage() {
       })
       return;
     }
-  
+
     if (Math.log2(teamIds.length).toString().includes(".") && (eventType === EventType.playoff || eventType.startsWith(EventType.swiss))) {
       toast({
         title: "Awkward team count",
@@ -369,10 +369,14 @@ export default function GenerateStage() {
         isClosable: true
       })
     }
-  
+
     let matches: [number, number][] = new Array<[number, number]>();
 
-    const tempTeamIds = teamIds;
+    let tempTeamIds: number[] = [];
+    for (const team of teamIds) {
+      tempTeamIds.push(team);
+    };
+
     if (eventType === EventType.playoff) {
       if (tempTeamIds.length % 2 !== 0) {
         // remove a random team that won't play this stage
@@ -383,16 +387,26 @@ export default function GenerateStage() {
       for (let team = 0; team + 1 < tempTeamIds.length; team += 2) {
         matches.push([tempTeamIds[team], tempTeamIds[team + 1]]);
       }
-  
-    } else if (eventType.startsWith(EventType.swiss)) {
-      const result = await getSwissMaps(Number(gameId.current), eventId as number, toast);
-      const scoreMap = result[0] as Map<number, number>;
-      const opponentMap = result[1] as Map<number, number[]>;
-      tempTeamIds.sort((a, b) => {
-        const scoreA = scoreMap.get(a) ?? 0;
-        const scoreB = scoreMap.get(b) ?? 0;
 
-        return scoreB - scoreA; // descending order
+    } else if (eventType.startsWith(EventType.swiss)) {
+      // TODO: display an error if the event type is malformed instead of defaulting to 3
+      const threshold = Number(eventType.slice("swiss,".length) ?? 3) ?? 3;
+      const result = await getSwissMaps(Number(gameId.current), eventId as number, toast);
+      const scoreMap = result[0] as Map<number, Score>;
+      const opponentMap = result[1] as Map<number, number[]>;
+      tempTeamIds = tempTeamIds.filter(team => {
+        const score = scoreMap.get(team) ?? {wins: 0, losses: 0};
+        if (score.wins < threshold && score.losses < threshold) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      tempTeamIds.sort((a, b) => {
+        const scoreA = scoreMap.get(a) ?? {wins: 0, losses: 0};
+        const scoreB = scoreMap.get(b) ?? {wins: 0, losses: 0};
+
+        return scoreB.wins - scoreA.wins; // descending order
       });
 
       if (tempTeamIds.length % 2 !== 0) {
@@ -481,8 +495,20 @@ export default function GenerateStage() {
   }
 }
 
+type Score = {
+  wins: number;
+  losses: number;
+};
+
+type Match = {
+  firstTeamId: number;
+  secondTeamId: number;
+  firstTeamResult: number;
+  secondTeamResult: number;
+};
+
 async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastFnReturn) {
-  const scoreMap: Map<number, number> = new Map();
+  const scoreMap: Map<number, Score> = new Map();
   const opponentMap: Map<number, number[]> = new Map();
   const playcountMap: Map<number, number> = new Map();
   let maxPlaycount = 0;
@@ -490,14 +516,15 @@ async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastF
   await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
   .then(response => response.json())
   .then(matches => {
-    for (let match of matches) {
+    for (let match of matches as Match[]) {
       const firstTeamId = match.firstTeamId;
       const secondTeamId = match.secondTeamId;
-      const firstTeamPlaycount = playcountMap.get(firstTeamId)?? 0;
-      const secondTeamPlaycount = playcountMap.get(secondTeamId)?? 0;
+      const firstTeamScore = scoreMap.get(firstTeamId)?? {wins: 0, losses: 0};
+      const secondTeamScore = scoreMap.get(secondTeamId)?? {wins: 0, losses: 0};
       const firstTeamOpponents = opponentMap.get(firstTeamId)?? [];
       const secondTeamOpponents = opponentMap.get(secondTeamId)?? [];
-
+      const firstTeamPlaycount = playcountMap.get(firstTeamId)?? 0;
+      const secondTeamPlaycount = playcountMap.get(secondTeamId)?? 0;
 
       if (firstTeamPlaycount + 1 > maxPlaycount) {
         maxPlaycount = firstTeamPlaycount + 1;
@@ -508,8 +535,27 @@ async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastF
       playcountMap.set(firstTeamId, firstTeamPlaycount + 1);
       playcountMap.set(secondTeamId, secondTeamPlaycount + 1);
 
-      scoreMap.set(firstTeamId, match.firstTeamResult);
-      scoreMap.set(secondTeamId, match.secondTeamResult);
+      if (match.firstTeamResult > match.secondTeamResult) {
+        scoreMap.set(firstTeamId, {
+          wins: firstTeamScore.wins + 1,
+          losses: firstTeamScore.losses,
+        });
+
+        scoreMap.set(secondTeamId, {
+          wins: secondTeamScore.wins,
+          losses: secondTeamScore.losses + 1
+        });
+      } else if (match.secondTeamResult > match.firstTeamResult) {
+        scoreMap.set(secondTeamId, {
+          wins: secondTeamScore.wins + 1,
+          losses: secondTeamScore.losses
+        });
+
+        scoreMap.set(firstTeamId, {
+          wins: firstTeamScore.wins,
+          losses: firstTeamScore.losses + 1,
+        });
+      }
 
       firstTeamOpponents.push(secondTeamId);
       opponentMap.set(firstTeamId, firstTeamOpponents);
@@ -529,14 +575,15 @@ async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastF
     }
   })
 
-  const winPoints = 3;
-
   for (let team of teams) {
     const playcount = playcountMap.get(Number(team))?? 0;
 
     if (playcount < maxPlaycount) {
-      const score = scoreMap.get(Number(team))?? 0;
-      scoreMap.set(Number(team), score + (maxPlaycount - playcount) * winPoints);
+      const score = scoreMap.get(Number(team))?? {wins: 0, losses: 0};
+      scoreMap.set(Number(team), {
+        wins: score.wins + (maxPlaycount - playcount),
+        losses: score.losses
+      });
     }
   }
 
