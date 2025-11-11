@@ -157,6 +157,10 @@ export default function GenerateStage() {
       groupLetter += alphabet[groupIndex];
     }
 
+    if (teams.length % 2 !== 0) {
+      teams.push(-1);
+    }
+
     const stageCount = teams.length - 1;
     const stages: number[] = [];
     const promises = [];
@@ -184,9 +188,6 @@ export default function GenerateStage() {
 
     Promise.allSettled(promises)
     .then(() => {
-      if (teams.length % 2 !== 0) {
-        teams.push(-1);
-      }
       const teamIndexes: number[] = [];
       for (let i = 0; i < teams.length / 2; i++) {
         teamIndexes.push(i);
