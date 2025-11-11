@@ -18,9 +18,6 @@ export default function GenerateStage() {
   const [stageName, setStageName] = useState("");
   const [teamIds, setTeamIds] = useState<number[]>([]);
 
-  // const [previousEventId, setPreviousEventId] = useState<number>();
-  // const [previousEventError, setPreviousEventError] = useState(false);
-
   const toast = useToast();
 
   return (
@@ -32,21 +29,16 @@ export default function GenerateStage() {
           isInvalid={previousStageIndex !== null && eventType.startsWith(EventType.groups)}
           errorMessage={previousStageIndex !== null && eventType.startsWith(EventType.groups) ? "You cannot have any existing stages when creating a groups event" : undefined}/>
 
-        <FormControl isDisabled={eventId == null}>
+        <FormControl isDisabled={eventId == null || eventType.startsWith("groups")}>
           <FormLabel>Stage name</FormLabel>
-          <Input onChange={event => setStageName(event.target.value)} marginBottom="1rem"/>
+          <Input value={stageName} onChange={event => setStageName(event.target.value)} marginBottom="1rem"/>
           {previousStageIndex !== null ? `Stage ${previousStageIndex} was ${previousStageName}` : (eventId ? "No previous stage" : "")}
         </FormControl>
 
-        {/* TODO: reimplement importing for swiss / remove swiss importing completely
-        {eventId && eventId !== 0 && previousStageIndex === null ?
-        <DataPicker title={<Stack direction="row" align="center"><p>Import teams (optional)</p> <Tooltip label="If you want to import advancing teams from a previous event"><QuestionIcon /></Tooltip></Stack>}
-        isInvalid={previousEventError} errorMessage="This event doesn't have any advancing teams!" value={previousEventId} dataType={dataType.event} changeHandler={event => selectPreviousEvent(event)} toast={toast} />
-        : <></>
-        }
-        */}
-
-        <ConfirmationButton isDisabled={!stageName || (previousStageIndex !== null && eventType.startsWith(EventType.groups))} onClick={() => {createStage()}}>Create stage and matches</ConfirmationButton>
+        <ConfirmationButton
+          isDisabled={(!stageName && !eventType.startsWith(EventType.groups)) || (previousStageIndex !== null && eventType.startsWith(EventType.groups))}
+          onClick={() => {createStage()}}
+        >Create stage and matches</ConfirmationButton>
       </EndpointForm>
     </div>
   )
@@ -58,12 +50,15 @@ export default function GenerateStage() {
     await fetchGracefully(backendUrl + `/backend/event/${newEventId}`, {}, null, toast)
     .then(response => response.json())
     .then(data => {
-      const tempEventType = data.eventType as EventType;
-      setEventType(tempEventType);
-      newEventType = tempEventType;
+      newEventType = data.eventType as EventType;
+      setEventType(newEventType);
       gameId.current = data.gameId;
     })
     .catch(error => console.error("Error: ", error));
+
+    if (newEventType.startsWith("groups")) {
+      setStageName("");
+    }
 
     fetchGracefully(backendUrl + `/backend/event/${newEventId}/stages/`, {}, null, toast)
     .then(response => response.json())
@@ -86,116 +81,6 @@ export default function GenerateStage() {
     })
     .catch(error => console.error("Error", error));
   }
-
-  // function selectPreviousEvent(event: React.ChangeEvent<HTMLSelectElement>) {
-  //   const previousEvent = event.target.value;
-
-  //   setPreviousEventError(false);
-  //   setPreviousEventId(Number(previousEvent));
-
-  //   if (!previousEvent) {
-  //     return;
-  //   }
-
-  //   fetchGracefully(backendUrl + `/backend/event/${previousEvent}/`, {}, null, toast)
-  //   .then(response => response.json())
-  //   .then(event => {
-  //     const eventType = parseEventType(event.eventType);
-  //     let advancingTeams = 0;
-  //     if (eventType.type === EventType.swiss) {
-  //       const swiss = eventType as SwissData;
-  //       // advancingTeams = swiss.advancingTeamCount;
-  //     } else if (eventType.type === EventType.groups) {
-  //       const groups = eventType as GroupsData;
-  //       advancingTeams = groups.advancingTeamCount;
-  //     } else {
-  //       setPreviousEventError(true);
-  //       return;
-  //     }
-
-  //     fetchGracefully(backendUrl + `/backend/event/${previousEvent}/matches/`, {}, null, toast)
-  //     .then(response => response.json())
-  //     .then(matches => {
-  //       if (eventType.type === EventType.playoff || eventType.type === EventType.swiss) {
-  //         setTeamIds(getBestTeamFromMatches(matches, advancingTeams));
-  //       } else if (eventType.type === EventType.groups) {
-  //         const groupCache: Map<number, string> = new Map();
-  //         const groupMatches: Map<string, any[]> = new Map();
-  //         const groupLetters: string[] = [];
-
-  //         for (let match of matches) {
-  //           let group = groupCache.get(match.stageId)?? "";
-  //           if (group === "") {
-  //             const regex = String(match.stageName).match(/[A-Z]+ - \d+/);
-  //             group = regex !== null ? regex[0].toString().substring(0, regex[0].toString().indexOf(" - ")) : "error";
-  //             groupCache.set(match.stageId, group);
-  //             if (!groupLetters.includes(group)) {
-  //               groupLetters.push(group);
-  //             }
-  //           }
-  //           const buffer = groupMatches.get(group)?? [];
-  //           buffer.push(match);
-  //           groupMatches.set(group, buffer);
-  //         }
-
-  //         let bestIds: number[] = [];
-  //         for (let group of groupLetters) {
-  //           bestIds = bestIds.concat(getBestTeamFromMatches(groupMatches.get(group)?? [], advancingTeams))
-  //         }
-  //         setTeamIds(bestIds);
-  //       }
-  //     })
-  //   })
-  // }
-
-  // function getBestTeamFromMatches(matches: any, advancingTeams: number) {
-  //   const scoreMap: Map<number, number> = new Map();
-  //   const teams = [];
-
-  //   for (let match of matches) {
-  //     const firstTeamId = match.firstTeamId;
-  //     const secondTeamId = match.secondTeamId;
-
-  //     if (!scoreMap.has(firstTeamId)) {
-  //       teams.push({
-  //         id: firstTeamId,
-  //         score: 0
-  //       })
-  //     }
-  //     if (!scoreMap.has(secondTeamId)) {
-  //       teams.push({
-  //         id: secondTeamId,
-  //         score: 0
-  //       })
-  //     }
-
-  //     const firstTeamScore = (scoreMap.get(firstTeamId)?? 0) + match.firstTeamResult;
-  //     const secondTeamScore = (scoreMap.get(secondTeamId)?? 0) + match.secondTeamResult;
-  //     if (match.firstTeamResult === 3) {
-  //       console.debug(firstTeamId);
-  //     }
-  //     if (match.secondTeamResult === 3) {
-  //       console.debug(secondTeamId);
-  //     }
-  //     scoreMap.set(firstTeamId, firstTeamScore);
-  //     scoreMap.set(secondTeamId, secondTeamScore);
-  //   }
-
-  //   console.debug(scoreMap);
-
-  //   for (let team of teams) {
-  //     team.score = scoreMap.get(team.id)?? 0;
-  //   }
-
-
-  //   teams.sort((a, b) => {return b.score - a.score});
-  //   const bestIds = [];
-  //   for (let team = 0; team < advancingTeams; team++) {
-  //     bestIds.push(teams[team].id);
-  //   }
-
-  //   return bestIds;
-  // }
 
   function setTeams(eventId: number, eventType: EventType) {
     const teams: number[] = [];
@@ -252,7 +137,7 @@ export default function GenerateStage() {
       })
       .catch(error => console.error("Error", error));
     } else if (eventType.startsWith(EventType.groups)) {
-      const stageTeamCount = parseGroupsData(eventType).teamCount;
+      const stageTeamCount = parseGroupsData(eventType).groupSize;
       const tempTeamIds = teamIds;
       for (let group = 0; tempTeamIds.length !== 0; group++) {
         generateGroup(group, tempTeamIds.splice(0, stageTeamCount));
@@ -281,7 +166,7 @@ export default function GenerateStage() {
         method: "POST",
         body: JSON.stringify({
           eventId: eventId,
-          stageName: `${stageName} ${groupLetter} - ${stage}`,
+          stageName: `${groupLetter} - ${stage}`,
           stageIndex: stage
         }),
         headers: {"Content-Type": "application/json"}
@@ -293,25 +178,36 @@ export default function GenerateStage() {
     }
 
     const stageMatches: [number, number][][] = [];
-    const stagePlaying: number[][] = [];
     for (let stage = 0; stage < stageCount; stage++) {
       stageMatches[stage] = [];
-      stagePlaying[stage] = [];
     }
 
     Promise.allSettled(promises)
     .then(() => {
-      for (let first = 0; first < teams.length - 1; first ++) {
-        for (let second = first + 1; second < teams.length; second++) {
-          for (let stage = 0; stage < stageCount; stage++) {
-            if (!stagePlaying[stage].includes(first) && !stagePlaying[stage].includes(second)) {
-              stageMatches[stage].push([teams[first], teams[second]]);
-              stagePlaying[stage].push(first);
-              stagePlaying[stage].push(second);
-              break;
-            }
+      if (teams.length % 2 !== 0) {
+        teams.push(-1);
+      }
+      const teamIndexes: number[] = [];
+      for (let i = 0; i < teams.length / 2; i++) {
+        teamIndexes.push(i);
+        teamIndexes.push(teams.length - i - 1);
+      }
+      const rotateIndexes = () => {
+        for (let i = 1; i < teamIndexes.length; i++) {
+          teamIndexes[i]--;
+          if (teamIndexes[i] === 0) {
+            teamIndexes[i] = teams.length - 1;
           }
         }
+      }
+
+      for (let stage = 0; stage < stageCount; stage++) {
+        for (let i = 1; i < teamIndexes.length; i += 2) {
+          if (teams[teamIndexes[i - 1]] !== -1 && teams[teamIndexes[i]] !== -1){
+            stageMatches[stage].push([teams[teamIndexes[i - 1]], teams[teamIndexes[i]]]);
+          }
+        }
+        rotateIndexes();
       }
 
       let success = true;

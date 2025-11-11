@@ -1,5 +1,5 @@
 import { FormControl, FormLabel, Input, Stack, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
@@ -16,14 +16,9 @@ export default function UpdateEvent() {
   const [end, setEnd] = useState("");
   const [description, setDescription] = useState("");
   const [eventType, setEventType] = useState<EventType>(EventType.none);
-  const [teamCount ,setTeamCount] = useState<number>();
-  const [advancingTeamCount, setAdvancingTeamCount] = useState<number>();
+  const [groupSize ,setGroupSize] = useState<number>();
   const [qualificationThreshold, setQualificationThreshold] = useState<number>();
   const [eventPickerKey, setEventPickerKey] = useState(1); // this causes an upate on the event picker so that description changes show
-
-  useEffect(() => {
-    console.debug(advancingTeamCount);
-  }, [advancingTeamCount]);
 
   const toast = useToast();
 
@@ -53,7 +48,7 @@ export default function UpdateEvent() {
         </FormControl>
 
         <EventTypeSelector isDisabled={eventId == null || eventId === 0} value={eventType} changeHandler={event => setEventType(event.target.value as EventType)} />
-        <EventTypeData eventType={eventType} teamCount={teamCount} advancingTeamCount={advancingTeamCount} changeHandler={value => setEventTypeData(value)} />
+        <EventTypeData eventType={eventType} groupSize={groupSize} changeHandler={value => setEventTypeData(value)} />
 
         <ConfirmationButton isDisabled={eventId == null || eventId === 0} onClick={updateEvent}>Update event</ConfirmationButton>
       </EndpointForm>
@@ -76,8 +71,7 @@ export default function UpdateEvent() {
       setEventType(eventType.type);
       if (eventType.type === EventType.groups) {
         const groups = eventType as GroupsData
-        setTeamCount(groups.teamCount);
-        setAdvancingTeamCount(groups.advancingTeamCount);
+        setGroupSize(groups.groupSize);
       } else if (eventType.type === EventType.swiss) {
         const swiss = eventType as SwissData;
         setQualificationThreshold(swiss.qualificationThreshold);
@@ -91,8 +85,7 @@ export default function UpdateEvent() {
     const parsed = parseEventType(fullEventType);
     if (parsed.type === EventType.groups) {
       const groups = parsed as GroupsData;
-      setTeamCount(groups.teamCount);
-      setAdvancingTeamCount(groups.advancingTeamCount);
+      setGroupSize(groups.groupSize);
     } else if (parsed.type === EventType.swiss) {
       const swiss = parsed as SwissData;
       setQualificationThreshold(swiss.qualificationThreshold);
@@ -110,7 +103,7 @@ export default function UpdateEvent() {
 
     const endTime = `${end}:00`;
 
-    const fullEventType = stringifyEventType(eventType, {teamCount, advancingTeamCount, qualificationThreshold});
+    const fullEventType = stringifyEventType(eventType, {groupSize, qualificationThreshold});
 
     fetchGracefully(backendUrl + `/backend/event/${eventId}/`,
     {

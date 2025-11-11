@@ -1,6 +1,5 @@
 import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
-import Bracket from "../../../components/Bracket/Bracket";
 import Breadcrumbs from "../../../components/Breadcrumbs/Breadcrumbs";
 import ConfirmationButton from "../../../components/ConfirmationButton/ConfirmationButton";
 import DataPicker, { dataType } from "../../../components/DataPicker/DataPicker";
@@ -37,7 +36,7 @@ export default function UpdateMatch() {
 
         <ConfirmationButton isDisabled={!matchId} onClick={updateMatch}>Update match</ConfirmationButton>
 
-        <Bracket eventId={eventId} toast={toast} callback={id => {selectMatchInternal(id)}} />
+        {/* <Bracket eventId={eventId} toast={toast} callback={id => {selectMatchInternal(id)}} /> */}
 
       </EndpointForm>
     </div>
