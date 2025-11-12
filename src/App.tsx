@@ -34,6 +34,8 @@ import GenerateStage from './pages/Stages/GenerateStage/GenerateStage';
 import Teams from './pages/Teams/Teams';
 import ShowTeam from './pages/Teams/ShowTeam/ShowTeam';
 import ExportGameTeams from './pages/Teams/ExportGameTeams/ExportGameTeams';
+import School from './pages/School/School';
+import CreateSchool from './pages/School/CreateSchool/CreateSchool';
 
 function App() {
   return (
@@ -69,6 +71,8 @@ function App() {
       <Route path="/teams" element={<Teams />} />
       <Route path="/teams/show" element={<ShowTeam />} />
       <Route path="/teams/game-export" element={<ExportGameTeams />} />
+      <Route path="/school" element={<School />} />
+      <Route path="/school/create" element={<CreateSchool />} />
       <Route path={`${loginPathRelative}`} element={<LoginScript />} />
     </Routes>
   )
