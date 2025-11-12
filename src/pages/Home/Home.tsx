@@ -13,6 +13,7 @@ import GroupHeading from '../../components/GroupHeading/GroupHeading';
 import FormDivider from '../../components/FormDivider/FormDivider';
 import { UsersContent } from '../Users/Users';
 import { TeamsContent } from '../Teams/Teams';
+import { SchoolContent } from '../School/School';
 
 function Home() {
   return (
@@ -47,6 +48,10 @@ function Home() {
 
       <ChakraLink as={RouterLink} to="file"><GroupHeading>File</GroupHeading></ChakraLink>
       <FileContent />
+      <FormDivider />
+
+      <ChakraLink as={RouterLink} to="school"><GroupHeading>School</GroupHeading></ChakraLink>
+      <SchoolContent />
       <FormDivider />
     </Stack>
   );
