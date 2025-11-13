@@ -82,38 +82,50 @@ export default function GenerateStage() {
     .catch(error => console.error("Error", error));
   }
 
-  function setTeams(eventId: number, eventType: EventType) {
-    const teams: number[] = [];
-    fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/false/`, {}, null, toast)
+  async function setTeams(eventId: number, eventType: EventType) {
+    let teams: number[] = [];
+    await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/false/`, {}, null, toast)
     .then(response => response.json())
-    .then(data => {
+    .then(async data => {
       for (let team of data) {
-        if (!teams.includes(team.teamId)) {
-          teams.push(team.teamId);
-        }
+        teams.push(team.teamId);
       }
-    })
-    .then(() => {
+      teams.sort((a, b) => a - b);
+      teams = teams.filter((value, index, array) => index === 0 || array[index - 1] !== value);
+
       if (eventType === EventType.playoff) {
-        fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
+        await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
         .then(response => response.json())
         .then(matches => {
-          for (let match of matches) {
-            const firstTeam = teams.findIndex((id) => id === match.firstTeamId)
-            const secondTeam = teams.findIndex((id) => id === match.secondTeamId)
+          let eliminated: number[] = [];
+          for (let match of matches as Match[]) {
+            if (match.firstTeamId === match.secondTeamId) {
+              continue;
+            }
 
-            if (match.firstTeamResult > match.secondTeamResult && secondTeam !== -1) {
-              teams.splice(secondTeam, 1);
-            } else if (match.secondTeamResult > match.firstTeamResult && firstTeam !== -1) {
-              teams.splice(firstTeam, 1);
+            if (match.firstTeamResult > match.secondTeamResult) {
+              eliminated.push(match.secondTeamId);
+            } else if (match.secondTeamResult > match.firstTeamResult) {
+              eliminated.push(match.firstTeamId);
+            } else {
+              console.error(`Invalid state! Match ${match.firstTeamId} vs ${match.secondTeamId} is indeterminate`)
+            }
+          }
+          eliminated.sort((a, b) => a - b);
+
+          for (let i = 0; i < teams.length; i++) {
+            if (eliminated.includes(teams[i])) {
+              teams.splice(i, 1);
+              i--;
             }
           }
         })
       }
-      setTeamIds(teams);
-      // setPreviousEventId(0);
     })
     .catch(error => console.error("Error: ", error));
+
+    console.debug(teams);
+    setTeamIds(teams);
   }
 
   function createStage() {
@@ -258,7 +270,7 @@ export default function GenerateStage() {
       return;
     }
 
-    if (Math.log2(teamIds.length).toString().includes(".") && (eventType === EventType.playoff || eventType.startsWith(EventType.swiss))) {
+    if (Math.log2(teamIds.length).toString().includes(".") && eventType === EventType.playoff) {
       toast({
         title: "Awkward team count",
         description: "A team won't play in this stage",
@@ -270,17 +282,17 @@ export default function GenerateStage() {
 
     let matches: [number, number][] = new Array<[number, number]>();
 
-    let tempTeamIds: number[] = [];
-    for (const team of teamIds) {
-      tempTeamIds.push(team);
-    };
+    let tempTeamIds = teamIds;
 
     if (eventType === EventType.playoff) {
       if (tempTeamIds.length % 2 !== 0) {
         // remove a random team that won't play this stage
         const randomIndex = Math.floor(Math.random() * tempTeamIds.length);
+        matches.push([tempTeamIds[randomIndex], tempTeamIds[randomIndex]]);
         tempTeamIds.splice(randomIndex, 1);
       }
+
+      tempTeamIds.sort((a, b) => a - b);
 
       for (let team = 0; team + 1 < tempTeamIds.length; team += 2) {
         matches.push([tempTeamIds[team], tempTeamIds[team + 1]]);
