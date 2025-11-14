@@ -1,5 +1,4 @@
-import { QuestionIcon } from "@chakra-ui/icons";
-import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack, Tooltip } from "@chakra-ui/react"
+import { FormControl, FormLabel, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Stack } from "@chakra-ui/react"
 import { useEffect, useState } from "react";
 import { horizontalFormSpacing } from "../../config/config";
 import { EventType } from "../EventTypeSelector/EventTypeSelector"
@@ -7,7 +6,6 @@ import { EventType } from "../EventTypeSelector/EventTypeSelector"
 type EventTypeDataProps = {
   eventType: EventType,
   changeHandler: (data: string) => void,
-  groupSize?: number,
   qualificationThreshold?: number
 }
 
@@ -24,33 +22,19 @@ export function parseSwissData(input: string): SwissData {
   }
 }
 
-export type GroupsData = {
-  type: EventType,
-  groupSize: number,
-}
-
-export function parseGroupsData(input: string): GroupsData {
-  const data = input.split(",");
-  return {
-    type: EventType.groups,
-    groupSize: Number(data[1]),
-  }
-}
-
 export function parseEventType(input: EventType) {
   if (input.startsWith(EventType.playoff)) {
     return { type: EventType.playoff }
   } else if (input.startsWith(EventType.swiss)) {
     return parseSwissData(input);
   } else if (input.startsWith(EventType.groups)) {
-    return parseGroupsData(input);
+    return { type: EventType.groups };
   } else {
     return { type: EventType.none };
   }
 }
 
 type eventTypeOptions = {
-  groupSize?: number;
   qualificationThreshold?: number;
 };
 
@@ -58,11 +42,7 @@ export function stringifyEventType(type: EventType, options?: eventTypeOptions) 
   if (type === EventType.playoff) {
     return type;
   } else if (type === EventType.groups) {
-    if (options?.groupSize !== undefined) {
-      return `${type},${options.groupSize}`;
-    } else {
-      throw new Error(`Invalid groups arguments: ${options?.groupSize}`);
-    }
+    return type;
   } else if (type === EventType.swiss) {
     if (options?.qualificationThreshold !== undefined) {
       return `${type},${options.qualificationThreshold}`
@@ -76,8 +56,6 @@ export function stringifyEventType(type: EventType, options?: eventTypeOptions) 
 
 export default function EventTypeData(props: EventTypeDataProps) {
   const [swissQualificationThreshold, setSwissQualificationThreshold] = useState(1);
-
-  const [groupSize, setGroupSize] = useState(1);
 
   useEffect(() => {
     if (props.eventType === EventType.playoff) {
@@ -95,15 +73,14 @@ export default function EventTypeData(props: EventTypeDataProps) {
 
   useEffect(() => {
     if (props.eventType.startsWith(EventType.groups)) {
-      props.changeHandler(`,${groupSize}`)
+      props.changeHandler("")
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupSize])
+  }, [props.eventType])
 
   return (
     <div>
       {
-      props.eventType === EventType.playoff ? <></> :
       props.eventType.startsWith(EventType.swiss) ?
         <Stack direction="row" spacing={horizontalFormSpacing}>
           <FormControl>
@@ -116,23 +93,8 @@ export default function EventTypeData(props: EventTypeDataProps) {
               </NumberInputStepper>
             </NumberInput>
           </FormControl>
-        </Stack> :
-      props.eventType.startsWith(EventType.groups) ?
-        <Stack direction="row" spacing={horizontalFormSpacing}>
-          <FormControl>
-            <Stack direction="row" align="center">
-              <FormLabel marginRight="-0.1em">Group size</FormLabel>
-              <Tooltip label="There should be an even number of teams, so that everyone plays every round"><QuestionIcon marginBottom="0.3em" /></Tooltip>
-            </Stack>
-            <NumberInput min={1} value={props.groupSize} onChange={(_, value) => setGroupSize(value)}>
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </FormControl>
-        </Stack> : <></>
+        </Stack>
+      : <></>
       }
     </div>
   )
