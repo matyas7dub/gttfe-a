@@ -108,14 +108,57 @@ export default function GenerateStage() {
           setPreviousStageIndex(null);
           setPreviousStageName("");
         }
-        setTeams(newEventId, newEventType);
+        setTeams(newEventId, newEventType, stages.length === 0);
       })
       .catch(error => console.error("Error", error));
   }
 
-  async function setTeams(eventId: number, eventType: EventType) {
+  async function setTeams(eventId: number, eventType: EventType, firstStage: boolean) {
     let teams: number[] = [];
-    await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/false/`, {}, null, toast)
+
+    if (eventType === EventType.playoff && firstStage === false) {
+      await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
+      .then(response => response.json())
+      .then((matches: Match[]) => {
+        matches.sort((a, b) => a.stageIndex - b.stageIndex);
+
+        const errMsg = (match: Match) => `Invalid state! Match ${match.firstTeamName} vs ${match.secondTeamName} is indeterminate`;
+
+        let i = 0;
+        while (i < matches.length && matches[i].stageIndex === 0) {
+          const winner = getWinningTeam(matches[i]);
+          if (winner !== null) {
+            teams.push(winner);
+          } else {
+            console.error(errMsg(matches[i]));
+          }
+          i++;
+        }
+
+        const eliminated: number[] = [];
+        while (i < matches.length) {
+          const loser = getLosingTeam(matches[i]);
+          if (loser !== null) {
+            eliminated.push(loser);
+          } else if (matches[i].firstTeamId !== matches[i].secondTeamId) {
+            console.error(errMsg(matches[i]));
+          }
+          i++;
+        }
+
+        teams.sort((a, b) => a - b);
+        eliminated.sort((a, b) => a - b);
+
+        for (let i = 0; i < teams.length; i++) {
+          if (eliminated.includes(teams[i])) {
+            teams.splice(i, 1);
+            i--;
+          }
+        }
+      })
+      .catch(error => console.error("Error: ", error));
+    } else {
+      await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/false/`, {}, null, toast)
       .then(response => response.json())
       .then(async data => {
         for (let team of data) {
@@ -124,36 +167,9 @@ export default function GenerateStage() {
         teams.sort((a, b) => a - b);
         teams = teams.filter((value, index, array) => index === 0 || array[index - 1] !== value);
 
-        if (eventType === EventType.playoff) {
-          await fetchGracefully(backendUrl + `/backend/event/${eventId}/matches/`, {}, null, toast)
-            .then(response => response.json())
-            .then(matches => {
-              let eliminated: number[] = [];
-              for (let match of matches as Match[]) {
-                if (match.firstTeamId === match.secondTeamId) {
-                  continue;
-                }
-
-                if (match.firstTeamResult > match.secondTeamResult) {
-                  eliminated.push(match.secondTeamId);
-                } else if (match.secondTeamResult > match.firstTeamResult) {
-                  eliminated.push(match.firstTeamId);
-                } else {
-                  console.error(`Invalid state! Match ${match.firstTeamId} vs ${match.secondTeamId} is indeterminate`)
-                }
-              }
-              eliminated.sort((a, b) => a - b);
-
-              for (let i = 0; i < teams.length; i++) {
-                if (eliminated.includes(teams[i])) {
-                  teams.splice(i, 1);
-                  i--;
-                }
-              }
-            })
-        }
       })
       .catch(error => console.error("Error: ", error));
+    }
 
     console.debug(teams);
     setTeamIds(teams);
@@ -448,9 +464,12 @@ type Score = {
 
 type Match = {
   firstTeamId: number;
-  secondTeamId: number;
+  firstTeamName: string,
   firstTeamResult: number;
+  secondTeamId: number;
+  secondTeamName: string;
   secondTeamResult: number;
+  stageIndex: number;
 };
 
 async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastFnReturn) {
@@ -549,4 +568,32 @@ function getGroupName(groupIndex: number) {
   }
 
   return name;
+}
+
+function getWinningTeam(match: Match) {
+  if (match.firstTeamId === match.secondTeamId) {
+    return match.firstTeamId;
+  }
+
+  if (match.firstTeamResult > match.secondTeamResult) {
+    return match.firstTeamId;
+  } else if (match.secondTeamResult > match.firstTeamResult) {
+    return match.secondTeamId;
+  } else {
+    return null;
+  }
+}
+
+function getLosingTeam(match: Match) {
+  if (match.firstTeamId === match.secondTeamId) {
+    return null;
+  }
+
+  if (match.firstTeamResult < match.secondTeamResult) {
+    return match.firstTeamId;
+  } else if (match.secondTeamResult < match.firstTeamResult) {
+    return match.secondTeamId;
+  } else {
+    return null;
+  }
 }
