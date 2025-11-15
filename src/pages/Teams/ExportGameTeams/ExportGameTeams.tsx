@@ -49,13 +49,14 @@ export default function ExportGameTeams() {
       }
     })
 
-    fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/players/admin/false/`, {}, null, toast)
+    fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/players/admin/true/`, {}, null, toast)
     .then(response => response.json())
     .then(users => {
       users.sort((a: any, b: any) => a.teamId - b.teamId);
-      let csv = "Název týmu,Nick,Rank,Maximální rank,Role v týmu,Discord ID,ID týmu\n";
+      let csv = "Název týmu,Nick,Rank,Maximální rank,Role v týmu,Discord nick,Discord ID,ID týmu\n";
       for (const user of users) {
-        csv += `${user.name},${user.nick},${rankNames[user.rank]??"neznámý"},${rankNames[user.maxRank]??"neznámý"},${roleNames[user.generatedRoleId]??"neznámá"},${user.userId},${user.teamId}\n`;
+        csv += `${user.name},${user.nick},${rankNames[user.rank]??"neznámý"},${rankNames[user.maxRank]??"neznámý"
+        },${roleNames[user.generatedRoleId]??"neznámá"},${user.discordUserObject?.username?? "neznámý"},${user.userId},${user.teamId}\n`;
       }
 
       window.open(
