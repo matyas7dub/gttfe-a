@@ -85,7 +85,7 @@ export default function DataPicker(props: DataPickerProps) {
           console.error("You need to provide a gameId for the teams data picker or disable it.")
           invalid = true;
         } else {
-          location = `/backend/team/list/participating/${props.gameId}/false/`
+          location = `/backend/team/list/participating/${props.gameId}/players/`
           setFormLabel("Team")
           setPlaceholder("Select a team");
           setErrorMessage("You must select a team!");
@@ -243,7 +243,7 @@ export default function DataPicker(props: DataPickerProps) {
     .then(response => response.json())
     .then(data => fetch(backendUrl + `/backend/event/${data.eventId}/`)
     .then(response => response.json())
-    .then(data => fetch(backendUrl + `/backend/team/list/participating/${data.gameId}/false/`)
+    .then(data => fetch(backendUrl + `/backend/team/list/participating/${data.gameId}/players/`)
     .then(response => response.json())
     .then(data => {
       const teamIds: number[] = [];

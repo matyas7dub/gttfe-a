@@ -34,9 +34,9 @@ export default function Bracket(props: BracketProps) {
       eventType = event.eventType;
       gameId = event.gameId;
     })
-  
+
     const namesMap = await getTeamNames(gameId, props.toast);
-  
+
     eventType = parseEventType(eventType).type;
     if (eventType === EventType.playoff) {
       fetchGracefully(backendUrl + `/backend/event/${props.eventId}/matches/`, {}, null, props.toast)
@@ -112,7 +112,7 @@ type Match = {
 
 async function getTeamNames(gameId: number, toast: CreateToastFnReturn) {
   const teamNameMap: Map<number, string> = new Map();
-  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
+  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/players/`, {}, null, toast)
   .then(response => response.json())
   .then(teams => {
     for (let team of teams) {

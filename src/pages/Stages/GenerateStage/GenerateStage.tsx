@@ -158,7 +158,7 @@ export default function GenerateStage() {
       })
       .catch(error => console.error("Error: ", error));
     } else {
-      await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/false/`, {}, null, toast)
+      await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId.current}/players/`, {}, null, toast)
       .then(response => response.json())
       .then(async data => {
         for (let team of data) {
@@ -530,7 +530,7 @@ async function getSwissMaps(gameId: number, eventId: number, toast: CreateToastF
     });
 
   const teams: number[] = [];
-  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
+  await fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/players/`, {}, null, toast)
     .then(response => response.json())
     .then(data => {
       for (let team of data) {

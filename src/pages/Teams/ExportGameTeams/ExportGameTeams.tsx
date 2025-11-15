@@ -49,7 +49,7 @@ export default function ExportGameTeams() {
       }
     })
 
-    fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/false/`, {}, null, toast)
+    fetchGracefully(backendUrl + `/backend/team/list/participating/${gameId}/players/admin/false/`, {}, null, toast)
     .then(response => response.json())
     .then(users => {
       users.sort((a: any, b: any) => a.teamId - b.teamId);
